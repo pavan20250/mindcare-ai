@@ -1,36 +1,186 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MindCare AI - AI-Powered Behavioral Health Platform
 
-## Getting Started
+A comprehensive web platform showcasing AI-powered behavioral health coordination and care delivery. Built with Next.js, TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Core Platform Capabilities
+- **AI-Powered Intake & Screening**: 24/7 conversational intake with DSM-5-guided assessments
+- **Intelligent Triage & Referral**: Rule-based routing to appropriate specialists
+- **Clinical Insights & Treatment Planning**: AI-generated summaries and editable treatment plans
+- **Smart Dashboards**: Real-time views for patients and clinicians
+- **Automated Scheduling & Billing**: Streamlined operational workflows
+
+### Clinical Scope
+- **Neurodevelopmental Disorders**: ASD, ADHD (AQ-10, ASRS assessments)
+- **Anxiety Disorders**: GAD, Social Anxiety, Panic Disorder (GAD-7)
+- **Depressive Disorders**: MDD, Persistent Depressive Disorder (PHQ-9, PHQ-2)
+- **Trauma & Stress**: PTSD (PCL-5)
+- **Substance & Addictive Disorders**: Alcohol/Drug Use (AUDIT, DAST)
+- **Personality Disorders**: BPD (MSI-BPD)
+
+## 🛠️ Technology Stack
+
+- **Framework**: Next.js 15.5.2 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Deployment**: Vercel-ready
+- **Icons**: Heroicons (SVG)
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── demo/           # Interactive demo page
+│   ├── globals.css     # Global styles
+│   ├── layout.tsx      # Root layout
+│   └── page.tsx        # Home page
+├── components/         # Reusable components
+│   ├── FeatureCard.tsx
+│   └── StatsCard.tsx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Installation
 
-## Learn More
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd healthtech
+```
 
-To learn more about Next.js, take a look at the following resources:
+2. Install dependencies:
+```bash
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+### Available Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production with Turbopack
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎯 Key Pages
+
+### Home Page (`/`)
+- Hero section with platform overview
+- Current challenges in behavioral health
+- Key features showcase
+- Patient journey flow
+- Clinical scope and assessments
+- Benefits for all stakeholders
+- Call-to-action sections
+
+### Demo Page (`/demo`)
+- Interactive conversational intake demo
+- Step-by-step assessment process
+- Real-time AI responses
+- Progress tracking
+- Care recommendations
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary**: Blue (#2563eb) - Trust, healthcare
+- **Secondary**: Purple (#7c3aed) - Innovation, AI
+- **Success**: Green (#16a34a) - Positive outcomes
+- **Warning**: Orange (#ea580c) - Attention needed
+- **Error**: Red (#dc2626) - Critical issues
+
+### Typography
+- **Headings**: Bold, clear hierarchy
+- **Body**: Readable, accessible font stack
+- **Interactive**: Hover states and transitions
+
+## 🔧 Customization
+
+### Adding New Features
+1. Create components in `src/components/`
+2. Add pages in `src/app/`
+3. Update navigation in layout files
+4. Style with Tailwind CSS classes
+
+### Styling
+- Use Tailwind CSS utility classes
+- Custom styles in `src/app/globals.css`
+- Component-specific styles in individual files
+
+## 📱 Responsive Design
+
+The platform is fully responsive with:
+- Mobile-first approach
+- Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
+- Touch-friendly interactions
+- Optimized for all device sizes
+
+## 🔒 Security & Privacy
+
+- HIPAA-compliant design considerations
+- Secure data handling patterns
+- Privacy-first approach
+- No sensitive data in demo
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Connect your GitHub repository
+2. Configure build settings
+3. Deploy automatically on push
+
+### Other Platforms
+- Netlify
+- AWS Amplify
+- Docker containers
+
+## 📊 Performance
+
+- Optimized images and assets
+- Lazy loading components
+- Efficient bundle splitting
+- Fast page loads
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Contact the development team
+- Check documentation
+
+## 🔮 Roadmap
+
+- [ ] Patient portal implementation
+- [ ] Clinician dashboard
+- [ ] EHR integration
+- [ ] Mobile app development
+- [ ] Advanced AI features
+- [ ] Multi-language support
+
+---
+
+**MindCare AI** - Transforming behavioral health care through intelligent automation and AI-powered solutions.
