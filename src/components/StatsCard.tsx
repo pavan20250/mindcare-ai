@@ -15,17 +15,17 @@ const colorClasses = {
 
 export default function StatsCard({ title, value, description, icon, color }: StatsCardProps) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 ${colorClasses[color]} rounded-lg flex items-center justify-center`}>
+    <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 ${colorClasses[color]} rounded-lg flex items-center justify-center`}>
           {icon}
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          <p className="text-sm text-gray-500">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">{value}</p>
+          <p className="text-xs sm:text-sm text-gray-500">{title}</p>
         </div>
       </div>
-      <p className="text-gray-600 text-sm">{description}</p>
+      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">{description}</p>
     </div>
   );
 }
