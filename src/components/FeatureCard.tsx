@@ -14,7 +14,7 @@ const colorClasses = {
 
 export default function FeatureCard({ title, description, icon, color }: FeatureCardProps) {
   return (
-    <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 hover:-translate-y-1">
+    <div className="section-bg p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 hover:-translate-y-1">
       <div className={`w-10 h-10 sm:w-12 sm:h-12 ${colorClasses[color]} rounded-lg flex items-center justify-center mb-3 sm:mb-4`}>
         {icon}
       </div>
