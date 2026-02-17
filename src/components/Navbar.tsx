@@ -17,16 +17,16 @@ export default function Navbar() {
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <a href="#features" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Features</a>
-                <a href="#journey" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Patient Journey</a>
-                <a href="#benefits" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Benefits</a>
-                <a href="#contact" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Contact</a>
+                <a href="#features" className="text-slate-600 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Features</a>
+                <a href="#journey" className="text-slate-600 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Journey</a>
+                <a href="#benefits" className="text-slate-600 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Benefits</a>
+                <a href="#contact" className="text-slate-600 hover:text-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Contact</a>
               </div>
             </div>
             <div className="md:hidden">
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-700 hover:text-blue-600 transition-colors p-2"
+                className="text-slate-600 hover:text-indigo-600 transition-colors p-2"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -54,10 +54,10 @@ export default function Navbar() {
                 </button>
               </div>
               <div className="space-y-4">
-                <a href="#features" className="block text-gray-700 hover:text-blue-600 py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Features</a>
-                <a href="#journey" className="block text-gray-700 hover:text-blue-600 py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Patient Journey</a>
-                <a href="#benefits" className="block text-gray-700 hover:text-blue-600 py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Benefits</a>
-                <a href="#contact" className="block text-gray-700 hover:text-blue-600 py-2 transition-colors" onClick={() => setMobileMenuOpen(false)}>Contact</a>
+                <a href="#features" className="block text-slate-700 hover:text-indigo-600 py-2 font-medium transition-colors" onClick={() => setMobileMenuOpen(false)}>Features</a>
+                <a href="#journey" className="block text-slate-700 hover:text-indigo-600 py-2 font-medium transition-colors" onClick={() => setMobileMenuOpen(false)}>Journey</a>
+                <a href="#benefits" className="block text-slate-700 hover:text-indigo-600 py-2 font-medium transition-colors" onClick={() => setMobileMenuOpen(false)}>Benefits</a>
+                <a href="#contact" className="block text-slate-700 hover:text-indigo-600 py-2 font-medium transition-colors" onClick={() => setMobileMenuOpen(false)}>Contact</a>
               </div>
             </div>
           </div>
@@ -66,4 +66,5 @@ export default function Navbar() {
     </>
   );
 }
+
 
