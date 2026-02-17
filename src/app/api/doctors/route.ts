@@ -10,7 +10,7 @@ export interface Doctor {
   image?: string;
 }
 
-const DOCTORS: Doctor[] = [
+export const DOCTORS: Doctor[] = [
   {
     id: '1',
     name: 'Dr. Sarah Chen',
