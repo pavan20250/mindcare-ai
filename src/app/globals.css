@@ -1,16 +1,89 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  /* Single theme: page and section backgrounds */
-  --page-bg: #f8fafc;
+  --foreground: #0f172a;
+  --page-bg: #f1f5f9;
   --section-bg: #ffffff;
+  --card-shadow: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+  --card-shadow-hover: 0 10px 25px -5px rgb(15 23 42 / 0.08), 0 4px 10px -4px rgb(15 23 42 / 0.04);
+  --radius-card: 0.875rem;
+  --radius-button: 0.5rem;
+  --ring: 79 70 229;
+  /* shadcn/ui theme (Slate) */
+  --radius: 0.625rem;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+  --primary: oklch(0.208 0.042 265.755);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.704 0.04 256.788);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.129 0.042 264.695);
+  --sidebar-primary: oklch(0.208 0.042 265.755);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-border: oklch(0.929 0.013 255.508);
+  --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -100,12 +173,12 @@ body {
   .mobile-hero {
     padding: 2.5rem 0;
   }
-  
+
   .mobile-hero-title {
     font-size: 1.5rem;
     line-height: 1.25;
   }
-  
+
   .mobile-hero-subtitle {
     font-size: 0.875rem;
     line-height: 1.5;
@@ -169,7 +242,7 @@ body {
   .mobile-text-xl {
     font-size: 1.25rem;
   }
-  
+
   .mobile-text-lg {
     font-size: 1rem;
   }
@@ -179,11 +252,11 @@ body {
   .mobile-text-xl {
     font-size: 2rem;
   }
-  
+
   .mobile-text-lg {
     font-size: 1.25rem;
   }
-  
+
   .mobile-text-base {
     font-size: 1rem;
   }
@@ -236,13 +309,13 @@ body {
     gap: 1.5rem;
     padding: 0;
   }
-  
+
   .mobile-grid-2 {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     padding: 0;
   }
-  
+
   .mobile-grid-3 {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
@@ -256,7 +329,7 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
   }
-  
+
   .mobile-grid-3 {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
@@ -275,11 +348,11 @@ body {
 
 /* Card Styling - clean, professional */
 .card {
-  background: white;
-  border-radius: 0.75rem;
+  background: var(--section-bg);
+  border-radius: var(--radius-card);
   padding: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  transition: all 0.25s ease;
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
   border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
@@ -298,9 +371,8 @@ body {
 }
 
 .card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px -8px rgba(30, 64, 175, 0.12), 0 4px 8px -4px rgba(15, 23, 42, 0.08);
-  border-color: rgba(226, 232, 240, 1);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(203, 213, 225, 0.9);
 }
 
 /* Feature Icon */
@@ -570,7 +642,7 @@ button {
   html {
     font-size: 16px;
   }
-  
+
   /* Better spacing for mobile */
   section {
     scroll-margin-top: 4rem;
@@ -588,4 +660,15 @@ a:focus-visible {
 ::selection {
   background-color: rgba(79, 70, 229, 0.2);
   color: inherit;
+}
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }

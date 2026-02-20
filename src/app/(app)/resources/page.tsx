@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface Resource {
   id: string;
@@ -94,31 +96,30 @@ export default function ResourcesPage() {
           if (!items?.length) return null;
           return (
             <section key={cat}>
-              <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
                 {CATEGORY_LABELS[cat]}
               </h2>
               <ul className="space-y-3">
                 {items.map((resource) => (
-                  <li
-                    key={resource.id}
-                    className="section-bg rounded-xl border border-slate-200 p-4 shadow-sm hover:border-slate-300 transition-colors"
-                  >
-                    <h3 className="font-semibold text-slate-900 text-sm">{resource.title}</h3>
-                    <p className="text-slate-600 text-sm mt-1 leading-snug">{resource.description}</p>
-                    {resource.link && resource.linkLabel && (
-                      <a
-                        href={resource.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 mt-2 text-indigo-600 text-sm font-medium hover:underline"
-                      >
-                        {resource.linkLabel}
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
-                    )}
-                  </li>
+                  <Card key={resource.id} className="hover:border-muted-foreground/20 transition-colors">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-card-foreground text-sm">{resource.title}</h3>
+                      <p className="text-muted-foreground text-sm mt-1 leading-snug">{resource.description}</p>
+                      {resource.link && resource.linkLabel && (
+                        <a
+                          href={resource.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 mt-2 text-primary text-sm font-medium hover:underline"
+                        >
+                          {resource.linkLabel}
+                          <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      )}
+                    </CardContent>
+                  </Card>
                 ))}
               </ul>
             </section>
@@ -127,12 +128,8 @@ export default function ResourcesPage() {
       </div>
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/demo" className="btn-secondary text-sm py-2 px-4">
-          ← Back to demo
-        </Link>
-        <Link href="/appointments" className="btn-primary text-sm py-2 px-4">
-          Book appointment
-        </Link>
+        <Button variant="secondary" asChild><Link href="/demo">← Back to demo</Link></Button>
+        <Button asChild><Link href="/appointments">Book appointment</Link></Button>
       </div>
     </div>
   );
