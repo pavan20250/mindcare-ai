@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 const INTAKE_STEP_LABELS: Record<string, string> = {
   welcome: 'Initial concerns',
@@ -37,16 +39,18 @@ export default function CarePage() {
       </header>
 
       {loading ? (
-        <div className="section-bg rounded-xl border border-slate-200 p-8 flex justify-center">
-          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Card>
+          <CardContent className="p-8 flex justify-center">
+            <div className="size-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </CardContent>
+        </Card>
       ) : entries.length === 0 ? (
-        <div className="section-bg rounded-xl border border-slate-200 p-6 text-center">
-          <p className="text-slate-600 text-sm mb-4">You haven’t completed the intake yet.</p>
-          <Link href="/demo" className="btn-primary text-sm py-2 px-4 inline-block">
-            Start conversational intake
-          </Link>
-        </div>
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground text-sm mb-4">You haven’t completed the intake yet.</p>
+          <Button asChild><Link href="/demo">Start conversational intake</Link></Button>
+          </CardContent>
+        </Card>
       ) : (
         <>
           {completedAt && (
@@ -54,27 +58,21 @@ export default function CarePage() {
               Completed {new Date(completedAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}
             </p>
           )}
-          <div className="section-bg rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+          <Card className="divide-y divide-border overflow-hidden gap-0 py-0">
             {entries.map(([stepId, value]) => (
-              <div key={stepId} className="p-4">
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              <CardContent key={stepId} className="p-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {INTAKE_STEP_LABELS[stepId] ?? stepId}
                 </p>
-                <p className="text-slate-900 text-sm mt-0.5">{value}</p>
-              </div>
+                <p className="text-card-foreground text-sm mt-0.5">{value}</p>
+              </CardContent>
             ))}
-          </div>
+          </Card>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/appointments" className="btn-primary text-sm py-2 px-4">
-              Book appointment
-            </Link>
-            <Link href="/resources" className="btn-secondary text-sm py-2 px-4">
-              Self-help resources
-            </Link>
-            <Link href="/demo" className="text-slate-600 text-sm hover:text-indigo-600 py-2">
-              Update intake
-            </Link>
+            <Button asChild><Link href="/appointments">Book appointment</Link></Button>
+            <Button variant="secondary" asChild><Link href="/resources">Self-help resources</Link></Button>
+            <Button variant="ghost" asChild><Link href="/demo">Update intake</Link></Button>
           </div>
         </>
       )}

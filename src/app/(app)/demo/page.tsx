@@ -2,6 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useIntake } from '@/contexts/IntakeContext';
+import { MessageCircle, User, Sparkles, Info } from 'lucide-react';
 
 export interface DemoStep {
   id: string;
@@ -25,6 +32,9 @@ function saveIntake(responses: Record<string, string>, completed?: boolean) {
 }
 
 export default function DemoPage() {
+  const searchParams = useSearchParams();
+  const required = searchParams.get('required') === '1';
+  const { setIntakeCompleted } = useIntake();
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [isTyping, setIsTyping] = useState(false);
@@ -51,7 +61,9 @@ export default function DemoPage() {
     const nextResponses = { ...responses, [stepId]: response };
     setResponses(nextResponses);
     const reachedRecommendation = currentStep + 1 >= demoSteps.length - 1;
-    saveIntake(nextResponses, reachedRecommendation).catch(() => {});
+    saveIntake(nextResponses, reachedRecommendation).then(() => {
+      if (reachedRecommendation) setIntakeCompleted(true);
+    }).catch(() => {});
     setIsTyping(true);
 
     setTimeout(() => {
@@ -60,7 +72,7 @@ export default function DemoPage() {
         setCurrentStep((prev) => prev + 1);
       }
     }, 1500);
-  }, [demoSteps, currentStep, responses]);
+  }, [demoSteps, currentStep, responses, setIntakeCompleted]);
 
   const handleRestart = useCallback(() => {
     setCurrentStep(0);
@@ -72,209 +84,223 @@ export default function DemoPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 py-12">
-        <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-600 mt-4">Loading intake…</p>
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="size-10 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
+        <p className="text-slate-500 mt-4 text-sm font-medium">Loading assessment…</p>
       </div>
     );
   }
 
   if (error || demoSteps.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 py-12 px-4">
-        <p className="text-slate-700 mb-4 text-center">{error ?? 'No demo steps available.'}</p>
-        <Link href="/" className="btn-primary">Back to Home</Link>
+      <div className="flex flex-col items-center justify-center min-h-[50vh] px-6">
+        <Card className="max-w-md w-full rounded-xl border border-slate-200 bg-white shadow-sm">
+          <CardContent className="pt-8 pb-8 px-8 text-center">
+            <p className="text-slate-700 mb-6 text-sm leading-relaxed">{error ?? 'No demo steps available.'}</p>
+            <Button asChild className="rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium"><Link href="/">Back to Home</Link></Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-      <header className="text-center mb-4 sm:mb-5">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Conversational Intake</h1>
-        <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto">
-          Your responses are saved to your account for care coordination and provider handoff.
-        </p>
+    <>
+    <div className="hidden md:flex h-svh flex-col w-full max-w-full mx-auto overflow-hidden bg-slate-50/80">
+      {/* Top bar */}
+      <header className="shrink-0 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm px-8 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-slate-800 text-white">
+              <MessageCircle className="size-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight text-slate-900">Clinical Intake</h1>
+              <p className="text-xs text-slate-500">Step {currentStep + 1} of {demoSteps.length}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-xs font-medium text-slate-500">Progress</p>
+              <p className="text-sm font-semibold tabular-nums text-slate-800">{Math.round(((currentStep + 1) / demoSteps.length) * 100)}%</p>
+            </div>
+            <Progress value={((currentStep + 1) / demoSteps.length) * 100} className="h-2 w-24 rounded-full" />
+          </div>
+        </div>
       </header>
 
-      <div className="mb-4">
-        <div className="flex justify-between text-xs sm:text-sm text-slate-500 mb-1">
-          <span>Step {currentStep + 1} of {demoSteps.length}</span>
-          <span>{Math.round(((currentStep + 1) / demoSteps.length) * 100)}%</span>
-        </div>
-        <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${((currentStep + 1) / demoSteps.length) * 100}%` }}
-          />
-        </div>
-        <div className="flex justify-between mt-1">
-          {demoSteps.map((_, i) => (
-            <div
-              key={i}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                i <= currentStep ? 'bg-indigo-500' : 'bg-slate-300'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="section-bg rounded-xl border border-slate-200/90 shadow-sm p-3 sm:p-4 mb-4">
-        <div className="space-y-3 sm:space-y-4">
-          <div className="flex gap-2 sm:gap-3">
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="bg-slate-50 rounded-lg p-3 sm:p-4 border border-slate-100">
-                <h3 className="font-semibold text-slate-900 mb-0.5 text-sm">{currentStepData.title}</h3>
-                <p className="text-slate-700 text-sm leading-snug">{currentStepData.message}</p>
-              </div>
-            </div>
-          </div>
-
-          {responses[currentStepData.id] && (
-            <div className="flex gap-2 sm:gap-3 justify-end">
-              <div className="flex-1 max-w-[85%] sm:max-w-sm order-2">
-                <div className="bg-slate-100 rounded-lg p-3 sm:p-4 border border-slate-200/80">
-                  <p className="text-slate-800 text-sm">{responses[currentStepData.id]}</p>
-                </div>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-slate-400 flex items-center justify-center shrink-0 order-1">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-            </div>
-          )}
-
-          {isTyping && (
-            <div className="flex gap-2 sm:gap-3">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 inline-flex gap-1">
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {!isTyping && currentStepData.type === 'message' && (
-        <div className="flex justify-center py-1">
-          <button onClick={() => handleResponse('')} className="btn-primary text-sm py-2 px-4">
-            Continue
-          </button>
-        </div>
-      )}
-
-      {!isTyping && currentStepData.type === 'question' && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-slate-700">Select your response</p>
-          <div className="grid gap-1.5">
-            {currentStepData.options?.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleResponse(option)}
-                className="text-left px-3 py-2.5 section-bg rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 text-slate-800 text-sm font-medium transition-colors min-h-10 w-full"
+      <div className="flex flex-1 min-h-0">
+        {/* Left: step indicators + notice */}
+        <aside className="w-52 shrink-0 flex flex-col gap-4 border-r border-slate-200/80 bg-white p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Steps</p>
+          <div className="flex flex-col gap-1.5">
+            {demoSteps.map((step, i) => (
+              <div
+                key={step.id}
+                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
+                  i === currentStep
+                    ? 'bg-slate-800 text-white font-medium'
+                    : i < currentStep
+                      ? 'bg-slate-100 text-slate-600'
+                      : 'text-slate-400'
+                }`}
               >
-                {option}
-              </button>
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-medium tabular-nums">
+                  {i < currentStep ? '✓' : i + 1}
+                </span>
+                <span className="truncate">{step.title}</span>
+              </div>
             ))}
           </div>
-        </div>
-      )}
+          <p className="mt-auto text-[11px] leading-relaxed text-slate-400">
+            Your responses are saved securely and used for care coordination and provider handoff.
+          </p>
+          {required && (
+            <Alert className="rounded-lg border border-amber-200/80 bg-amber-50/90 text-amber-900 [&_svg]:text-amber-600 p-3">
+              <Info className="size-3.5 shrink-0" />
+              <AlertTitle className="text-amber-900 font-semibold text-xs">Complete to continue</AlertTitle>
+              <AlertDescription className="text-amber-800/90 text-[11px] mt-0.5">
+                Finish this assessment to access My care, Appointments, and Resources.
+              </AlertDescription>
+            </Alert>
+          )}
+        </aside>
 
-      {!isTyping && currentStepData.type === 'scale' && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-slate-700 text-center">Rate the impact on your daily life</p>
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span className="text-xs text-slate-500 order-2 sm:order-1">1 · Not at all</span>
-            <div className="flex flex-wrap justify-center gap-1.5">
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                <button
-                  key={num}
-                  onClick={() => handleResponse(num.toString())}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-semibold transition-colors touch-manipulation"
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-            <span className="text-xs text-slate-500 order-3">10 · Extremely</span>
-          </div>
-        </div>
-      )}
+        {/* Right: current step content */}
+        <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-slate-50/50">
+          <div className="flex-1 min-h-0 overflow-auto p-8">
+            <div className="mx-auto max-w-2xl">
+              {/* Question / message block */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm">
+                <div className="flex gap-4">
+                  <div className="size-10 shrink-0 rounded-full bg-slate-100 flex items-center justify-center">
+                    <Sparkles className="size-5 text-slate-600" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-base font-semibold text-slate-900 mb-1.5">{currentStepData.title}</h2>
+                    <p className="text-sm leading-relaxed text-slate-600">{currentStepData.message}</p>
+                  </div>
+                </div>
+              </div>
 
-      {!isTyping && currentStepData.type === 'recommendation' && (
-        <div className="space-y-4">
-          <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-xl p-4 sm:p-5">
-            <h3 className="text-sm font-semibold text-emerald-900 mb-2">Care recommendation</h3>
-            <ul className="space-y-2">
-              {currentStepData.nextSteps?.map((step, index) => (
-                <li key={index} className="flex items-center gap-2 text-emerald-800 text-sm">
-                  <span className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  {step}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 flex-wrap">
-            <Link href="/appointments?specialty=psychologist" className="btn-primary w-full sm:w-auto text-sm py-2 px-4">
-              Book appointment with a doctor
-            </Link>
-            <Link href="/resources" className="btn-secondary w-full sm:w-auto text-sm py-2 px-4">
-              Access self-help resources
-            </Link>
-            <button onClick={handleRestart} className="btn-secondary w-full sm:w-auto text-sm py-2 px-4">
-              Restart intake
-            </button>
-            <Link href="/" className="btn-secondary w-full sm:w-auto text-center text-sm py-2 px-4">
-              Back to home
-            </Link>
-          </div>
-        </div>
-      )}
+              {responses[currentStepData.id] && (
+                <div className="mt-4 flex justify-end">
+                  <div className="flex max-w-md items-start gap-3">
+                    <div className="rounded-lg border border-slate-200/80 bg-white px-4 py-3 shadow-sm">
+                      <p className="text-sm text-slate-800">{responses[currentStepData.id]}</p>
+                    </div>
+                    <div className="size-10 shrink-0 rounded-full bg-slate-200 flex items-center justify-center">
+                      <User className="size-5 text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-      <div className="mt-6 pt-5 border-t border-slate-200">
-        <p className="text-center text-slate-500 text-xs mb-3">What this demo shows</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex gap-2 p-3 section-bg rounded-lg border border-slate-200">
-            <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-              <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h4 className="font-medium text-slate-900 text-xs mb-0.5">Conversational intake</h4>
-              <p className="text-slate-600 text-xs leading-snug">Natural dialogue and structured assessments.</p>
+              {isTyping && (
+                <div className="mt-4 flex gap-4">
+                  <div className="size-10 shrink-0 rounded-full bg-slate-100 flex items-center justify-center">
+                    <Sparkles className="size-5 text-slate-600" />
+                  </div>
+                  <div className="rounded-lg border border-slate-200/80 bg-white px-4 py-3 shadow-sm inline-flex gap-1.5">
+                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              {!isTyping && currentStepData.type === 'message' && (
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={() => handleResponse('')} className="rounded-lg bg-slate-800 px-6 font-medium text-white hover:bg-slate-700">Continue</Button>
+                </div>
+              )}
+
+              {!isTyping && currentStepData.type === 'question' && (
+                <div className="mt-6 space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Select one</p>
+                  <div className="grid gap-2">
+                    {currentStepData.options?.map((option, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        onClick={() => handleResponse(option)}
+                        className="h-auto justify-start rounded-lg border-slate-200 bg-white py-3 px-4 text-left text-sm font-normal text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!isTyping && currentStepData.type === 'scale' && (
+                <div className="mt-6 space-y-4">
+                  <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Rate impact on daily life</p>
+                  <div className="flex flex-wrap items-center justify-center gap-6">
+                    <span className="text-xs text-slate-500">1 · Not at all</span>
+                    <div className="flex gap-2">
+                      {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+                        <Button
+                          key={num}
+                          variant="outline"
+                          size="icon"
+                          className="size-10 rounded-full border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                          onClick={() => handleResponse(num.toString())}
+                        >
+                          {num}
+                        </Button>
+                      ))}
+                    </div>
+                    <span className="text-xs text-slate-500">10 · Extremely</span>
+                  </div>
+                </div>
+              )}
+
+              {!isTyping && currentStepData.type === 'recommendation' && (
+                <div className="mt-6 space-y-6">
+                  <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm">
+                    <h3 className="text-base font-semibold text-slate-900 mb-0.5">Your care recommendation</h3>
+                    <p className="text-sm text-slate-500 mb-4">Based on your responses</p>
+                    <ul className="space-y-2.5">
+                      {currentStepData.nextSteps?.map((step, index) => (
+                        <li key={index} className="flex items-start gap-3 text-sm text-slate-700">
+                          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-white">
+                            <svg className="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                          {step}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button asChild className="rounded-lg bg-slate-800 px-5 font-medium text-white hover:bg-slate-700">
+                      <Link href="/appointments?specialty=psychologist">Book appointment</Link>
+                    </Button>
+                    <Button variant="outline" asChild className="rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50">
+                      <Link href="/resources">Self-help resources</Link>
+                    </Button>
+                    <Button variant="ghost" onClick={handleRestart} className="rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-800">Restart</Button>
+                    <Button variant="ghost" asChild className="rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+                      <Link href="/">Home</Link>
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          <div className="flex gap-2 p-3 section-bg rounded-lg border border-slate-200">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-              <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h4 className="font-medium text-slate-900 text-xs mb-0.5">Clinical alignment</h4>
-              <p className="text-slate-600 text-xs leading-snug">DSM-5–aligned screening and PHQ-9 steps.</p>
-            </div>
-          </div>
-        </div>
+        </main>
       </div>
     </div>
+
+    <div className="md:hidden flex flex-col items-center justify-center min-h-[60vh] px-6 text-center bg-slate-50">
+      <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm max-w-sm">
+        <p className="text-slate-700 font-medium mb-1">Clinical Intake</p>
+        <p className="text-slate-500 text-sm">This assessment is designed for desktop. Please use a larger screen for the best experience.</p>
+      </div>
+    </div>
+    </>
   );
 }
