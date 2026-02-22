@@ -10,15 +10,17 @@ import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#f8fafc]">
       <Navbar />
-      <HeroSection />
-      <ChallengesSection />
-      <FeaturesSection />
-      <PatientJourneySection />
-      <ClinicalScopeSection />
-      <BenefitsSection />
-      <CTASection />
+      <main>
+        <HeroSection />
+        <ChallengesSection />
+        <FeaturesSection />
+        <PatientJourneySection />
+        <ClinicalScopeSection />
+        <BenefitsSection />
+        <CTASection />
+      </main>
       <Footer />
     </div>
   );
