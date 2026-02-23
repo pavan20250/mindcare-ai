@@ -91,8 +91,14 @@ const blobs: ColorBlob[] = [
 
 function SiriCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -219,7 +225,17 @@ function SiriCanvas() {
       cancelAnimationFrame(frameId);
       ro.disconnect();
     };
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) {
+    return (
+      <div
+        className="w-full h-full rounded-[50%] bg-[#080818]"
+        style={{ borderRadius: '50%', filter: 'blur(3px) saturate(1.35)' }}
+        aria-hidden
+      />
+    );
+  }
 
   return (
     <canvas
@@ -237,11 +253,6 @@ function SiriCanvas() {
 /*  Orb wrapper: blends with hero bg + mouse-reactive tilt & glow       */
 /* ------------------------------------------------------------------ */
 
-const orbitData = [
-  { r: 215, size: 3, alpha: 0.4, dur: 20, dir: 1 },
-  { r: 268, size: 2.5, alpha: 0.25, dur: 26, dir: -1 },
-];
-
 const CONVERSATION_PHRASES = [
   'Ready to listen.',
   'Ask me anything about mental wellness.',
@@ -252,6 +263,24 @@ const CONVERSATION_PHRASES = [
 ];
 
 const WAVE_BARS = [0.4, 0.7, 1, 0.85, 0.5, 0.9, 0.6, 0.75, 0.45];
+
+/* Atom-like particles inside the orb (x%, y%, size px, color 0=cyan 1=violet 2=white) — deterministic */
+const ORB_INNER_ATOMS: { x: number; y: number; size: number; c: number }[] = [
+  { x: 38, y: 42, size: 2, c: 0 }, { x: 62, y: 38, size: 1.5, c: 1 }, { x: 48, y: 58, size: 2.5, c: 2 },
+  { x: 72, y: 48, size: 1.5, c: 0 }, { x: 28, y: 52, size: 2, c: 1 }, { x: 52, y: 28, size: 1.5, c: 0 },
+  { x: 65, y: 62, size: 2, c: 2 }, { x: 35, y: 68, size: 1.5, c: 1 }, { x: 58, y: 45, size: 2, c: 0 },
+  { x: 42, y: 32, size: 2.5, c: 1 }, { x: 78, y: 55, size: 1.5, c: 2 }, { x: 32, y: 45, size: 2, c: 0 },
+  { x: 55, y: 65, size: 1.5, c: 1 }, { x: 45, y: 48, size: 2, c: 2 }, { x: 68, y: 35, size: 2, c: 0 },
+];
+
+/* Horizontal voice waveform: thin + bulk lines, peaks & valleys (deterministic for hydration) */
+const ORB_WAVEFORM_BARS: { w: number; peak: number }[] = [
+  { w: 2, peak: 0.25 }, { w: 2, peak: 0.5 }, { w: 3, peak: 0.9 }, { w: 4, peak: 1 }, { w: 3, peak: 0.85 },
+  { w: 2, peak: 0.45 }, { w: 2, peak: 0.2 }, { w: 2, peak: 0.55 }, { w: 3, peak: 0.75 }, { w: 4, peak: 1 },
+  { w: 3, peak: 0.7 }, { w: 2, peak: 0.35 }, { w: 2, peak: 0.2 }, { w: 3, peak: 0.8 }, { w: 4, peak: 0.95 },
+  { w: 2, peak: 0.5 }, { w: 2, peak: 0.3 }, { w: 2, peak: 0.65 }, { w: 3, peak: 0.9 }, { w: 4, peak: 1 },
+  { w: 2, peak: 0.4 }, { w: 2, peak: 0.25 }, { w: 2, peak: 0.6 }, { w: 3, peak: 0.85 }, { w: 2, peak: 0.35 },
+];
 
 function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: number; mouseY?: number; isHovering?: boolean }) {
   const tiltX = useSpring(0, { stiffness: 80, damping: 20 });
@@ -277,37 +306,66 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
   }, []);
 
   return (
-    <div className="relative flex items-center justify-center py-10 lg:py-14">
-      {/* Conversation strip — rotating phrase, talking-assistant feel */}
+    <div className="relative w-full flex items-center justify-center py-8 lg:py-10">
+      {/* Fixed-size stage so all absolute positions are consistent */}
+      <div
+        className="relative flex items-center justify-center"
+        style={{
+          width: 'clamp(320px, 42vw, 420px)',
+          height: 'clamp(340px, 44vw, 440px)',
+        }}
+      >
+      {/* Floating badges — minimal pill style */}
+      {[
+        { label: '24/7', top: '8%', left: '0%', delay: 0 },
+        { label: 'Private', top: '10%', right: '0%', left: 'auto', delay: 0.15 },
+        { label: 'Secure', bottom: '30%', left: '0%', top: 'auto', delay: 0.3 },
+        { label: 'Listen', bottom: '28%', right: '0%', left: 'auto', top: 'auto', delay: 0.05 },
+      ].map((badge) => (
+        <motion.div
+          key={badge.label}
+          className="absolute flex items-center gap-2 py-1.5 px-3 rounded-full pointer-events-none border border-white/10 bg-white/5 backdrop-blur-sm"
+          style={{ top: badge.top, bottom: badge.bottom, left: badge.left, right: badge.right }}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.4 + badge.delay, duration: 0.4 }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-teal-400/90" aria-hidden />
+          <span className="text-white/60 text-[10px] font-medium tracking-wide">{badge.label}</span>
+        </motion.div>
+      ))}
+
+      {/* Single outer ring — teal dashed, unique frame */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none border border-dashed border-teal-400/20"
+        style={{
+          width: 'clamp(220px, 32vw, 320px)',
+          height: 'clamp(220px, 32vw, 320px)',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.02)',
+        }}
+      />
+
+      {/* Conversation strip — unique left-accent pill */}
       <motion.div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-sm px-4"
+        className="absolute left-1/2 -translate-x-1/2 w-full max-w-md px-4"
+        style={{ top: 'calc(50% - min(12rem, 24vw) - 4rem)' }}
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.5 }}
       >
         <div
-          className="flex items-center justify-center gap-3 py-3 px-5 rounded-2xl min-h-[52px]"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
-          }}
+          className="flex items-center justify-center gap-4 py-3.5 pl-5 pr-5 rounded-2xl min-h-[56px] border border-white/10 bg-white/5 backdrop-blur-xl relative overflow-hidden"
+          style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.2)' }}
         >
-          <div className="flex items-center justify-center gap-0.5 h-4">
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-gradient-to-b from-teal-400/70 to-violet-400/50" aria-hidden />
+          <div className="flex items-center justify-center gap-0.5 h-5 shrink-0" aria-hidden>
             {WAVE_BARS.map((h, i) => (
               <motion.span
                 key={i}
-                className="w-0.5 rounded-full bg-cyan-400/70 origin-center"
-                animate={{ scaleY: [0.5, 0.5 + h * 0.5, 0.5] }}
-                transition={{
-                  duration: 0.8,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.06,
-                }}
-                style={{ height: 14 }}
+                className="w-0.5 rounded-full bg-teal-400/70 origin-bottom"
+                animate={{ scaleY: [0.4, 0.4 + h * 0.6, 0.4] }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut', delay: i * 0.07 }}
+                style={{ height: 16 }}
               />
             ))}
           </div>
@@ -318,7 +376,7 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.35 }}
-              className="text-white/80 text-sm font-medium tracking-tight"
+              className="text-white/90 text-sm font-medium tracking-tight text-center"
             >
               {CONVERSATION_PHRASES[phraseIndex]}
             </motion.p>
@@ -326,74 +384,62 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
         </div>
       </motion.div>
 
-      {/* Blended ambient glow — extends into hero bg, cursor-follow */}
+      {/* Ambient glow — teal/violet, cursor-follow */}
       <motion.div
-        className="absolute rounded-full pointer-events-none"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
         style={{
-          width: 'clamp(380px, 50vw, 580px)',
-          height: 'clamp(380px, 50vw, 580px)',
-          background:
-            'radial-gradient(circle, rgba(0,180,200,0.22) 0%, rgba(100,60,230,0.12) 30%, rgba(240,70,160,0.08) 55%, transparent 72%)',
-          filter: 'blur(70px)',
+          width: 'clamp(260px, 38vw, 380px)',
+          height: 'clamp(260px, 38vw, 380px)',
+          background: 'radial-gradient(circle, rgba(34, 197, 194, 0.14) 0%, rgba(99, 102, 241, 0.06) 45%, transparent 70%)',
+          filter: 'blur(48px)',
           mixBlendMode: 'screen',
           x: glowX,
           y: glowY,
         }}
-        animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.75, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ scale: [1, 1.04, 1], opacity: [0.5, 0.7, 0.5] }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* "Listening" ring — appears on hover, theme: ready to understand */}
+      {/* Single soft ring — appears on hover */}
       <motion.div
-        className="absolute rounded-full pointer-events-none"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
         style={{
-          width: 'clamp(220px, 32vw, 340px)',
-          height: 'clamp(220px, 32vw, 340px)',
-          border: '1px solid rgba(0, 212, 212, 0.25)',
-          boxShadow: '0 0 24px rgba(0, 212, 212, 0.12)',
+          width: 'clamp(170px, 25vw, 260px)',
+          height: 'clamp(170px, 25vw, 260px)',
+          border: '1px solid rgba(34, 197, 194, 0.2)',
+          boxShadow: '0 0 24px rgba(34, 197, 194, 0.06)',
         }}
         initial={{ scale: 1, opacity: 0 }}
         animate={{
-          scale: isHovering ? [1, 1.15, 1] : 1,
-          opacity: isHovering ? [0.3, 0.6, 0.3] : 0,
+          scale: isHovering ? [1, 1.06, 1] : 1,
+          opacity: isHovering ? [0.3, 0.5, 0.3] : 0,
         }}
         transition={{ duration: 2.5, repeat: isHovering ? Infinity : 0, ease: 'easeInOut' }}
       />
 
-      {/* Ripple rings */}
-      {[0, 1].map((i) => (
-        <motion.div
-          key={`rip-${i}`}
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            width: 'clamp(190px, 26vw, 270px)',
-            height: 'clamp(190px, 26vw, 270px)',
-            border: '1px solid rgba(255,255,255,0.035)',
-          }}
-          animate={{ scale: [1, 2.8], opacity: [0.1, 0] }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: 'easeOut',
-            delay: i * 2.5,
-          }}
-        />
-      ))}
-
-      {/* Listening arc — rotating sweep, unique "active" indicator */}
-      <svg
-        className="absolute pointer-events-none"
+      {/* One subtle ripple */}
+      <motion.div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
         style={{
-          width: 'clamp(200px, 28vw, 290px)',
-          height: 'clamp(200px, 28vw, 290px)',
+          width: 'clamp(150px, 21vw, 210px)',
+          height: 'clamp(150px, 21vw, 210px)',
+          border: '1px solid rgba(255,255,255,0.04)',
         }}
+        animate={{ scale: [1, 2.6], opacity: [0.08, 0] }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeOut' }}
+      />
+
+      {/* Single rotating arc — teal accent */}
+      <svg
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        style={{ width: 'clamp(155px, 21vw, 220px)', height: 'clamp(155px, 21vw, 220px)' }}
         viewBox="0 0 100 100"
       >
         <defs>
-          <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="rgba(0,212,212,0)" />
-            <stop offset="50%" stopColor="rgba(0,212,212,0.5)" />
-            <stop offset="100%" stopColor="rgba(0,212,212,0)" />
+          <linearGradient id="heroArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgba(34,197,194,0)" />
+            <stop offset="50%" stopColor="rgba(34,197,194,0.4)" />
+            <stop offset="100%" stopColor="rgba(34,197,194,0)" />
           </linearGradient>
         </defs>
         <motion.circle
@@ -401,35 +447,25 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
           cy="50"
           r="48"
           fill="none"
-          stroke="url(#arcGrad)"
+          stroke="url(#heroArcGrad)"
           strokeWidth="0.6"
           strokeLinecap="round"
-          strokeDasharray="20 120"
+          strokeDasharray="16 110"
           animate={{ rotate: 360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: '50% 50%', transformBox: 'fill-box' }}
-        />
-        <motion.circle
-          cx="50"
-          cy="50"
-          r="45"
-          fill="none"
-          stroke="rgba(240,70,160,0.15)"
-          strokeWidth="0.4"
-          strokeLinecap="round"
-          strokeDasharray="15 80"
-          animate={{ rotate: -360 }}
           transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
           style={{ transformOrigin: '50% 50%', transformBox: 'fill-box' }}
         />
       </svg>
 
-      {/* Orb (canvas) with 3D tilt — blends into bg via parent */}
+      {/* Orb (canvas) with 3D tilt — aligned below bg outer circle so arc sits on top */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pt-2"
+      >
       <motion.div
         className="relative cursor-default"
         style={{
-          width: 'clamp(224px, 30vw, 310px)',
-          height: 'clamp(224px, 30vw, 310px)',
+          width: 'clamp(140px, 20vw, 200px)',
+          height: 'clamp(140px, 20vw, 200px)',
           rotateX: tiltX,
           rotateY: tiltY,
           transformStyle: 'preserve-3d',
@@ -439,85 +475,136 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Outer halo — soft edge so orb melts into gradient */}
+        {/* Outer halo — teal/violet blend */}
         <div
-          className="absolute -inset-8 rounded-full pointer-events-none"
+          className="absolute -inset-4 rounded-full pointer-events-none"
           style={{
-            background:
-              'radial-gradient(circle, rgba(0,200,215,0.08) 0%, rgba(120,50,240,0.05) 45%, rgba(240,60,150,0.03) 75%, transparent 100%)',
-            filter: 'blur(24px)',
+            background: 'radial-gradient(circle, rgba(34,197,194,0.08) 0%, rgba(99,102,241,0.04) 45%, transparent 100%)',
+            filter: 'blur(20px)',
           }}
         />
 
-        <div className="relative" style={{ transform: 'translateZ(20px)' }}>
+        <div className="relative rounded-full overflow-hidden" style={{ transform: 'translateZ(20px)' }}>
           <SiriCanvas />
         </div>
 
-        {/* Thin outer ring */}
+        {/* Refined outer ring */}
         <div
           className="absolute -inset-px rounded-full pointer-events-none"
-          style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ border: '1px solid rgba(255,255,255,0.08)' }}
         />
-      </motion.div>
 
-      {/* Orbiting particles */}
-      {orbitData.map((o, i) => (
-        <motion.div
-          key={`orb-${i}`}
-          className="absolute pointer-events-none"
-          style={{ width: o.r, height: o.r }}
-          animate={{ rotate: 360 * o.dir }}
-          transition={{ duration: o.dur, repeat: Infinity, ease: 'linear' }}
+        {/* Horizontal voice waveform — subtle sound visualization */}
+        <div
+          className="absolute inset-0 rounded-full overflow-hidden pointer-events-none flex items-center justify-center"
+          style={{ zIndex: 10, transform: 'translateZ(24px)' }}
+          aria-hidden
         >
-          <div
-            className="absolute rounded-full"
-            style={{
-              width: o.size,
-              height: o.size,
-              top: 0,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: `radial-gradient(circle, rgba(255,255,255,${o.alpha}), transparent)`,
-              boxShadow: `0 0 ${o.size * 2.5}px rgba(255,255,255,${o.alpha * 0.35})`,
-            }}
-          />
-        </motion.div>
-      ))}
+          <div className="flex items-center justify-center gap-0.5 w-[65%]">
+            {ORB_WAVEFORM_BARS.map((bar, i) => (
+              <motion.span
+                key={i}
+                className="rounded-full origin-center"
+                style={{
+                  width: `${bar.w}px`,
+                  height: '28px',
+                  opacity: 0.85,
+                  background: 'linear-gradient(180deg, rgba(34,197,194,0.9) 0%, rgba(99,102,241,0.8) 50%, rgba(168,85,247,0.8) 100%)',
+                  boxShadow: bar.w >= 4
+                    ? '0 0 10px rgba(34,197,194,0.35), 0 0 6px rgba(99,102,241,0.2)'
+                    : '0 0 6px rgba(34,197,194,0.3), 0 0 3px rgba(99,102,241,0.15)',
+                }}
+                animate={{
+                  scaleY: [0.3, 0.3 + bar.peak * 0.65, 0.3],
+                }}
+                transition={{
+                  duration: 1.8 + (i % 3) * 0.3,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: (i * 0.05) % 0.6,
+                }}
+              />
+            ))}
+          </div>
+        </div>
 
-      {/* Status pill — professional identity + listening state */}
+        {/* Atom-like particles inside the orb — clipped to circle, moving/drifting */}
+        <div
+          className="absolute inset-0 rounded-full overflow-hidden pointer-events-none flex items-center justify-center"
+          style={{ zIndex: 12, transform: 'translateZ(26px)' }}
+          aria-hidden
+        >
+          <div className="relative w-full h-full">
+            {ORB_INNER_ATOMS.map((a, i) => {
+              const leftPct = `${Number(a.x).toFixed(2)}%`;
+              const topPct = `${Number(a.y).toFixed(2)}%`;
+              const bg =
+                a.c === 0
+                  ? 'rgba(0,212,212,0.9)'
+                  : a.c === 1
+                    ? 'rgba(139,92,246,0.85)'
+                    : 'rgba(255,255,255,0.9)';
+              const glow =
+                a.c === 0
+                  ? 'rgba(0,212,212,0.5)'
+                  : a.c === 1
+                    ? 'rgba(139,92,246,0.4)'
+                    : 'rgba(255,255,255,0.4)';
+              const dx = 4 + (i % 5);
+              const dy = 3 + (i % 4);
+              return (
+                <motion.span
+                  key={i}
+                  className="absolute rounded-full origin-center"
+                  style={{
+                    left: leftPct,
+                    top: topPct,
+                    width: `${a.size}px`,
+                    height: `${a.size}px`,
+                    marginLeft: `-${a.size / 2}px`,
+                    marginTop: `-${a.size / 2}px`,
+                    background: bg,
+                    boxShadow: `0 0 ${a.size * 3}px ${glow}`,
+                  }}
+                  animate={{
+                    x: [0, dx, -dx * 0.7, 0],
+                    y: [0, -dy * 0.8, dy, 0],
+                    scale: [1, 1.25, 1],
+                    opacity: [0.75, 1, 0.75],
+                  }}
+                  transition={{
+                    duration: 3 + (i % 4) * 0.5,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: (i * 0.15) % 1.5,
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </motion.div>
+      </div>
+
+      {/* Status pill — teal accent, minimal */}
       <motion.div
-        className="absolute -bottom-8 sm:-bottom-4 lg:bottom-0 left-1/2 -translate-x-1/2"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.5 }}
       >
-        <div
-          className="flex flex-col items-center gap-1.5 py-3 px-8 min-w-[280px] sm:min-w-[320px] rounded-2xl"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
-          }}
-        >
+        <div className="flex flex-col items-center gap-1.5 py-3 px-6 min-w-[280px] sm:min-w-[320px] rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl" style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
           <div className="flex items-center gap-2.5">
-            <motion.span
-              className="relative flex h-2 w-2"
-              aria-hidden
-            >
-              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            <motion.span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
+              <span className="absolute inline-flex h-full w-full rounded-full bg-teal-400/50 animate-ping" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-400 ring-2 ring-teal-400/30" />
             </motion.span>
-            <span className="text-white/90 text-xs font-semibold tracking-[0.2em] uppercase">
-              Swasthya AI
-            </span>
+            <span className="text-white/95 text-xs font-semibold tracking-[0.2em] uppercase">Swasthya AI</span>
           </div>
-          <span className="text-white/40 text-[10px] font-medium tracking-wider">
-            Your AI companion · Always here to listen
-          </span>
+          <span className="text-white/50 text-[10px] font-medium tracking-widest">Your AI companion · Always here to listen</span>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 }
@@ -545,110 +632,94 @@ export default function HeroSection() {
   const handleMouseLeave = useCallback(() => setMouse((m) => ({ ...m, hover: false })), []);
 
   return (
-    <section className="hero-gradient relative overflow-hidden min-h-screen flex items-center pt-[4.25rem]">
-      {/* Subtle noise texture overlay for depth */}
+    <section className="relative overflow-hidden min-h-screen flex items-center pt-[4.25rem]">
+      {/* Unique hero bg: deep base + single soft focal glow */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-soft-light"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          background: 'linear-gradient(165deg, #0c1222 0%, #0f1729 35%, #0d1324 70%, #0a0f1a 100%)',
         }}
       />
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Soft teal glow — top-left, calm */}
-        <div
-          className="absolute top-[8%] left-[5%] w-[min(55vw,480px)] h-[min(55vw,480px)] rounded-full blur-[80px] opacity-50"
-          style={{
-            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.22) 0%, rgba(6, 182, 212, 0.08) 45%, transparent 70%)',
-          }}
-        />
-        {/* Violet / indigo — right side */}
-        <div
-          className="absolute top-[35%] right-[2%] w-[min(45vw,380px)] h-[min(45vw,380px)] rounded-full blur-[72px] opacity-60"
-          style={{
-            background: 'radial-gradient(circle, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 70%)',
-          }}
-        />
-        {/* Warm rose accent — bottom, subtle "care" feel */}
-        <div
-          className="absolute bottom-[15%] left-[15%] w-[min(40vw,320px)] h-[min(40vw,320px)] rounded-full blur-[70px] opacity-40"
-          style={{
-            background: 'radial-gradient(circle, rgba(244, 114, 182, 0.12) 0%, rgba(219, 39, 119, 0.04) 50%, transparent 70%)',
-          }}
-        />
-        {/* Center glow that ties into the orb */}
-        <div
-          className="absolute top-1/2 right-[8%] w-[min(50vw,420px)] h-[min(50vw,420px)] rounded-full blur-[90px] opacity-50 -translate-y-1/2"
-          style={{
-            background: 'radial-gradient(circle, rgba(0, 180, 216, 0.15) 0%, rgba(139, 92, 246, 0.08) 45%, transparent 70%)',
-          }}
-        />
-      </div>
+      <div
+        className="absolute inset-0 pointer-events-none opacity-60"
+        style={{
+          background: 'radial-gradient(ellipse 90% 70% at 70% 40%, rgba(34, 197, 194, 0.12) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%)',
+        }}
+      />
+      {/* Subtle dot grid for depth — no noise */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.12]"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
+          backgroundSize: '28px 28px',
+        }}
+      />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left */}
-          <div className="text-center lg:text-left text-white">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 mb-5 slide-in">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-blue-100 text-xs font-medium tracking-wide">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20 w-full">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* Left: Copy — unique vertical accent + headline */}
+          <div className="text-center lg:text-left text-white space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 slide-in">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+              <span className="text-slate-300 text-xs font-medium tracking-wider uppercase">
                 AI-Powered Behavioral Health
               </span>
             </div>
 
-            <h1 className="mobile-hero-title text-3xl sm:text-4xl lg:text-[3.1rem] font-bold mb-4 slide-in tracking-tight leading-[1.1]">
-              Care that <span className="bg-gradient-to-r from-blue-200 via-violet-200 to-cyan-200 bg-clip-text text-transparent">understands</span>
-            </h1>
-
-            <p
-              className="text-white/70 font-semibold text-sm sm:text-base mb-6 max-w-md mx-auto lg:mx-0 slide-in leading-relaxed"
-              style={{ animationDelay: '0.15s' }}
-            >
-              Intelligent intake. Instant insights. Better outcomes.
-            </p>
+            <div className="relative space-y-1">
+              {/* Vertical accent bar — desktop only */}
+              <div className="hidden lg:block absolute -left-5 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-teal-400/50 to-transparent" />
+              <h1 className="mobile-hero-title text-3xl sm:text-4xl lg:text-[2.85rem] xl:text-[3.25rem] font-bold slide-in tracking-tight leading-[1.12] text-white">
+                Care that{' '}
+                <span className="bg-gradient-to-r from-teal-300 via-cyan-300 to-violet-300 bg-clip-text text-transparent">
+                  understands
+                </span>
+              </h1>
+              <p
+                className="text-slate-400 text-base sm:text-lg max-w-md mx-auto lg:mx-0 slide-in leading-relaxed"
+                style={{ animationDelay: '0.1s' }}
+              >
+                Intelligent intake. Instant insights. Better outcomes.
+              </p>
+            </div>
 
             <div
-              className="mobile-btn-group justify-center lg:justify-start slide-in gap-3"
-              style={{ animationDelay: '0.3s' }}
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 slide-in"
+              style={{ animationDelay: '0.2s' }}
             >
-              <a href="#contact" className="btn-primary rounded-xl">
+              <a
+                href="#contact"
+                className="btn-primary rounded-xl px-6 py-3.5 text-sm font-semibold w-full sm:w-auto inline-flex items-center justify-center"
+              >
                 Get Started
               </a>
-              <Link href="/demo" className="btn-ghost rounded-xl">
+              <Link
+                href="/demo"
+                className="btn-ghost rounded-xl px-6 py-3.5 text-sm font-semibold w-full sm:w-auto inline-flex items-center justify-center border border-white/20"
+              >
                 Try Demo
               </Link>
             </div>
 
             <div
-              className="flex items-center gap-5 mt-8 justify-center lg:justify-start slide-in"
-              style={{ animationDelay: '0.45s' }}
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-2 slide-in"
+              style={{ animationDelay: '0.35s' }}
             >
-              <div className="flex items-center gap-1.5">
-                <svg
-                  className="w-3.5 h-3.5 text-emerald-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-white/50 text-xs">HIPAA Compliant</span>
+              <div className="flex items-center gap-2 text-slate-400">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full border border-teal-400/30 bg-teal-400/5">
+                  <svg className="h-3 w-3 text-teal-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </span>
+                <span className="text-xs font-medium">HIPAA Compliant</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <svg
-                  className="w-3.5 h-3.5 text-emerald-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-white/50 text-xs">DSM-5 Aligned</span>
+              <div className="flex items-center gap-2 text-slate-400">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full border border-teal-400/30 bg-teal-400/5">
+                  <svg className="h-3 w-3 text-teal-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </span>
+                <span className="text-xs font-medium">DSM-5 Aligned</span>
               </div>
             </div>
           </div>
@@ -658,7 +729,7 @@ export default function HeroSection() {
             ref={orbRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="relative fade-in hidden sm:flex items-center justify-center min-h-[320px] lg:min-h-[380px]"
+            className="relative fade-in hidden sm:flex items-center justify-center min-h-[300px] lg:min-h-[360px]"
           >
             <div
               className="absolute inset-0 flex items-center justify-center"

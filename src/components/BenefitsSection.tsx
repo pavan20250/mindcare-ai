@@ -97,18 +97,21 @@ export default function BenefitsSection() {
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-widest mb-3">
+        <div className="text-center mb-12 space-y-3">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-wider border border-indigo-100/80">
             Benefits
           </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-[1.2]">
             Everyone gains
           </h2>
+          <p className="text-slate-600 text-base max-w-xl mx-auto">
+            Patients, clinicians, admins, and organizations—aligned outcomes.
+          </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 gap-6">
           {items.map((item) => (
-            <div key={item.who} className="group bg-white rounded-2xl p-5 border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1">
+            <div key={item.who} className="group bg-white rounded-2xl p-6 border border-slate-100 hover:border-slate-200/80 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 hover:-translate-y-0.5">
               <div className="flex items-center gap-3">
                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-md ${item.shadow} shrink-0 group-hover:scale-110 transition-transform duration-500`}>
                   {item.icon}

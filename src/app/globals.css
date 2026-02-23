@@ -203,14 +203,20 @@ body {
   }
 }
 
-/* Section Spacing */
+/* Section Spacing — consistent vertical rhythm */
 .section-padding {
-  padding: 4rem 0;
+  padding: 4.5rem 0;
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding: 5.5rem 0;
+  }
 }
 
 @media (max-width: 640px) {
   .section-padding {
-    padding: 2.5rem 0;
+    padding: 3rem 0;
   }
 }
 
