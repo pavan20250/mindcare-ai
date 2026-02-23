@@ -141,7 +141,7 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="section-padding bg-white relative overflow-hidden">
+    <section id="features" className="section-padding section-bg relative overflow-hidden">
       <div className="absolute inset-0 dot-pattern opacity-20" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

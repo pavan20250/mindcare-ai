@@ -93,7 +93,7 @@ export default function BenefitsSection() {
   ];
 
   return (
-    <section id="benefits" className="section-padding bg-[#f8fafc] relative overflow-hidden">
+    <section id="benefits" className="section-padding section-bg-alt relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

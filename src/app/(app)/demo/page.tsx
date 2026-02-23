@@ -106,9 +106,9 @@ export default function DemoPage() {
 
   return (
     <>
-    <div className="hidden md:flex h-svh flex-col w-full max-w-full mx-auto overflow-hidden bg-slate-50/80">
+    <div className="hidden md:flex h-svh flex-col w-full max-w-full mx-auto overflow-hidden page-bg">
       {/* Top bar */}
-      <header className="shrink-0 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm px-8 py-4">
+      <header className="shrink-0 border-b border-border/60 bg-card/95 backdrop-blur-sm px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-slate-800 text-white">
@@ -131,7 +131,7 @@ export default function DemoPage() {
 
       <div className="flex flex-1 min-h-0">
         {/* Left: step indicators + notice */}
-        <aside className="w-52 shrink-0 flex flex-col gap-4 border-r border-slate-200/80 bg-white p-5">
+        <aside className="w-52 shrink-0 flex flex-col gap-4 border-r border-border/60 section-bg p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Steps</p>
           <div className="flex flex-col gap-1.5">
             {demoSteps.map((step, i) => (
@@ -167,7 +167,7 @@ export default function DemoPage() {
         </aside>
 
         {/* Right: current step content */}
-        <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-slate-50/50">
+        <main className="flex-1 min-w-0 flex flex-col overflow-hidden page-bg">
           <div className="flex-1 min-h-0 overflow-auto p-8">
             <div className="mx-auto max-w-2xl">
               {/* Question / message block */}
@@ -295,7 +295,7 @@ export default function DemoPage() {
       </div>
     </div>
 
-    <div className="md:hidden flex flex-col items-center justify-center min-h-[60vh] px-6 text-center bg-slate-50">
+    <div className="md:hidden flex flex-col items-center justify-center min-h-[60vh] px-6 text-center page-bg">
       <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm max-w-sm">
         <p className="text-slate-700 font-medium mb-1">Clinical Intake</p>
         <p className="text-slate-500 text-sm">This assessment is designed for desktop. Please use a larger screen for the best experience.</p>

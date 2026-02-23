@@ -22,9 +22,9 @@ function AppLayoutInner({ user, children }: { user: { email: string }; children:
   }, [intakeCompleted, pathname, router]);
 
   return (
-    <div className="flex min-h-svh w-full bg-[var(--page-bg)]">
+    <div className="flex min-h-svh w-full page-bg-mesh">
       <AppSidebar user={user} />
-      <SidebarInset className="min-h-svh overflow-auto bg-[var(--page-bg)]">
+      <SidebarInset className="min-h-svh overflow-auto page-bg-mesh">
         {children}
       </SidebarInset>
     </div>
@@ -62,7 +62,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (checking || !user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[var(--page-bg)]">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 page-bg-mesh">
         <div className="size-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         <p className="text-muted-foreground text-sm font-medium">Loading…</p>
       </div>

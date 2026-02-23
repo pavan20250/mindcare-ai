@@ -117,7 +117,7 @@ function LoginFallback() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-[var(--page-bg)]">
+    <div className="min-h-screen page-bg-mesh">
       <nav className="nav-glass">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
