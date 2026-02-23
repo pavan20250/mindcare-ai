@@ -79,7 +79,7 @@ export default function PatientJourneySection() {
   ];
 
   return (
-    <section id="journey" className="section-padding bg-[#f8fafc] relative overflow-hidden">
+    <section id="journey" className="section-padding section-bg-alt relative overflow-hidden">
       <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-indigo-50 to-transparent rounded-full blur-3xl opacity-40" />
       <div className="absolute bottom-0 left-0 w-60 h-60 bg-gradient-to-tr from-blue-50 to-transparent rounded-full blur-3xl opacity-40" />
 

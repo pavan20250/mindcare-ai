@@ -1,6 +1,6 @@
 export default function ChallengesSection() {
   return (
-    <section className="section-padding bg-[#f8fafc] relative overflow-hidden">
+    <section className="section-padding section-bg-alt relative overflow-hidden">
       <div className="absolute inset-0 mesh-gradient" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

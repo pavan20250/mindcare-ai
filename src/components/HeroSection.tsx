@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { motion, useSpring, AnimatePresence } from 'framer-motion';
 
 /* ------------------------------------------------------------------ */
 /*  Canvas-rendered Siri orb with true additive (screen) blending.     */
@@ -242,11 +242,23 @@ const orbitData = [
   { r: 268, size: 2.5, alpha: 0.25, dur: 26, dir: -1 },
 ];
 
+const CONVERSATION_PHRASES = [
+  'Ready to listen.',
+  'Ask me anything about mental wellness.',
+  "I'm here 24/7.",
+  'Tell me how you\'re feeling.',
+  'Your conversations stay private.',
+  'Let\'s talk — no judgment.',
+];
+
+const WAVE_BARS = [0.4, 0.7, 1, 0.85, 0.5, 0.9, 0.6, 0.75, 0.45];
+
 function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: number; mouseY?: number; isHovering?: boolean }) {
   const tiltX = useSpring(0, { stiffness: 80, damping: 20 });
   const tiltY = useSpring(0, { stiffness: 80, damping: 20 });
   const glowX = useSpring(0, { stiffness: 40, damping: 25 });
   const glowY = useSpring(0, { stiffness: 40, damping: 25 });
+  const [phraseIndex, setPhraseIndex] = useState(0);
 
   useEffect(() => {
     const tx = Math.max(-12, Math.min(12, mouseY * 14));
@@ -257,8 +269,63 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
     glowY.set(mouseY * 18);
   }, [mouseX, mouseY, tiltX, tiltY, glowX, glowY]);
 
+  useEffect(() => {
+    const t = setInterval(() => {
+      setPhraseIndex((i) => (i + 1) % CONVERSATION_PHRASES.length);
+    }, 3800);
+    return () => clearInterval(t);
+  }, []);
+
   return (
     <div className="relative flex items-center justify-center py-10 lg:py-14">
+      {/* Conversation strip — rotating phrase, talking-assistant feel */}
+      <motion.div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-sm px-4"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
+      >
+        <div
+          className="flex items-center justify-center gap-3 py-3 px-5 rounded-2xl min-h-[52px]"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+          }}
+        >
+          <div className="flex items-center justify-center gap-0.5 h-4">
+            {WAVE_BARS.map((h, i) => (
+              <motion.span
+                key={i}
+                className="w-0.5 rounded-full bg-cyan-400/70 origin-center"
+                animate={{ scaleY: [0.5, 0.5 + h * 0.5, 0.5] }}
+                transition={{
+                  duration: 0.8,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: i * 0.06,
+                }}
+                style={{ height: 14 }}
+              />
+            ))}
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={phraseIndex}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.35 }}
+              className="text-white/80 text-sm font-medium tracking-tight"
+            >
+              {CONVERSATION_PHRASES[phraseIndex]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
       {/* Blended ambient glow — extends into hero bg, cursor-follow */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
@@ -312,6 +379,50 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
           }}
         />
       ))}
+
+      {/* Listening arc — rotating sweep, unique "active" indicator */}
+      <svg
+        className="absolute pointer-events-none"
+        style={{
+          width: 'clamp(200px, 28vw, 290px)',
+          height: 'clamp(200px, 28vw, 290px)',
+        }}
+        viewBox="0 0 100 100"
+      >
+        <defs>
+          <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgba(0,212,212,0)" />
+            <stop offset="50%" stopColor="rgba(0,212,212,0.5)" />
+            <stop offset="100%" stopColor="rgba(0,212,212,0)" />
+          </linearGradient>
+        </defs>
+        <motion.circle
+          cx="50"
+          cy="50"
+          r="48"
+          fill="none"
+          stroke="url(#arcGrad)"
+          strokeWidth="0.6"
+          strokeLinecap="round"
+          strokeDasharray="20 120"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: '50% 50%', transformBox: 'fill-box' }}
+        />
+        <motion.circle
+          cx="50"
+          cy="50"
+          r="45"
+          fill="none"
+          stroke="rgba(240,70,160,0.15)"
+          strokeWidth="0.4"
+          strokeLinecap="round"
+          strokeDasharray="15 80"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: '50% 50%', transformBox: 'fill-box' }}
+        />
+      </svg>
 
       {/* Orb (canvas) with 3D tilt — blends into bg via parent */}
       <motion.div
@@ -373,33 +484,37 @@ function SiriOrb({ mouseX = 0, mouseY = 0, isHovering = false }: { mouseX?: numb
         </motion.div>
       ))}
 
-      {/* Status pill */}
+      {/* Status pill — professional identity + listening state */}
       <motion.div
-        className="absolute -bottom-4 sm:bottom-0 lg:bottom-3 left-1/2 -translate-x-1/2"
+        className="absolute -bottom-8 sm:-bottom-4 lg:bottom-0 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.5 }}
       >
         <div
-          className="flex items-center gap-2.5 px-5 py-2 rounded-full"
+          className="flex flex-col items-center gap-1.5 py-3 px-8 min-w-[280px] sm:min-w-[320px] rounded-2xl"
           style={{
-            background: 'rgba(255,255,255,0.03)',
+            background: 'rgba(255,255,255,0.04)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
           }}
         >
-          <motion.span
-            className="w-[5px] h-[5px] rounded-full bg-emerald-400"
-            animate={{ opacity: [1, 0.2, 1] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          <span className="text-white/30 text-[10px] font-medium tracking-[0.18em] uppercase">
-            Swasthya AI
+          <div className="flex items-center gap-2.5">
+            <motion.span
+              className="relative flex h-2 w-2"
+              aria-hidden
+            >
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </motion.span>
+            <span className="text-white/90 text-xs font-semibold tracking-[0.2em] uppercase">
+              Swasthya AI
+            </span>
+          </div>
+          <span className="text-white/40 text-[10px] font-medium tracking-wider">
+            Your AI companion · Always here to listen
           </span>
         </div>
       </motion.div>
@@ -431,14 +546,40 @@ export default function HeroSection() {
 
   return (
     <section className="hero-gradient relative overflow-hidden min-h-screen flex items-center pt-[4.25rem]">
+      {/* Subtle noise texture overlay for depth */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-soft-light"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        }}
+      />
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
-        {/* Extra gradient blob near orb area so orb and bg feel one */}
+        {/* Soft teal glow — top-left, calm */}
         <div
-          className="absolute top-1/2 right-[10%] w-[min(45vw,420px)] h-[min(45vw,420px)] rounded-full blur-3xl opacity-60"
+          className="absolute top-[8%] left-[5%] w-[min(55vw,480px)] h-[min(55vw,480px)] rounded-full blur-[80px] opacity-50"
           style={{
-            background: 'radial-gradient(circle, rgba(30,64,175,0.2) 0%, rgba(55,48,163,0.12) 50%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.22) 0%, rgba(6, 182, 212, 0.08) 45%, transparent 70%)',
+          }}
+        />
+        {/* Violet / indigo — right side */}
+        <div
+          className="absolute top-[35%] right-[2%] w-[min(45vw,380px)] h-[min(45vw,380px)] rounded-full blur-[72px] opacity-60"
+          style={{
+            background: 'radial-gradient(circle, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 70%)',
+          }}
+        />
+        {/* Warm rose accent — bottom, subtle "care" feel */}
+        <div
+          className="absolute bottom-[15%] left-[15%] w-[min(40vw,320px)] h-[min(40vw,320px)] rounded-full blur-[70px] opacity-40"
+          style={{
+            background: 'radial-gradient(circle, rgba(244, 114, 182, 0.12) 0%, rgba(219, 39, 119, 0.04) 50%, transparent 70%)',
+          }}
+        />
+        {/* Center glow that ties into the orb */}
+        <div
+          className="absolute top-1/2 right-[8%] w-[min(50vw,420px)] h-[min(50vw,420px)] rounded-full blur-[90px] opacity-50 -translate-y-1/2"
+          style={{
+            background: 'radial-gradient(circle, rgba(0, 180, 216, 0.15) 0%, rgba(139, 92, 246, 0.08) 45%, transparent 70%)',
           }}
         />
       </div>
@@ -454,15 +595,12 @@ export default function HeroSection() {
               </span>
             </div>
 
-            <h1 className="mobile-hero-title text-4xl sm:text-5xl lg:text-[3.5rem] font-bold mb-4 slide-in tracking-tight leading-[1.1]">
-              Care that
-              <span className="block bg-gradient-to-r from-blue-200 via-violet-200 to-cyan-200 bg-clip-text text-transparent">
-                understands
-              </span>
+            <h1 className="mobile-hero-title text-3xl sm:text-4xl lg:text-[3.1rem] font-bold mb-4 slide-in tracking-tight leading-[1.1]">
+              Care that <span className="bg-gradient-to-r from-blue-200 via-violet-200 to-cyan-200 bg-clip-text text-transparent">understands</span>
             </h1>
 
             <p
-              className="text-white/70 text-sm sm:text-base mb-6 max-w-md mx-auto lg:mx-0 slide-in leading-relaxed"
+              className="text-white/70 font-semibold text-sm sm:text-base mb-6 max-w-md mx-auto lg:mx-0 slide-in leading-relaxed"
               style={{ animationDelay: '0.15s' }}
             >
               Intelligent intake. Instant insights. Better outcomes.
