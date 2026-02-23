@@ -1,3 +1,5 @@
+'use client';
+
 export default function PatientJourneySection() {
   const steps = [
     {
@@ -5,21 +7,20 @@ export default function PatientJourneySection() {
       title: 'Welcome',
       desc: 'AI conversational intake',
       gradient: 'from-blue-500 to-cyan-500',
-      shadow: 'shadow-blue-200/50',
       icon: (
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       ),
       visual: (
-        <div className="mt-3 space-y-1.5">
-          <div className="flex items-start gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-blue-100 shrink-0 mt-0.5" />
-            <div className="bg-blue-50 rounded-lg rounded-tl-sm px-2.5 py-1.5 text-[11px] text-blue-700">How are you feeling?</div>
+        <div className="flex flex-col gap-0.5 p-1 rounded-md bg-slate-50 border border-slate-100">
+          <div className="flex items-start gap-1">
+            <div className="w-3.5 h-3.5 rounded-full bg-blue-100 shrink-0 mt-0.5" />
+            <div className="bg-blue-50 rounded rounded-tl-sm px-1 py-0.5 text-[9px] text-blue-800 max-w-[90px]">How are you feeling?</div>
           </div>
-          <div className="flex items-start gap-1.5 justify-end">
-            <div className="bg-slate-100 rounded-lg rounded-tr-sm px-2.5 py-1.5 text-[11px] text-slate-600">I&apos;ve been anxious</div>
-            <div className="w-5 h-5 rounded-full bg-slate-200 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-1 justify-end">
+            <div className="bg-slate-100 rounded rounded-tr-sm px-1 py-0.5 text-[9px] text-slate-700 max-w-[90px]">Anxious lately</div>
+            <div className="w-3.5 h-3.5 rounded-full bg-slate-200 shrink-0 mt-0.5" />
           </div>
         </div>
       ),
@@ -29,21 +30,24 @@ export default function PatientJourneySection() {
       title: 'Screening',
       desc: 'DSM-5 aligned assessment',
       gradient: 'from-emerald-500 to-teal-500',
-      shadow: 'shadow-emerald-200/50',
       icon: (
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
         </svg>
       ),
       visual: (
-        <div className="mt-3 space-y-1.5">
-          {['PHQ-9', 'GAD-7', 'PCL-5'].map((label, i) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span className="text-[9px] text-slate-500 w-8 shrink-0">{label}</span>
-              <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${i === 0 ? 'bg-emerald-400 w-3/4' : i === 1 ? 'bg-teal-400 w-1/2' : 'bg-cyan-400 w-1/3'}`} />
+        <div className="space-y-0.5">
+          {[
+            { label: 'PHQ-9', width: '75%', color: 'bg-emerald-400' },
+            { label: 'GAD-7', width: '50%', color: 'bg-teal-400' },
+            { label: 'PCL-5', width: '35%', color: 'bg-cyan-400' },
+          ].map(({ label, width, color }) => (
+            <div key={label} className="flex items-center gap-1">
+              <span className="text-[9px] text-slate-500 w-7 shrink-0 font-medium">{label}</span>
+              <div className="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full ${color}`} style={{ width }} />
               </div>
-              <svg className="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-2.5 h-2.5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
@@ -56,22 +60,21 @@ export default function PatientJourneySection() {
       title: 'Care',
       desc: 'Triage, referral & treatment',
       gradient: 'from-violet-500 to-purple-500',
-      shadow: 'shadow-violet-200/50',
       icon: (
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       ),
       visual: (
-        <div className="mt-3 flex items-center gap-2.5">
-          <div className="flex -space-x-1.5">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className={`w-7 h-7 rounded-full border-2 border-white ${i === 0 ? 'bg-violet-200' : i === 1 ? 'bg-purple-200' : 'bg-indigo-200'}`} />
+        <div className="flex items-center gap-1 p-1 rounded-md bg-slate-50 border border-slate-100">
+          <div className="flex -space-x-1">
+            {['bg-violet-300', 'bg-purple-300', 'bg-indigo-300'].map((bg, i) => (
+              <div key={i} className={`w-4 h-4 rounded-full border-2 border-white ${bg}`} />
             ))}
           </div>
           <div>
-            <div className="text-[11px] font-medium text-slate-700">Care team matched</div>
-            <div className="text-[10px] text-slate-400">3 providers available</div>
+            <div className="text-[9px] font-semibold text-slate-800">Care team matched</div>
+            <div className="text-[8px] text-slate-500">3 providers</div>
           </div>
         </div>
       ),
@@ -79,42 +82,95 @@ export default function PatientJourneySection() {
   ];
 
   return (
-    <section id="journey" className="section-padding section-bg-alt relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-indigo-50 to-transparent rounded-full blur-3xl opacity-40" />
-      <div className="absolute bottom-0 left-0 w-60 h-60 bg-gradient-to-tr from-blue-50 to-transparent rounded-full blur-3xl opacity-40" />
+    <section id="journey" className="section-bg-alt relative overflow-hidden py-8 md:py-10">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-indigo-100/40 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-cyan-100/25 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-widest mb-3">
-            Journey
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section header — aligned with other sections */}
+        <div className="text-center max-w-xl mx-auto mb-10 md:mb-12 space-y-3">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-wider border border-indigo-100/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+            Patient Journey
           </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-[1.2]">
             Three steps to better care
           </h2>
+          <p className="text-slate-600 text-sm sm:text-base">
+            First contact to matched care—streamlined and evidence-based.
+          </p>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-4 sm:gap-5 relative">
-          <div className="absolute top-14 left-[20%] right-[20%] h-px bg-gradient-to-r from-blue-200 via-emerald-200 to-violet-200 hidden sm:block" />
-
-          {steps.map((step) => (
-            <div key={step.num} className="relative group">
-              <div className="bg-white rounded-2xl p-5 border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1 h-full">
-                <div className="flex items-center gap-2.5 mb-2">
-                  <div className={`relative w-11 h-11 rounded-xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-md ${step.shadow} shrink-0 group-hover:scale-110 transition-transform duration-500`}>
-                    {step.icon}
-                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-slate-700">{step.num}</span>
+        {/* Horizontal step flow (desktop) */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-3 gap-1.5 items-stretch">
+            {steps.map((step, i) => (
+              <div key={step.num} className="relative flex flex-col">
+                {i < steps.length - 1 && (
+                  <div className="absolute top-4 left-[calc(50%+24px)] right-[-10px] h-0.5 bg-gradient-to-r from-slate-200 to-slate-100 z-0" aria-hidden />
+                )}
+                <div className="relative z-10 bg-white rounded-lg p-2.5 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300/60 transition-all duration-200 flex flex-col min-h-0">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <div className={`w-7 h-7 rounded-md bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow flex-shrink-0`}>
+                      {step.icon}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[9px] font-bold text-slate-400 tabular-nums">0{step.num}</span>
+                      <h3 className="font-bold text-slate-900 text-xs leading-tight truncate">{step.title}</h3>
                     </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-sm">{step.title}</h3>
-                    <p className="text-slate-500 text-[11px]">{step.desc}</p>
+                  <p className="text-slate-500 text-[11px] mb-1.5 flex-shrink-0">{step.desc}</p>
+                  <div className="flex-1 min-h-0">{step.visual}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Vertical timeline (mobile) */}
+        <div className="md:hidden">
+          <div className="relative pl-1">
+            <div className="absolute left-2.5 top-2 bottom-2 w-0.5 bg-gradient-to-b from-slate-200 to-slate-100 rounded-full" aria-hidden />
+            <div className="space-y-1.5">
+              {steps.map((step) => (
+                <div key={step.num} className="relative flex gap-2">
+                  <div className={`relative z-10 w-6 h-6 rounded-md bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow flex-shrink-0 mt-0.5`}>
+                    {step.icon}
+                  </div>
+                  <div className="flex-1 min-w-0 pb-1.5 last:pb-0">
+                    <div className="bg-white rounded-lg p-2 border border-slate-200/80 shadow-sm">
+                      <h3 className="font-bold text-slate-900 text-xs mb-0.5">{step.title}</h3>
+                      <p className="text-slate-500 text-[11px] mb-1">{step.desc}</p>
+                      {step.visual}
+                    </div>
                   </div>
                 </div>
-                {step.visual}
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+        </div>
+
+        {/* Video — compact */}
+        <div className="mt-4 md:mt-5">
+          <div className="relative rounded-lg overflow-hidden bg-slate-900 shadow-md ring-1 ring-slate-200/50 max-w-xl mx-auto">
+            <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-sm text-white/90 text-[9px] font-medium">
+              <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+              Demo
+            </div>
+            <video
+              className="w-full aspect-video object-cover"
+              src="/MindCare_AI_Homepage_Video_Generation.mp4"
+              playsInline
+              muted
+              loop
+              autoPlay
+              controls
+              preload="metadata"
+              aria-label="MindCare AI patient journey demo"
+            />
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+          </div>
+          <p className="mt-1 text-center text-[10px] text-slate-500">Intake to care matching</p>
         </div>
       </div>
     </section>

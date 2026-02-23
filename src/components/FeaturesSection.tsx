@@ -97,6 +97,10 @@ export default function FeaturesSection() {
               <div className="h-1.5 w-full bg-slate-100 rounded-full">
                 <div className="h-1.5 w-3/4 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full" />
               </div>
+              <div className="bg-white rounded-md p-2 shadow-sm border border-indigo-100/50">
+                <div className="w-7 h-1.5 bg-blue-100 rounded-full mb-0.5" />
+                <div className="w-9 h-2.5 bg-blue-200 rounded-full" />
+              </div>
             </div>
           </div>
         </div>
@@ -129,10 +133,6 @@ export default function FeaturesSection() {
                 <div className="w-7 h-1.5 bg-indigo-100 rounded-full mb-0.5" />
                 <div className="w-10 h-2.5 bg-indigo-200 rounded-full" />
               </div>
-              <div className="bg-white rounded-md p-2 shadow-sm border border-indigo-100/50">
-                <div className="w-7 h-1.5 bg-blue-100 rounded-full mb-0.5" />
-                <div className="w-9 h-2.5 bg-blue-200 rounded-full" />
-              </div>
             </div>
           </div>
         </div>
@@ -145,18 +145,21 @@ export default function FeaturesSection() {
       <div className="absolute inset-0 dot-pattern opacity-20" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-widest mb-3">
+        <div className="text-center mb-12 space-y-3">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-wider border border-indigo-100/80">
             Platform
           </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-[1.2]">
             Everything you need
           </h2>
+          <p className="text-slate-600 text-base max-w-xl mx-auto">
+            AI-powered tools that streamline intake, triage, and clinical workflows.
+          </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 gap-6">
           {features.map((f) => (
-            <div key={f.title} className="group bg-white rounded-2xl p-5 border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1">
+            <div key={f.title} className="group bg-white rounded-2xl p-6 border border-slate-100 hover:border-slate-200/80 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 hover:-translate-y-0.5">
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center shadow-md ${f.shadowColor} shrink-0 group-hover:scale-110 transition-transform duration-500`}>
                   {f.icon}

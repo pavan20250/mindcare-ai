@@ -68,26 +68,26 @@ export default function ClinicalScopeSection() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-indigo-50/40 to-violet-50/40 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div className="text-center lg:text-left">
-            <span className="inline-block px-3 py-1 rounded-full bg-violet-50 text-violet-600 text-xs font-semibold uppercase tracking-widest mb-3">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="text-center lg:text-left space-y-4">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-violet-50 text-violet-600 text-xs font-semibold uppercase tracking-wider border border-violet-100/80">
               Clinical Scope
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-3 leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-[1.2]">
               Evidence-based,
-              <span className="block text-violet-500">DSM-5 aligned</span>
+              <span className="block text-violet-600">DSM-5 aligned</span>
             </h2>
-            <p className="text-slate-500 text-sm sm:text-base max-w-md mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-slate-600 text-base max-w-md mx-auto lg:mx-0 leading-relaxed">
               Comprehensive screening across all major behavioral health domains.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {domains.map((d) => (
               <div
                 key={d.label}
-                className="group relative bg-white rounded-xl p-3.5 border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-md transition-all duration-400 hover:-translate-y-0.5 text-center"
+                className="group relative bg-white rounded-xl p-4 border border-slate-100 hover:border-slate-200/80 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-center"
               >
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${d.gradient} flex items-center justify-center mx-auto mb-2 text-white shadow group-hover:scale-110 transition-transform duration-400`}>
                   {d.icon}
