@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "MindCare AI - AI-Powered Behavioral Health Platform",
@@ -34,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="antialiased text-slate-900 page-bg min-h-screen">
+      <body className={`${plusJakarta.variable} antialiased text-slate-200 min-h-screen font-sans`}>
         {children}
       </body>
     </html>

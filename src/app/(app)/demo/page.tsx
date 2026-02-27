@@ -85,8 +85,8 @@ export default function DemoPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="size-10 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
-        <p className="text-slate-500 mt-4 text-sm font-medium">Loading assessment…</p>
+        <div className="size-10 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
+        <p className="text-slate-400 mt-4 text-sm font-medium">Loading assessment…</p>
       </div>
     );
   }
@@ -94,10 +94,12 @@ export default function DemoPage() {
   if (error || demoSteps.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] px-6">
-        <Card className="max-w-md w-full rounded-xl border border-slate-200 bg-white shadow-sm">
+        <Card className="max-w-md w-full rounded-2xl border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10">
           <CardContent className="pt-8 pb-8 px-8 text-center">
-            <p className="text-slate-700 mb-6 text-sm leading-relaxed">{error ?? 'No demo steps available.'}</p>
-            <Button asChild className="rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium"><Link href="/">Back to Home</Link></Button>
+            <p className="text-slate-300 mb-6 text-sm leading-relaxed">{error ?? 'No demo steps available.'}</p>
+            <Button asChild className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold border-0">
+              <Link href="/">Back to Home</Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -106,60 +108,60 @@ export default function DemoPage() {
 
   return (
     <>
-    <div className="hidden md:flex h-svh flex-col w-full max-w-full mx-auto overflow-hidden page-bg">
+    <div className="hidden md:flex h-svh flex-col w-full max-w-full mx-auto overflow-hidden">
       {/* Top bar */}
-      <header className="shrink-0 border-b border-border/60 bg-card/95 backdrop-blur-sm px-8 py-4">
+      <header className="shrink-0 border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-md px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-slate-800 text-white">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 shadow-lg shadow-teal-500/10">
               <MessageCircle className="size-5" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold tracking-tight text-slate-900">Clinical Intake</h1>
+              <h1 className="text-lg font-semibold tracking-tight text-white">Clinical Intake</h1>
               <p className="text-xs text-slate-500">Step {currentStep + 1} of {demoSteps.length}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-xs font-medium text-slate-500">Progress</p>
-              <p className="text-sm font-semibold tabular-nums text-slate-800">{Math.round(((currentStep + 1) / demoSteps.length) * 100)}%</p>
+              <p className="text-sm font-semibold tabular-nums text-slate-300">{Math.round(((currentStep + 1) / demoSteps.length) * 100)}%</p>
             </div>
-            <Progress value={((currentStep + 1) / demoSteps.length) * 100} className="h-2 w-24 rounded-full" />
+            <Progress value={((currentStep + 1) / demoSteps.length) * 100} className="h-2 w-24 rounded-full bg-white/[0.06]" />
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 min-h-0">
-        {/* Left: step indicators + notice */}
-        <aside className="w-52 shrink-0 flex flex-col gap-4 border-r border-border/60 section-bg p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Steps</p>
+        {/* Left: step indicators */}
+        <aside className="w-52 shrink-0 flex flex-col gap-4 border-r border-white/[0.06] bg-white/[0.02] p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Steps</p>
           <div className="flex flex-col gap-1.5">
             {demoSteps.map((step, i) => (
               <div
                 key={step.id}
                 className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
                   i === currentStep
-                    ? 'bg-slate-800 text-white font-medium'
+                    ? 'bg-teal-500/15 text-teal-300 font-medium border border-teal-500/20'
                     : i < currentStep
-                      ? 'bg-slate-100 text-slate-600'
-                      : 'text-slate-400'
+                      ? 'bg-teal-500/[0.06] text-teal-400/70'
+                      : 'text-slate-600'
                 }`}
               >
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-medium tabular-nums">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium tabular-nums">
                   {i < currentStep ? '✓' : i + 1}
                 </span>
                 <span className="truncate">{step.title}</span>
               </div>
             ))}
           </div>
-          <p className="mt-auto text-[11px] leading-relaxed text-slate-400">
+          <p className="mt-auto text-[11px] leading-relaxed text-slate-600">
             Your responses are saved securely and used for care coordination and provider handoff.
           </p>
           {required && (
-            <Alert className="rounded-lg border border-amber-200/80 bg-amber-50/90 text-amber-900 [&_svg]:text-amber-600 p-3">
+            <Alert className="rounded-lg border border-amber-500/20 bg-amber-500/[0.06] text-amber-300 [&_svg]:text-amber-400 p-3">
               <Info className="size-3.5 shrink-0" />
-              <AlertTitle className="text-amber-900 font-semibold text-xs">Complete to continue</AlertTitle>
-              <AlertDescription className="text-amber-800/90 text-[11px] mt-0.5">
+              <AlertTitle className="text-amber-300 font-semibold text-xs">Complete to continue</AlertTitle>
+              <AlertDescription className="text-amber-400/80 text-[11px] mt-0.5">
                 Finish this assessment to access My care, Appointments, and Resources.
               </AlertDescription>
             </Alert>
@@ -167,18 +169,18 @@ export default function DemoPage() {
         </aside>
 
         {/* Right: current step content */}
-        <main className="flex-1 min-w-0 flex flex-col overflow-hidden page-bg">
+        <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
           <div className="flex-1 min-h-0 overflow-auto p-8">
             <div className="mx-auto max-w-2xl">
               {/* Question / message block */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm">
+              <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-lg p-6 shadow-lg shadow-black/10">
                 <div className="flex gap-4">
-                  <div className="size-10 shrink-0 rounded-full bg-slate-100 flex items-center justify-center">
-                    <Sparkles className="size-5 text-slate-600" />
+                  <div className="size-10 shrink-0 rounded-full bg-teal-500/10 flex items-center justify-center">
+                    <Sparkles className="size-5 text-teal-400" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-base font-semibold text-slate-900 mb-1.5">{currentStepData.title}</h2>
-                    <p className="text-sm leading-relaxed text-slate-600">{currentStepData.message}</p>
+                    <h2 className="text-base font-semibold text-white mb-1.5">{currentStepData.title}</h2>
+                    <p className="text-sm leading-relaxed text-slate-300">{currentStepData.message}</p>
                   </div>
                 </div>
               </div>
@@ -186,11 +188,11 @@ export default function DemoPage() {
               {responses[currentStepData.id] && (
                 <div className="mt-4 flex justify-end">
                   <div className="flex max-w-md items-start gap-3">
-                    <div className="rounded-lg border border-slate-200/80 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-sm text-slate-800">{responses[currentStepData.id]}</p>
+                    <div className="rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 shadow-sm">
+                      <p className="text-sm text-slate-200">{responses[currentStepData.id]}</p>
                     </div>
-                    <div className="size-10 shrink-0 rounded-full bg-slate-200 flex items-center justify-center">
-                      <User className="size-5 text-slate-600" />
+                    <div className="size-10 shrink-0 rounded-full bg-white/[0.06] flex items-center justify-center">
+                      <User className="size-5 text-slate-400" />
                     </div>
                   </div>
                 </div>
@@ -198,13 +200,13 @@ export default function DemoPage() {
 
               {isTyping && (
                 <div className="mt-4 flex gap-4">
-                  <div className="size-10 shrink-0 rounded-full bg-slate-100 flex items-center justify-center">
-                    <Sparkles className="size-5 text-slate-600" />
+                  <div className="size-10 shrink-0 rounded-full bg-white/[0.06] flex items-center justify-center">
+                    <Sparkles className="size-5 text-slate-400" />
                   </div>
-                  <div className="rounded-lg border border-slate-200/80 bg-white px-4 py-3 shadow-sm inline-flex gap-1.5">
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 shadow-sm inline-flex gap-1.5">
+                    <span className="w-2 h-2 bg-teal-400/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-teal-400/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-teal-400/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               )}
@@ -212,7 +214,7 @@ export default function DemoPage() {
               {/* Actions */}
               {!isTyping && currentStepData.type === 'message' && (
                 <div className="mt-6 flex justify-center">
-                  <Button onClick={() => handleResponse('')} className="rounded-lg bg-slate-800 px-6 font-medium text-white hover:bg-slate-700">Continue</Button>
+                  <Button onClick={() => handleResponse('')} className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-6 font-semibold text-white hover:from-teal-400 hover:to-teal-500 border-0">Continue</Button>
                 </div>
               )}
 
@@ -225,7 +227,7 @@ export default function DemoPage() {
                         key={index}
                         variant="outline"
                         onClick={() => handleResponse(option)}
-                        className="h-auto justify-start rounded-lg border-slate-200 bg-white py-3 px-4 text-left text-sm font-normal text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                        className="h-auto justify-start rounded-lg border-white/[0.08] bg-white/[0.03] py-3 px-4 text-left text-sm font-normal text-slate-300 hover:bg-white/[0.08] hover:border-teal-500/20 hover:text-teal-300"
                       >
                         {option}
                       </Button>
@@ -245,7 +247,7 @@ export default function DemoPage() {
                           key={num}
                           variant="outline"
                           size="icon"
-                          className="size-10 rounded-full border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                          className="size-10 rounded-full border-white/[0.08] bg-white/[0.03] font-medium text-slate-300 hover:bg-teal-500/10 hover:border-teal-500/20 hover:text-teal-300"
                           onClick={() => handleResponse(num.toString())}
                         >
                           {num}
@@ -259,13 +261,13 @@ export default function DemoPage() {
 
               {!isTyping && currentStepData.type === 'recommendation' && (
                 <div className="mt-6 space-y-6">
-                  <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm">
-                    <h3 className="text-base font-semibold text-slate-900 mb-0.5">Your care recommendation</h3>
-                    <p className="text-sm text-slate-500 mb-4">Based on your responses</p>
+                  <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-lg p-6 shadow-lg shadow-black/10">
+                    <h3 className="text-base font-semibold text-white mb-0.5">Your care recommendation</h3>
+                    <p className="text-sm text-slate-400 mb-4">Based on your responses</p>
                     <ul className="space-y-2.5">
                       {currentStepData.nextSteps?.map((step, index) => (
-                        <li key={index} className="flex items-start gap-3 text-sm text-slate-700">
-                          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-white">
+                        <li key={index} className="flex items-start gap-3 text-sm text-slate-300">
+                          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-500/20 text-teal-400">
                             <svg className="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
@@ -276,14 +278,14 @@ export default function DemoPage() {
                     </ul>
                   </div>
                   <div className="flex flex-wrap gap-3">
-                    <Button asChild className="rounded-lg bg-slate-800 px-5 font-medium text-white hover:bg-slate-700">
+                    <Button asChild className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-5 font-semibold text-white border-0">
                       <Link href="/appointments?specialty=psychologist">Book appointment</Link>
                     </Button>
-                    <Button variant="outline" asChild className="rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50">
+                    <Button variant="outline" asChild className="rounded-lg border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-teal-500/20">
                       <Link href="/resources">Self-help resources</Link>
                     </Button>
-                    <Button variant="ghost" onClick={handleRestart} className="rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-800">Restart</Button>
-                    <Button variant="ghost" asChild className="rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+                    <Button variant="ghost" onClick={handleRestart} className="rounded-lg text-slate-400 hover:text-teal-400 hover:bg-white/[0.06]">Restart</Button>
+                    <Button variant="ghost" asChild className="rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]">
                       <Link href="/">Home</Link>
                     </Button>
                   </div>
@@ -295,10 +297,10 @@ export default function DemoPage() {
       </div>
     </div>
 
-    <div className="md:hidden flex flex-col items-center justify-center min-h-[60vh] px-6 text-center page-bg">
-      <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm max-w-sm">
-        <p className="text-slate-700 font-medium mb-1">Clinical Intake</p>
-        <p className="text-slate-500 text-sm">This assessment is designed for desktop. Please use a larger screen for the best experience.</p>
+    <div className="md:hidden flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-lg p-8 shadow-lg shadow-black/10 max-w-sm">
+        <p className="text-white font-semibold mb-1">Clinical Intake</p>
+        <p className="text-slate-400 text-sm">This assessment is designed for desktop. Please use a larger screen for the best experience.</p>
       </div>
     </div>
     </>

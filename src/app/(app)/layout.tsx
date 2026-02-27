@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AppSidebar } from '@/components/AppSidebar';
+import NeuralNetworkBg from '@/components/NeuralNetworkBg';
 import { IntakeProvider, useIntake } from '@/contexts/IntakeContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
@@ -22,9 +23,15 @@ function AppLayoutInner({ user, children }: { user: { email: string }; children:
   }, [intakeCompleted, pathname, router]);
 
   return (
-    <div className="flex min-h-svh w-full page-bg-mesh">
+    <div className="flex min-h-svh w-full hero-gradient relative">
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <NeuralNetworkBg nodeCount={60} connectionDist={160} />
+      </div>
+      <div className="absolute inset-0 pointer-events-none z-0" style={{
+        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(10, 14, 26, 0.5) 100%)',
+      }} />
       <AppSidebar user={user} />
-      <SidebarInset className="min-h-svh overflow-auto page-bg-mesh">
+      <SidebarInset className="min-h-svh overflow-auto relative z-10">
         {children}
       </SidebarInset>
     </div>
@@ -62,9 +69,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (checking || !user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 page-bg-mesh">
-        <div className="size-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-muted-foreground text-sm font-medium">Loading…</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 hero-gradient relative">
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <NeuralNetworkBg nodeCount={40} />
+        </div>
+        <div className="relative z-10 flex flex-col items-center gap-4">
+          <div className="size-10 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-400 text-sm font-medium">Loading…</p>
+        </div>
       </div>
     );
   }
