@@ -7,7 +7,6 @@ import {
   Heart,
   Calendar,
   BookOpen,
-  Home,
   LogOut,
   User,
   Lock,
@@ -46,7 +45,6 @@ const NAV_LINKS = [
   { href: '/care', label: 'My care', icon: Heart },
   { href: '/appointments', label: 'Appointments', icon: Calendar },
   { href: '/resources', label: 'Resources', icon: BookOpen },
-  { href: '/', label: 'Home', icon: Home },
 ] as const;
 
 export function AppSidebar({ user }: AppSidebarProps) {
@@ -61,40 +59,37 @@ export function AppSidebar({ user }: AppSidebarProps) {
   };
 
   return (
-    <Sidebar side="left" variant="sidebar" collapsible="offcanvas" className="border-r-0">
-      <SidebarHeader className="border-b border-white/[0.06] bg-white/[0.02]">
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-2 py-3 font-semibold"
-        >
-          <span className="bg-gradient-to-r from-teal-300 to-teal-500 bg-clip-text text-transparent text-lg">MindCare AI</span>
+    <Sidebar side="left" variant="sidebar" collapsible="offcanvas" className="border-r border-slate-200">
+      <SidebarHeader className="border-b border-slate-200/80 bg-white px-3 py-2">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <span className="text-teal-700 text-base font-bold tracking-tight">MindCare AI</span>
         </Link>
       </SidebarHeader>
-      <SidebarContent className="bg-[#0b1120]/80 backdrop-blur-xl">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500">
+      <SidebarContent className="bg-white">
+        <SidebarGroup className="p-1.5 pb-0">
+          <SidebarGroupLabel className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.14em] px-1.5 mb-0.5">
             Account
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <div className="flex items-center gap-3 rounded-md px-2 py-2.5">
-              <div className="flex size-9 items-center justify-center rounded-full bg-teal-500/10 text-teal-400">
-                <User className="size-4" />
+            <div className="flex items-center gap-2.5 px-1.5 py-1">
+              <div className="flex size-7 items-center justify-center rounded-full bg-teal-50 border border-teal-100 text-teal-600">
+                <User className="size-3.5" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-slate-200">
-                  {user.email}
+                <p className="truncate text-[13px] font-medium text-slate-800 leading-tight">
+                  {user.email.split('@')[0].slice(0, 5)}
                 </p>
-                <p className="truncate text-xs text-slate-500">
-                  Signed in
+                <p className="truncate text-[11px] text-slate-400 leading-tight">
+                  Patient
                 </p>
               </div>
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarSeparator className="bg-white/[0.06]" />
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500">
-            Get started
+        <SidebarSeparator className="bg-slate-200/80 mx-2 my-1" />
+        <SidebarGroup className="p-1.5 pt-0">
+          <SidebarGroupLabel className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.14em] px-1.5 mb-0.5">
+            Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <TooltipProvider delayDuration={300}>
@@ -103,8 +98,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                   const isIntake = href === INTAKE_HREF;
                   const locked = !isIntake && !intakeCompleted;
                   const isActive =
-                    pathname === href ||
-                    (href !== '/' && pathname.startsWith(href));
+                    pathname === href || pathname.startsWith(href);
                   return (
                     <SidebarMenuItem key={href}>
                       {locked ? (
@@ -114,28 +108,28 @@ export function AppSidebar({ user }: AppSidebarProps) {
                               isActive={false}
                               className="pointer-events-none opacity-40 text-slate-400"
                             >
-                              <Lock className="size-4 text-slate-600" />
+                              <Lock className="size-4 text-slate-400" />
                               <span>{label}</span>
-                              <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 bg-white/[0.06] text-slate-500 border-white/[0.08]">
+                              <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 bg-slate-100 text-slate-400 border border-slate-200">
                                 Complete intake
                               </Badge>
                             </SidebarMenuButton>
                           </TooltipTrigger>
-                          <TooltipContent side="right" className="bg-[#141a2e] border-white/10 text-slate-300">
+                          <TooltipContent side="right" className="bg-white border-slate-200 text-slate-600 shadow-lg">
                             Complete your intake to unlock
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <SidebarMenuButton asChild isActive={isActive} className={isActive ? 'bg-teal-500/10 text-teal-300 border border-teal-500/20' : 'text-slate-300 hover:bg-white/[0.06] hover:text-white'}>
+                        <SidebarMenuButton asChild isActive={isActive} className={isActive ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}>
                           <Link href={href}>
                             {isIntake && intakeCompleted ? (
-                              <CheckCircle2 className="size-4 text-teal-400" />
+                              <CheckCircle2 className="size-4 text-teal-600" />
                             ) : (
                               <Icon className="size-4" />
                             )}
                             <span>{label}</span>
                             {isIntake && !intakeCompleted && (
-                              <Badge className="ml-auto bg-teal-500/20 text-teal-300 text-[10px] px-1.5 py-0 border border-teal-500/30">
+                              <Badge className="ml-auto bg-teal-50 text-teal-700 text-[10px] px-1.5 py-0 border border-teal-200">
                                 Step 1
                               </Badge>
                             )}
@@ -150,10 +144,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-white/[0.06] bg-[#0b1120]/80">
+      <SidebarFooter className="border-t border-slate-200/80 bg-white">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleSignOut} className="text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]">
+            <SidebarMenuButton onClick={handleSignOut} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
               <LogOut className="size-4" />
               <span>Sign out</span>
             </SidebarMenuButton>
