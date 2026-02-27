@@ -30,64 +30,63 @@ export default function CarePage() {
   const completedAt = intake?.completedAt;
 
   return (
-    <div className="min-h-full">
-      <div className="border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-md">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">My care</h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-xl">
-            Your intake summary and next steps. Share this with your provider for continuity of care.
-          </p>
-        </div>
+    <div className="min-h-full bg-[#f8fafb]">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-slate-900">My care</h1>
+        <p className="text-slate-500 text-sm mt-0.5">
+          Your intake summary and next steps. Share this with your provider for continuity of care.
+        </p>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {loading ? (
-          <Card className="rounded-2xl border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10">
-            <CardContent className="p-10 flex justify-center">
-              <div className="size-8 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
-            </CardContent>
-          </Card>
-        ) : entries.length === 0 ? (
-          <Card className="rounded-2xl border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10">
-            <CardContent className="p-10 text-center">
-              <p className="text-slate-400 text-sm mb-5">You haven&apos;t completed the intake yet.</p>
-              <Button asChild className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 font-semibold text-white border-0">
-                <Link href="/demo">Start conversational intake</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            {completedAt && (
-              <p className="text-slate-500 text-sm mb-4">
-                Completed {new Date(completedAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-              </p>
-            )}
-            <Card className="rounded-2xl border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10 divide-y divide-white/[0.06] overflow-hidden">
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="size-7 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : entries.length === 0 ? (
+        <Card className="rounded-xl border-slate-200 bg-white shadow-sm">
+          <CardContent className="px-5 py-8 text-center">
+            <p className="text-slate-500 text-sm mb-4">You haven&apos;t completed the intake yet.</p>
+            <Button asChild size="sm" className="rounded-lg bg-teal-600 hover:bg-teal-700 font-semibold text-white border-0">
+              <Link href="/demo">Start conversational intake</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {completedAt && (
+            <p className="text-slate-400 text-xs mb-3">
+              Completed {new Date(completedAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+            </p>
+          )}
+
+          <Card className="rounded-xl border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="divide-y divide-slate-100">
               {entries.map(([stepId, value]) => (
-                <CardContent key={stepId} className="p-5 py-4">
-                  <p className="text-xs font-semibold text-teal-400/80 uppercase tracking-wide">
+                <div key={stepId} className="px-4 py-3">
+                  <p className="text-[11px] font-semibold text-teal-600 uppercase tracking-wide leading-none">
                     {INTAKE_STEP_LABELS[stepId] ?? stepId}
                   </p>
-                  <p className="text-slate-200 text-sm mt-1">{value}</p>
-                </CardContent>
+                  <p className="text-slate-700 text-sm mt-1 leading-snug">{value}</p>
+                </div>
               ))}
-            </Card>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button asChild className="rounded-lg font-semibold bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white border-0">
-                <Link href="/appointments">Book appointment</Link>
-              </Button>
-              <Button variant="secondary" asChild className="rounded-lg bg-white/[0.06] border-white/10 text-slate-300 hover:bg-white/[0.1]">
-                <Link href="/resources">Self-help resources</Link>
-              </Button>
-              <Button variant="ghost" asChild className="rounded-lg text-slate-400 hover:text-teal-400">
-                <Link href="/demo">Update intake</Link>
-              </Button>
             </div>
-          </>
-        )}
-      </div>
+          </Card>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button asChild size="sm" className="rounded-lg font-semibold bg-teal-600 hover:bg-teal-700 text-white border-0">
+              <Link href="/appointments">Book appointment</Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild className="rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
+              <Link href="/resources">Self-help resources</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild className="rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50">
+              <Link href="/demo">Update intake</Link>
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
     </div>
   );
 }

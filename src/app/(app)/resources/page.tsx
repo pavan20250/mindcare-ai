@@ -82,59 +82,57 @@ export default function ResourcesPage() {
   const order: Resource['category'][] = ['mood', 'anxiety', 'sleep', 'crisis', 'general'];
 
   return (
-    <div className="min-h-full">
-      <div className="border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-md">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Self-help resources</h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-xl">
+    <div className="min-h-full bg-[#f8fafb]">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-5">
+          <h1 className="text-xl font-bold text-slate-900">Self-help resources</h1>
+          <p className="text-slate-500 text-sm mt-0.5">
             Evidence-based strategies you can use between sessions. Not a substitute for professional care.
           </p>
         </div>
-      </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {order.map((cat) => {
             const items = byCategory[cat];
             if (!items?.length) return null;
             return (
-              <section key={cat}>
-                <h2 className="text-sm font-semibold text-teal-400/80 uppercase tracking-wide mb-3">
-                  {CATEGORY_LABELS[cat]}
-                </h2>
-                <ul className="space-y-3">
+              <Card key={cat} className="rounded-xl border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div className="px-4 pt-3 pb-1.5 border-b border-slate-100">
+                  <h2 className="text-[11px] font-bold text-teal-600 uppercase tracking-wide">
+                    {CATEGORY_LABELS[cat]}
+                  </h2>
+                </div>
+                <div className="divide-y divide-slate-100">
                   {items.map((resource) => (
-                    <Card key={resource.id} className="rounded-xl border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10 hover:border-teal-500/20 hover:bg-white/[0.06] transition-all">
-                      <CardContent className="p-5">
-                        <h3 className="font-semibold text-white text-sm">{resource.title}</h3>
-                        <p className="text-slate-400 text-sm mt-1 leading-snug">{resource.description}</p>
-                        {resource.link && resource.linkLabel && (
-                          <a
-                            href={resource.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 mt-3 text-teal-400 text-sm font-semibold hover:text-teal-300 transition-colors"
-                          >
-                            {resource.linkLabel}
-                            <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        )}
-                      </CardContent>
-                    </Card>
+                    <div key={resource.id} className="px-4 py-3">
+                      <h3 className="font-semibold text-slate-800 text-sm">{resource.title}</h3>
+                      <p className="text-slate-500 text-xs mt-0.5 leading-snug">{resource.description}</p>
+                      {resource.link && resource.linkLabel && (
+                        <a
+                          href={resource.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-1.5 text-teal-600 text-xs font-semibold hover:text-teal-700 transition-colors"
+                        >
+                          {resource.linkLabel}
+                          <svg className="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
                   ))}
-                </ul>
-              </section>
+                </div>
+              </Card>
             );
           })}
         </div>
 
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Button variant="secondary" asChild className="rounded-lg bg-white/[0.06] border-white/10 text-slate-300 hover:bg-white/[0.1]">
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <Button variant="outline" size="sm" asChild className="rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
             <Link href="/demo">← Back to demo</Link>
           </Button>
-          <Button asChild className="rounded-lg font-semibold bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white border-0">
+          <Button size="sm" asChild className="rounded-lg font-semibold bg-teal-600 hover:bg-teal-700 text-white border-0">
             <Link href="/appointments">Book appointment</Link>
           </Button>
         </div>

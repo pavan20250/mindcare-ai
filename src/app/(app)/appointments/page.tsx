@@ -206,77 +206,72 @@ export default function AppointmentsPage() {
   const upcomingAppointments = appointments.filter((a) => isUpcoming(a.date));
 
   return (
-    <div className="min-h-full">
-      {/* Header */}
-      <div className="border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-md">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-            Appointments
-          </h1>
-          <p className="mt-1.5 text-slate-400 text-sm sm:text-base max-w-xl">
+    <div className="min-h-full bg-[#f8fafb]">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-5">
+          <h1 className="text-xl font-bold text-slate-900">Appointments</h1>
+          <p className="text-slate-500 text-sm mt-0.5">
             View your upcoming sessions and book with a provider that fits your needs.
           </p>
         </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* My appointments */}
           <section className="lg:col-span-1 order-2 lg:order-1">
-            <Card className="h-full border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10">
+            <Card className="h-full border-slate-200 bg-white shadow-sm">
               <CardHeader className="pb-3">
-                <h2 className="text-sm font-medium text-white">Your appointments</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Your appointments</h2>
                 <p className="text-xs text-slate-400">Upcoming and recent</p>
               </CardHeader>
               <CardContent className="pt-0">
                 {appointmentsLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex gap-3 p-3 rounded-lg bg-white/[0.03]">
-                        <Skeleton className="h-10 w-10 rounded-lg shrink-0 bg-white/[0.06]" />
+                      <div key={i} className="flex gap-3 p-3 rounded-lg bg-slate-50">
+                        <Skeleton className="h-10 w-10 rounded-lg shrink-0 bg-slate-100" />
                         <div className="flex-1 space-y-2">
-                          <Skeleton className="h-4 w-3/4 bg-white/[0.06]" />
-                          <Skeleton className="h-3 w-1/2 bg-white/[0.06]" />
+                          <Skeleton className="h-4 w-3/4 bg-slate-100" />
+                          <Skeleton className="h-3 w-1/2 bg-slate-100" />
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : upcomingAppointments.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-white/[0.1] bg-white/[0.02] p-6 text-center">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.06] text-slate-400 mb-3">
+                  <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-6 text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
                       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <p className="text-sm font-medium text-slate-300">No upcoming appointments</p>
-                    <p className="text-xs text-slate-500 mt-1">Book one with a provider below.</p>
+                    <p className="text-sm font-medium text-slate-600">No upcoming appointments</p>
+                    <p className="text-xs text-slate-400 mt-1">Book one with a provider below.</p>
                   </div>
                 ) : (
                   <ul className="space-y-2">
                     {upcomingAppointments.map((apt) => (
                       <li key={apt.id}>
-                        <Card className="overflow-hidden border-white/[0.08] bg-white/[0.03] transition-colors hover:bg-white/[0.06]">
+                        <Card className="overflow-hidden border-slate-200 bg-white transition-colors hover:bg-slate-50/50">
                           <CardContent className="p-0">
                             <div className="flex">
-                              <div className="flex flex-col items-center justify-center w-14 shrink-0 bg-teal-500/10 text-teal-400 py-2 px-2 text-center">
-                                <span className="text-[10px] font-medium uppercase leading-tight">
+                              <div className="flex flex-col items-center justify-center w-14 shrink-0 bg-teal-50 text-teal-700 py-2 px-2 text-center">
+                                <span className="text-[10px] font-semibold uppercase leading-tight">
                                   {new Date(apt.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
                                 </span>
-                                <span className="text-sm font-semibold leading-tight">
+                                <span className="text-sm font-bold leading-tight">
                                   {new Date(apt.date + 'T12:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short' }).replace(' ', '\n')}
                                 </span>
                               </div>
                               <div className="flex-1 min-w-0 p-3">
-                                <p className="font-medium text-white text-sm truncate">{apt.doctorName}</p>
-                                <p className="text-teal-400 text-xs font-medium">{apt.specialty}</p>
+                                <p className="font-semibold text-slate-800 text-sm truncate">{apt.doctorName}</p>
+                                <p className="text-teal-600 text-xs font-medium">{apt.specialty}</p>
                                 <p className="text-slate-400 text-xs mt-1">{formatTime(apt.timeSlot)}</p>
                                 {apt.reason && (
-                                  <p className="text-slate-500 text-xs mt-1 truncate" title={apt.reason}>
+                                  <p className="text-slate-400 text-xs mt-1 truncate" title={apt.reason}>
                                     {apt.reason}
                                   </p>
                                 )}
                                 <div className="flex items-center gap-2 mt-2">
-                                  <Badge variant="secondary" className="text-[10px] font-medium text-teal-300 bg-teal-500/10 border-teal-500/20">
+                                  <Badge variant="secondary" className="text-[10px] font-semibold text-teal-700 bg-teal-50 border border-teal-200">
                                     Confirmed
                                   </Badge>
                                   {isUpcoming(apt.date) && (
@@ -284,7 +279,7 @@ export default function AppointmentsPage() {
                                       type="button"
                                       variant="ghost"
                                       size="sm"
-                                      className="h-6 text-xs text-slate-500 hover:text-red-400 px-1"
+                                      className="h-6 text-xs text-slate-400 hover:text-red-600 hover:bg-red-50 px-1"
                                       onClick={() => handleCancelAppointment(apt.id)}
                                       disabled={cancellingId === apt.id}
                                     >
@@ -308,14 +303,14 @@ export default function AppointmentsPage() {
           <section className="lg:col-span-2 order-1 lg:order-2">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div>
-                <h2 className="text-sm font-medium text-white">Book a new appointment</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Book a new appointment</h2>
                 <p className="text-xs text-slate-400 mt-0.5">Select a provider and choose a time</p>
               </div>
               <Select value={specialtyFilter || 'all'} onValueChange={(v) => setSpecialtyFilter(v === 'all' ? '' : v)}>
-                <SelectTrigger className="w-[180px] h-9 text-sm border-white/10 bg-white/[0.06] text-slate-300">
+                <SelectTrigger className="w-[180px] h-9 text-sm border-slate-200 bg-white text-slate-600">
                   <SelectValue placeholder="Filter by specialty" />
                 </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#141a2e] text-slate-300">
+                <SelectContent className="border-slate-200 bg-white text-slate-600">
                   {specialtyOptions.map((opt) => (
                     <SelectItem key={opt.value || 'all'} value={opt.value || 'all'}>
                       {opt.label}
@@ -328,15 +323,15 @@ export default function AppointmentsPage() {
             {loading ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <Card key={i} className="overflow-hidden border-white/[0.08] bg-white/[0.04]">
+                  <Card key={i} className="overflow-hidden border-slate-200 bg-white">
                     <CardContent className="p-5">
                       <div className="flex gap-4">
-                        <Skeleton className="h-14 w-14 rounded-xl shrink-0 bg-white/[0.06]" />
+                        <Skeleton className="h-14 w-14 rounded-xl shrink-0 bg-slate-100" />
                         <div className="flex-1 space-y-2">
-                          <Skeleton className="h-5 w-32 bg-white/[0.06]" />
-                          <Skeleton className="h-4 w-24 bg-white/[0.06]" />
-                          <Skeleton className="h-12 w-full mt-2 bg-white/[0.06]" />
-                          <Skeleton className="h-9 w-28 mt-3 bg-white/[0.06]" />
+                          <Skeleton className="h-5 w-32 bg-slate-100" />
+                          <Skeleton className="h-4 w-24 bg-slate-100" />
+                          <Skeleton className="h-12 w-full mt-2 bg-slate-100" />
+                          <Skeleton className="h-9 w-28 mt-3 bg-slate-100" />
                         </div>
                       </div>
                     </CardContent>
@@ -344,10 +339,10 @@ export default function AppointmentsPage() {
                 ))}
               </div>
             ) : doctors.length === 0 ? (
-              <Card className="border-dashed border-white/[0.1] bg-white/[0.03]">
-                <CardContent className="py-12 text-center">
-                  <p className="text-slate-400 text-sm mb-4">No providers match this filter.</p>
-                  <Button variant="outline" size="sm" asChild className="border-white/10 text-slate-300 hover:bg-white/[0.06]">
+              <Card className="border-dashed border-slate-200 bg-slate-50/50">
+                <CardContent className="py-8 text-center">
+                  <p className="text-slate-500 text-sm mb-4">No providers match this filter.</p>
+                  <Button variant="outline" size="sm" asChild className="border-slate-200 text-slate-600 hover:bg-slate-50">
                     <Link href="/appointments">Show all providers</Link>
                   </Button>
                 </CardContent>
@@ -356,30 +351,30 @@ export default function AppointmentsPage() {
               <ul className="grid gap-4 sm:grid-cols-2">
                 {doctors.map((doctor) => (
                   <li key={doctor.id}>
-                    <Card className="group h-full overflow-hidden border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10 transition-all hover:bg-white/[0.07] hover:border-teal-500/20">
+                    <Card className="group h-full overflow-hidden border-slate-200 bg-white shadow-sm transition-all hover:shadow-md hover:shadow-teal-500/5 hover:border-teal-200">
                       <CardContent className="p-0">
                         <div className="flex">
-                          <div className="flex flex-col justify-center w-1.5 shrink-0 rounded-l-md bg-teal-500/20 group-hover:bg-teal-500/30 transition-colors" />
+                          <div className="flex flex-col justify-center w-1.5 shrink-0 rounded-l-md bg-teal-100 group-hover:bg-teal-200 transition-colors" />
                           <div className="flex-1 min-w-0 p-4 sm:p-5">
                             <div className="flex gap-3 sm:gap-4">
-                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 font-semibold text-sm">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 border border-teal-100 text-teal-700 font-semibold text-sm">
                                 {getInitials(doctor.name)}
                               </div>
                               <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-white">{doctor.name}</h3>
-                                <p className="text-teal-400 text-sm font-medium">{doctor.specialty}</p>
-                                <p className="text-slate-500 text-xs mt-0.5">{doctor.credentials}</p>
+                                <h3 className="font-semibold text-slate-800">{doctor.name}</h3>
+                                <p className="text-teal-600 text-sm font-medium">{doctor.specialty}</p>
+                                <p className="text-slate-400 text-xs mt-0.5">{doctor.credentials}</p>
                               </div>
                             </div>
-                            <p className="text-slate-400 text-sm mt-3 line-clamp-2 leading-snug">{doctor.bio}</p>
-                            <p className="text-slate-500 text-xs mt-2 flex items-center gap-1.5">
+                            <p className="text-slate-500 text-sm mt-3 line-clamp-2 leading-snug">{doctor.bio}</p>
+                            <p className="text-slate-400 text-xs mt-2 flex items-center gap-1.5">
                               <span className="inline-block size-2 rounded-full bg-emerald-400" />
                               {doctor.availability}
                             </p>
                             <Button
                               onClick={() => openBooking(doctor)}
                               size="sm"
-                              className="mt-4 w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white border-0"
+                              className="mt-4 w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white border-0"
                             >
                               Book appointment
                             </Button>
@@ -394,21 +389,21 @@ export default function AppointmentsPage() {
           </section>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <Button variant="ghost" size="sm" asChild className="text-slate-500 hover:text-teal-400">
+        <div className="mt-6 flex justify-center">
+          <Button variant="ghost" size="sm" asChild className="text-slate-400 hover:text-teal-600 hover:bg-teal-50">
             <Link href="/demo">← Back to demo</Link>
           </Button>
         </div>
       </div>
 
       <Dialog open={!!bookingDoctor} onOpenChange={(open) => !open && closeBooking()}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto sm:rounded-xl border-white/10 bg-[#0f1629]/95 backdrop-blur-xl text-white">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto sm:rounded-2xl border-slate-200 bg-white text-slate-800 shadow-xl">
           {bookingDoctor &&
             (bookingSuccess ? (
               <>
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2 text-white">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
+                  <DialogTitle className="flex items-center gap-2 text-slate-900">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -416,23 +411,23 @@ export default function AppointmentsPage() {
                     Appointment confirmed
                   </DialogTitle>
                 </DialogHeader>
-                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4 text-sm text-emerald-300">
-                  <p className="font-semibold text-emerald-200">{bookingSuccess.doctorName}</p>
-                  <p className="text-emerald-400">{bookingSuccess.specialty}</p>
-                  <p className="mt-2 text-emerald-300">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm">
+                  <p className="font-semibold text-emerald-800">{bookingSuccess.doctorName}</p>
+                  <p className="text-emerald-700">{bookingSuccess.specialty}</p>
+                  <p className="mt-2 text-emerald-700">
                     {formatDate(bookingSuccess.date)} at {formatTime(bookingSuccess.timeSlot)}
                   </p>
                   {bookingSuccess.reason && (
-                    <p className="mt-1 text-emerald-400/80">Reason: {bookingSuccess.reason}</p>
+                    <p className="mt-1 text-emerald-600">Reason: {bookingSuccess.reason}</p>
                   )}
-                  <p className="mt-2 text-xs text-emerald-500/80">A confirmation has been sent to your email.</p>
+                  <p className="mt-2 text-xs text-emerald-500">A confirmation has been sent to your email.</p>
                 </div>
                 <DialogFooter className="gap-2 sm:gap-0">
-                  <Button variant="secondary" onClick={closeBooking} className="flex-1 bg-white/[0.06] border-white/10 text-slate-300 hover:bg-white/[0.1]">
+                  <Button variant="outline" onClick={closeBooking} className="flex-1 border-slate-200 text-slate-600 hover:bg-slate-50">
                     Done
                   </Button>
                   <Button
-                    className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0"
+                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white border-0"
                     onClick={() => {
                       setBookingSuccess(null);
                       setBookingDate('');
@@ -448,44 +443,44 @@ export default function AppointmentsPage() {
               <>
                 <DialogHeader>
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400 font-semibold text-sm">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 border border-teal-100 text-teal-700 font-semibold text-sm">
                       {getInitials(bookingDoctor.name)}
                     </div>
                     <div>
-                      <DialogTitle className="text-white">{bookingDoctor.name}</DialogTitle>
-                      <p className="text-teal-400 text-sm font-medium">{bookingDoctor.specialty}</p>
+                      <DialogTitle className="text-slate-900">{bookingDoctor.name}</DialogTitle>
+                      <p className="text-teal-600 text-sm font-medium">{bookingDoctor.specialty}</p>
                     </div>
                   </div>
                 </DialogHeader>
-                <Separator className="my-1 bg-white/[0.06]" />
+                <Separator className="my-1 bg-slate-100" />
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label className="text-sm text-slate-300">Date</Label>
+                    <Label className="text-sm text-slate-700 font-medium">Date</Label>
                     <Input
                       type="date"
                       min={minDate}
                       value={bookingDate}
                       onChange={(e) => setBookingDate(e.target.value)}
-                      className="h-10 border-white/10 bg-white/[0.06] text-white"
+                      className="h-10 border-slate-200 bg-white text-slate-800"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm text-slate-300">Time</Label>
+                    <Label className="text-sm text-slate-700 font-medium">Time</Label>
                     {slotsLoading ? (
                       <div className="flex items-center gap-2 text-slate-400 text-sm">
-                        <div className="size-4 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
+                        <div className="size-4 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
                         Loading slots…
                       </div>
                     ) : !bookingDate ? (
-                      <p className="text-slate-500 text-sm">Select a date first.</p>
+                      <p className="text-slate-400 text-sm">Select a date first.</p>
                     ) : slots.length === 0 ? (
-                      <p className="text-slate-500 text-sm">No slots available on this date.</p>
+                      <p className="text-slate-400 text-sm">No slots available on this date.</p>
                     ) : (
                       <Select value={selectedSlot} onValueChange={setSelectedSlot}>
-                        <SelectTrigger className="h-10 w-full border-white/10 bg-white/[0.06] text-slate-300">
+                        <SelectTrigger className="h-10 w-full border-slate-200 bg-white text-slate-700">
                           <SelectValue placeholder="Choose a time" />
                         </SelectTrigger>
-                        <SelectContent className="border-white/10 bg-[#141a2e] text-slate-300">
+                        <SelectContent className="border-slate-200 bg-white text-slate-700">
                           {slots.map((slot) => (
                             <SelectItem key={slot} value={slot}>
                               {formatTime(slot)}
@@ -496,21 +491,21 @@ export default function AppointmentsPage() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm text-slate-300">Reason for visit (optional)</Label>
+                    <Label className="text-sm text-slate-700 font-medium">Reason for visit (optional)</Label>
                     <Textarea
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                       placeholder="e.g. Follow-up from intake, depression screening"
                       rows={2}
-                      className="resize-none border-white/10 bg-white/[0.06] text-white placeholder:text-slate-500"
+                      className="resize-none border-slate-200 bg-white text-slate-800 placeholder:text-slate-400"
                     />
                   </div>
                 </div>
                 <DialogFooter className="gap-2 sm:gap-0">
-                  <Button variant="outline" onClick={closeBooking} className="border-white/10 text-slate-300 hover:bg-white/[0.06]">
+                  <Button variant="outline" onClick={closeBooking} className="border-slate-200 text-slate-600 hover:bg-slate-50">
                     Cancel
                   </Button>
-                  <Button onClick={handleConfirmBooking} disabled={!selectedSlot || submitting} className="bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0">
+                  <Button onClick={handleConfirmBooking} disabled={!selectedSlot || submitting} className="bg-teal-600 hover:bg-teal-700 text-white border-0">
                     {submitting ? (
                       <>
                         <span className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />

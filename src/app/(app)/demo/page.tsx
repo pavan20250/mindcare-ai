@@ -1,14 +1,26 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useIntake } from '@/contexts/IntakeContext';
-import { MessageCircle, User, Sparkles, Info } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  MessageCircle,
+  User,
+  Sparkles,
+  Info,
+  ArrowRight,
+  Check,
+  RotateCcw,
+  Home,
+  CalendarCheck,
+  BookOpen,
+  ShieldCheck,
+  Activity,
+  AlertTriangle,
+} from 'lucide-react';
 
 export interface DemoStep {
   id: string;
@@ -31,6 +43,121 @@ function saveIntake(responses: Record<string, string>, completed?: boolean) {
   });
 }
 
+const fadeSlide = {
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+  transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+};
+
+function StepIndicator({ steps, current }: { steps: DemoStep[]; current: number }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      {steps.map((step, i) => {
+        const isActive = i === current;
+        const isCompleted = i < current;
+        return (
+          <div
+            key={step.id}
+            className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 ${
+              isActive
+                ? 'bg-teal-50 border border-teal-200/60'
+                : 'border border-transparent'
+            }`}
+          >
+            <span
+              className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-all ${
+                isActive
+                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
+                  : isCompleted
+                    ? 'bg-teal-100 text-teal-700'
+                    : 'bg-slate-100 text-slate-400'
+              }`}
+            >
+              {isCompleted ? (
+                <Check className="size-3.5" strokeWidth={2.5} />
+              ) : (
+                i + 1
+              )}
+            </span>
+            <span
+              className={`text-[13px] truncate transition-colors ${
+                isActive
+                  ? 'text-teal-800 font-semibold'
+                  : isCompleted
+                    ? 'text-slate-600'
+                    : 'text-slate-400'
+              }`}
+            >
+              {step.title}
+            </span>
+            {isActive && (
+              <motion.div
+                layoutId="step-bar"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-teal-600"
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ProgressBar({ value }: { value: number }) {
+  return (
+    <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+      <motion.div
+        className="h-full rounded-full bg-gradient-to-r from-teal-500 to-teal-400"
+        initial={{ width: 0 }}
+        animate={{ width: `${value}%` }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      />
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-3 mt-5">
+      <div className="size-9 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center">
+        <Sparkles className="size-4 text-teal-600" />
+      </div>
+      <div className="rounded-2xl rounded-tl-sm bg-slate-50 border border-slate-200/60 px-5 py-3">
+        <div className="flex gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <motion.span
+              key={i}
+              className="w-1.5 h-1.5 bg-teal-500 rounded-full"
+              animate={{ opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                delay: i * 0.2,
+                ease: 'easeInOut',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScaleButton({ num, onClick }: { num: number; onClick: (v: string) => void }) {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.08, y: -2 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => onClick(num.toString())}
+      className="size-11 rounded-full border border-slate-200 bg-white font-medium text-sm text-slate-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 transition-colors shadow-sm"
+    >
+      {num}
+    </motion.button>
+  );
+}
+
 export default function DemoPage() {
   const searchParams = useSearchParams();
   const required = searchParams.get('required') === '1';
@@ -41,6 +168,7 @@ export default function DemoPage() {
   const [demoSteps, setDemoSteps] = useState<DemoStep[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/api/demo')
@@ -48,31 +176,37 @@ export default function DemoPage() {
         if (!res.ok) throw new Error('Failed to load demo');
         return res.json();
       })
-      .then((data) => {
-        setDemoSteps(data.steps ?? []);
-      })
+      .then((data) => setDemoSteps(data.steps ?? []))
       .catch(() => setError('Unable to load demo. Please try again.'))
       .finally(() => setLoading(false));
   }, []);
 
-  const handleResponse = useCallback((response: string) => {
-    const stepId = demoSteps[currentStep]?.id;
-    if (!stepId) return;
-    const nextResponses = { ...responses, [stepId]: response };
-    setResponses(nextResponses);
-    const reachedRecommendation = currentStep + 1 >= demoSteps.length - 1;
-    saveIntake(nextResponses, reachedRecommendation).then(() => {
-      if (reachedRecommendation) setIntakeCompleted(true);
-    }).catch(() => {});
-    setIsTyping(true);
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
 
-    setTimeout(() => {
-      setIsTyping(false);
-      if (currentStep < demoSteps.length - 1) {
-        setCurrentStep((prev) => prev + 1);
-      }
-    }, 1500);
-  }, [demoSteps, currentStep, responses, setIntakeCompleted]);
+  const handleResponse = useCallback(
+    (response: string) => {
+      const stepId = demoSteps[currentStep]?.id;
+      if (!stepId) return;
+      const nextResponses = { ...responses, [stepId]: response };
+      setResponses(nextResponses);
+      const reachedRecommendation = currentStep + 1 >= demoSteps.length - 1;
+      saveIntake(nextResponses, reachedRecommendation)
+        .then(() => {
+          if (reachedRecommendation) setIntakeCompleted(true);
+        })
+        .catch(() => {});
+      setIsTyping(true);
+      setTimeout(() => {
+        setIsTyping(false);
+        if (currentStep < demoSteps.length - 1) {
+          setCurrentStep((prev) => prev + 1);
+        }
+      }, 1200);
+    },
+    [demoSteps, currentStep, responses, setIntakeCompleted],
+  );
 
   const handleRestart = useCallback(() => {
     setCurrentStep(0);
@@ -81,228 +215,372 @@ export default function DemoPage() {
   }, []);
 
   const currentStepData = demoSteps[currentStep];
+  const progress = demoSteps.length ? ((currentStep + 1) / demoSteps.length) * 100 : 0;
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="size-10 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-400 mt-4 text-sm font-medium">Loading assessment…</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="size-9 border-2 border-teal-500 border-t-transparent rounded-full"
+        />
+        <p className="text-slate-500 text-sm font-medium tracking-wide">
+          Preparing your assessment…
+        </p>
       </div>
     );
   }
 
   if (error || demoSteps.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] px-6">
-        <Card className="max-w-md w-full rounded-2xl border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10">
-          <CardContent className="pt-8 pb-8 px-8 text-center">
-            <p className="text-slate-300 mb-6 text-sm leading-relaxed">{error ?? 'No demo steps available.'}</p>
-            <Button asChild className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold border-0">
-              <Link href="/">Back to Home</Link>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-sm w-full rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg"
+        >
+          <div className="size-12 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+            <Info className="size-5 text-red-500" />
+          </div>
+          <p className="text-slate-600 mb-6 text-sm leading-relaxed">
+            {error ?? 'No assessment steps available.'}
+          </p>
+          <Button
+            asChild
+            className="rounded-xl bg-teal-600 text-white font-semibold border-0 px-6 hover:bg-teal-700"
+          >
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <>
-    <div className="hidden md:flex h-svh flex-col w-full max-w-full mx-auto overflow-hidden">
-      {/* Top bar */}
-      <header className="shrink-0 border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-md px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 shadow-lg shadow-teal-500/10">
-              <MessageCircle className="size-5" />
+    <div className="flex flex-col h-svh w-full overflow-hidden bg-[#f8fafb]">
+      {/* Header */}
+      <header className="shrink-0 border-b border-slate-200/80 bg-white px-5 sm:px-8 py-3.5">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-teal-600 text-white shadow-sm shadow-teal-600/20">
+              <MessageCircle className="size-4" />
             </div>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight text-white">Clinical Intake</h1>
-              <p className="text-xs text-slate-500">Step {currentStep + 1} of {demoSteps.length}</p>
+            <div className="min-w-0">
+              <h1 className="text-[15px] font-semibold tracking-tight text-slate-900 truncate">
+                Clinical Intake Assessment
+              </h1>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Step {currentStep + 1} of {demoSteps.length}
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-xs font-medium text-slate-500">Progress</p>
-              <p className="text-sm font-semibold tabular-nums text-slate-300">{Math.round(((currentStep + 1) / demoSteps.length) * 100)}%</p>
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="hidden sm:block text-right">
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                Progress
+              </p>
+              <p className="text-sm font-bold tabular-nums text-slate-700">
+                {Math.round(progress)}%
+              </p>
             </div>
-            <Progress value={((currentStep + 1) / demoSteps.length) * 100} className="h-2 w-24 rounded-full bg-white/[0.06]" />
+            <div className="w-20 sm:w-28">
+              <ProgressBar value={progress} />
+            </div>
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 min-h-0">
-        {/* Left: step indicators */}
-        <aside className="w-52 shrink-0 flex flex-col gap-4 border-r border-white/[0.06] bg-white/[0.02] p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Steps</p>
-          <div className="flex flex-col gap-1.5">
-            {demoSteps.map((step, i) => (
-              <div
-                key={step.id}
-                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
-                  i === currentStep
-                    ? 'bg-teal-500/15 text-teal-300 font-medium border border-teal-500/20'
-                    : i < currentStep
-                      ? 'bg-teal-500/[0.06] text-teal-400/70'
-                      : 'text-slate-600'
-                }`}
-              >
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium tabular-nums">
-                  {i < currentStep ? '✓' : i + 1}
-                </span>
-                <span className="truncate">{step.title}</span>
-              </div>
-            ))}
+        {/* Sidebar — desktop */}
+        <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-slate-200/80 bg-white">
+          <div className="flex-1 overflow-y-auto p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 mb-3 px-1">
+              Steps
+            </p>
+            <StepIndicator steps={demoSteps} current={currentStep} />
           </div>
-          <p className="mt-auto text-[11px] leading-relaxed text-slate-600">
-            Your responses are saved securely and used for care coordination and provider handoff.
-          </p>
-          {required && (
-            <Alert className="rounded-lg border border-amber-500/20 bg-amber-500/[0.06] text-amber-300 [&_svg]:text-amber-400 p-3">
-              <Info className="size-3.5 shrink-0" />
-              <AlertTitle className="text-amber-300 font-semibold text-xs">Complete to continue</AlertTitle>
-              <AlertDescription className="text-amber-400/80 text-[11px] mt-0.5">
-                Finish this assessment to access My care, Appointments, and Resources.
-              </AlertDescription>
-            </Alert>
-          )}
+          <div className="p-4 border-t border-slate-100 space-y-3">
+            {required && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
+                  <span className="text-xs font-semibold text-amber-700">Required</span>
+                </div>
+                <p className="text-[11px] text-amber-600 leading-relaxed">
+                  Complete this assessment to access all features.
+                </p>
+              </div>
+            )}
+            <div className="flex items-start gap-2 px-1">
+              <ShieldCheck className="size-3.5 text-teal-500 shrink-0 mt-0.5" />
+              <span className="text-[11px] text-slate-400 leading-relaxed">
+                Responses saved securely &amp; HIPAA compliant
+              </span>
+            </div>
+          </div>
         </aside>
 
-        {/* Right: current step content */}
+        {/* Mobile step indicator */}
+        <div className="md:hidden shrink-0 border-b border-slate-200/60 bg-white px-5 py-3">
+          <div className="flex gap-1.5 items-center">
+            {demoSteps.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 rounded-full flex-1 transition-colors duration-300 ${
+                  i <= currentStep ? 'bg-teal-500' : 'bg-slate-200'
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-slate-500 mt-2 font-medium">
+            {currentStepData.title}
+          </p>
+          {required && (
+            <p className="text-amber-600 text-[10px] mt-1 font-medium">
+              Complete assessment to unlock all features
+            </p>
+          )}
+        </div>
+
+        {/* Main content */}
         <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
-          <div className="flex-1 min-h-0 overflow-auto p-8">
+          <div
+            ref={scrollRef}
+            className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-8 py-6 sm:py-10"
+          >
             <div className="mx-auto max-w-2xl">
-              {/* Question / message block */}
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-lg p-6 shadow-lg shadow-black/10">
-                <div className="flex gap-4">
-                  <div className="size-10 shrink-0 rounded-full bg-teal-500/10 flex items-center justify-center">
-                    <Sparkles className="size-5 text-teal-400" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-base font-semibold text-white mb-1.5">{currentStepData.title}</h2>
-                    <p className="text-sm leading-relaxed text-slate-300">{currentStepData.message}</p>
-                  </div>
-                </div>
-              </div>
-
-              {responses[currentStepData.id] && (
-                <div className="mt-4 flex justify-end">
-                  <div className="flex max-w-md items-start gap-3">
-                    <div className="rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 shadow-sm">
-                      <p className="text-sm text-slate-200">{responses[currentStepData.id]}</p>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentStepData.id}
+                  initial={fadeSlide.initial}
+                  animate={fadeSlide.animate}
+                  exit={fadeSlide.exit}
+                  transition={fadeSlide.transition}
+                >
+                  {/* AI message */}
+                  <div className="flex items-start gap-3">
+                    <div className="size-9 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center mt-0.5">
+                      <Sparkles className="size-4 text-teal-600" />
                     </div>
-                    <div className="size-10 shrink-0 rounded-full bg-white/[0.06] flex items-center justify-center">
-                      <User className="size-5 text-slate-400" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {isTyping && (
-                <div className="mt-4 flex gap-4">
-                  <div className="size-10 shrink-0 rounded-full bg-white/[0.06] flex items-center justify-center">
-                    <Sparkles className="size-5 text-slate-400" />
-                  </div>
-                  <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 shadow-sm inline-flex gap-1.5">
-                    <span className="w-2 h-2 bg-teal-400/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-teal-400/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-teal-400/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
-                </div>
-              )}
-
-              {/* Actions */}
-              {!isTyping && currentStepData.type === 'message' && (
-                <div className="mt-6 flex justify-center">
-                  <Button onClick={() => handleResponse('')} className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-6 font-semibold text-white hover:from-teal-400 hover:to-teal-500 border-0">Continue</Button>
-                </div>
-              )}
-
-              {!isTyping && currentStepData.type === 'question' && (
-                <div className="mt-6 space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Select one</p>
-                  <div className="grid gap-2">
-                    {currentStepData.options?.map((option, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        onClick={() => handleResponse(option)}
-                        className="h-auto justify-start rounded-lg border-white/[0.08] bg-white/[0.03] py-3 px-4 text-left text-sm font-normal text-slate-300 hover:bg-white/[0.08] hover:border-teal-500/20 hover:text-teal-300"
-                      >
-                        {option}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {!isTyping && currentStepData.type === 'scale' && (
-                <div className="mt-6 space-y-4">
-                  <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Rate impact on daily life</p>
-                  <div className="flex flex-wrap items-center justify-center gap-6">
-                    <span className="text-xs text-slate-500">1 · Not at all</span>
-                    <div className="flex gap-2">
-                      {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                        <Button
-                          key={num}
-                          variant="outline"
-                          size="icon"
-                          className="size-10 rounded-full border-white/[0.08] bg-white/[0.03] font-medium text-slate-300 hover:bg-teal-500/10 hover:border-teal-500/20 hover:text-teal-300"
-                          onClick={() => handleResponse(num.toString())}
-                        >
-                          {num}
-                        </Button>
-                      ))}
-                    </div>
-                    <span className="text-xs text-slate-500">10 · Extremely</span>
-                  </div>
-                </div>
-              )}
-
-              {!isTyping && currentStepData.type === 'recommendation' && (
-                <div className="mt-6 space-y-6">
-                  <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-lg p-6 shadow-lg shadow-black/10">
-                    <h3 className="text-base font-semibold text-white mb-0.5">Your care recommendation</h3>
-                    <p className="text-sm text-slate-400 mb-4">Based on your responses</p>
-                    <ul className="space-y-2.5">
-                      {currentStepData.nextSteps?.map((step, index) => (
-                        <li key={index} className="flex items-start gap-3 text-sm text-slate-300">
-                          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-500/20 text-teal-400">
-                            <svg className="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                            </svg>
+                    <div className="flex-1 min-w-0">
+                      <div className="rounded-2xl rounded-tl-sm bg-white border border-slate-200/80 p-5 shadow-sm">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-[11px] font-bold text-teal-600 uppercase tracking-wider">
+                            MindCare AI
                           </span>
-                          {step}
-                        </li>
+                          <span className="size-1 rounded-full bg-slate-300" />
+                          <span className="text-[11px] text-slate-400 font-medium">
+                            {currentStepData.title}
+                          </span>
+                        </div>
+                        <p className="text-[15px] leading-relaxed text-slate-700">
+                          {currentStepData.message}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User response echo */}
+                  {responses[currentStepData.id] && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex justify-end mt-4"
+                    >
+                      <div className="flex items-start gap-3 max-w-md">
+                        <div className="rounded-2xl rounded-tr-sm bg-teal-600 px-5 py-3 shadow-sm shadow-teal-600/10">
+                          <p className="text-sm text-white font-medium">
+                            {responses[currentStepData.id]}
+                          </p>
+                        </div>
+                        <div className="size-9 shrink-0 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mt-0.5">
+                          <User className="size-4 text-slate-500" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {isTyping && <TypingIndicator />}
+
+                  {/* Continue */}
+                  {!isTyping && currentStepData.type === 'message' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                      className="mt-6 flex justify-start ml-12"
+                    >
+                      <Button
+                        onClick={() => handleResponse('')}
+                        className="rounded-xl bg-teal-600 hover:bg-teal-700 px-7 py-5 font-semibold text-white border-0 shadow-md shadow-teal-600/15 transition-all"
+                      >
+                        Continue
+                        <ArrowRight className="size-4 ml-1.5" />
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {/* Question options */}
+                  {!isTyping && currentStepData.type === 'question' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                      className="mt-6 ml-12 space-y-2"
+                    >
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 mb-3">
+                        Choose one
+                      </p>
+                      {currentStepData.options?.map((option, index) => (
+                        <motion.button
+                          key={index}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.06 * index + 0.2 }}
+                          whileHover={{ x: 3 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleResponse(option)}
+                          className="group w-full flex items-center gap-3 rounded-xl border border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/50 py-3.5 px-4 text-left transition-all shadow-sm hover:shadow-md hover:shadow-teal-500/5"
+                        >
+                          <span className="size-7 shrink-0 rounded-lg bg-slate-50 border border-slate-200/80 group-hover:bg-teal-100 group-hover:border-teal-200 flex items-center justify-center transition-all">
+                            <span className="text-xs font-semibold text-slate-400 group-hover:text-teal-700 transition-colors">
+                              {String.fromCharCode(65 + index)}
+                            </span>
+                          </span>
+                          <span className="text-sm text-slate-600 group-hover:text-slate-800 font-medium transition-colors">
+                            {option}
+                          </span>
+                          <ArrowRight className="size-3.5 text-slate-300 group-hover:text-teal-500 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-all" />
+                        </motion.button>
                       ))}
-                    </ul>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    <Button asChild className="rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-5 font-semibold text-white border-0">
-                      <Link href="/appointments?specialty=psychologist">Book appointment</Link>
-                    </Button>
-                    <Button variant="outline" asChild className="rounded-lg border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-teal-500/20">
-                      <Link href="/resources">Self-help resources</Link>
-                    </Button>
-                    <Button variant="ghost" onClick={handleRestart} className="rounded-lg text-slate-400 hover:text-teal-400 hover:bg-white/[0.06]">Restart</Button>
-                    <Button variant="ghost" asChild className="rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]">
-                      <Link href="/">Home</Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
+                    </motion.div>
+                  )}
+
+                  {/* Scale */}
+                  {!isTyping && currentStepData.type === 'scale' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                      className="mt-6 ml-12 space-y-4"
+                    >
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 text-center">
+                        Rate impact on daily life
+                      </p>
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="flex flex-wrap justify-center gap-2.5">
+                          {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+                            <ScaleButton key={num} num={num} onClick={handleResponse} />
+                          ))}
+                        </div>
+                        <div className="flex justify-between w-full max-w-xs text-[11px] text-slate-400 font-medium mt-1 px-1">
+                          <span>Not at all</span>
+                          <span>Extremely</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Recommendation */}
+                  {!isTyping && currentStepData.type === 'recommendation' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                      className="mt-6 ml-12 space-y-5"
+                    >
+                      {currentStepData.severity && (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <Activity className="size-4 text-teal-600" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-teal-700">
+                              Assessment Complete
+                            </span>
+                          </div>
+                          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-[11px] font-semibold text-amber-700 uppercase tracking-wider">
+                            <span className="size-1.5 rounded-full bg-amber-500" />
+                            {currentStepData.severity} severity
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+                        <div className="px-6 pt-5 pb-4 border-b border-slate-100">
+                          <h3 className="text-base font-semibold text-slate-900">
+                            Recommended Next Steps
+                          </h3>
+                          <p className="text-sm text-slate-400 mt-0.5">
+                            Personalized based on your responses
+                          </p>
+                        </div>
+                        <div className="p-6 space-y-3.5">
+                          {currentStepData.nextSteps?.map((step, index) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, x: -8 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.1 * index + 0.3 }}
+                              className="flex items-start gap-3"
+                            >
+                              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700">
+                                <Check className="size-3" strokeWidth={2.5} />
+                              </span>
+                              <span className="text-sm text-slate-600 leading-relaxed">
+                                {step}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3 pt-1">
+                        <Button
+                          asChild
+                          className="rounded-xl bg-teal-600 hover:bg-teal-700 px-5 py-5 font-semibold text-white border-0 shadow-md shadow-teal-600/15 transition-all"
+                        >
+                          <Link href="/appointments?specialty=psychologist">
+                            <CalendarCheck className="size-4 mr-2" />
+                            Book Appointment
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          asChild
+                          className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 px-5 py-5 font-medium transition-all"
+                        >
+                          <Link href="/resources">
+                            <BookOpen className="size-4 mr-2" />
+                            Self-Help Resources
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={handleRestart}
+                          className="rounded-xl text-slate-400 hover:text-teal-600 hover:bg-teal-50 px-4 py-5 font-medium transition-all"
+                        >
+                          <RotateCcw className="size-3.5 mr-1.5" />
+                          Restart
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          asChild
+                          className="rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 px-4 py-5 font-medium transition-all"
+                        >
+                          <Link href="/">
+                            <Home className="size-3.5 mr-1.5" />
+                            Home
+                          </Link>
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </main>
       </div>
     </div>
-
-    <div className="md:hidden flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-lg p-8 shadow-lg shadow-black/10 max-w-sm">
-        <p className="text-white font-semibold mb-1">Clinical Intake</p>
-        <p className="text-slate-400 text-sm">This assessment is designed for desktop. Please use a larger screen for the best experience.</p>
-      </div>
-    </div>
-    </>
   );
 }
