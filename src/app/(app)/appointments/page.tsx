@@ -208,12 +208,12 @@ export default function AppointmentsPage() {
   return (
     <div className="min-h-full">
       {/* Header */}
-      <div className="border-b border-border/60 bg-card/50 backdrop-blur-sm">
+      <div className="border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
             Appointments
           </h1>
-          <p className="mt-1.5 text-muted-foreground text-sm sm:text-base max-w-xl">
+          <p className="mt-1.5 text-slate-400 text-sm sm:text-base max-w-xl">
             View your upcoming sessions and book with a provider that fits your needs.
           </p>
         </div>
@@ -221,44 +221,44 @@ export default function AppointmentsPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
-          {/* My appointments — takes 1 column on lg */}
+          {/* My appointments */}
           <section className="lg:col-span-1 order-2 lg:order-1">
-            <Card className="h-full border-border/80 shadow-sm">
+            <Card className="h-full border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10">
               <CardHeader className="pb-3">
-                <h2 className="text-sm font-medium text-foreground">Your appointments</h2>
-                <p className="text-xs text-muted-foreground">Upcoming and recent</p>
+                <h2 className="text-sm font-medium text-white">Your appointments</h2>
+                <p className="text-xs text-slate-400">Upcoming and recent</p>
               </CardHeader>
               <CardContent className="pt-0">
                 {appointmentsLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex gap-3 p-3 rounded-lg bg-muted/30">
-                        <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+                      <div key={i} className="flex gap-3 p-3 rounded-lg bg-white/[0.03]">
+                        <Skeleton className="h-10 w-10 rounded-lg shrink-0 bg-white/[0.06]" />
                         <div className="flex-1 space-y-2">
-                          <Skeleton className="h-4 w-3/4" />
-                          <Skeleton className="h-3 w-1/2" />
+                          <Skeleton className="h-4 w-3/4 bg-white/[0.06]" />
+                          <Skeleton className="h-3 w-1/2 bg-white/[0.06]" />
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : upcomingAppointments.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-border bg-muted/20 p-6 text-center">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground mb-3">
+                  <div className="rounded-xl border border-dashed border-white/[0.1] bg-white/[0.02] p-6 text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.06] text-slate-400 mb-3">
                       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <p className="text-sm font-medium text-foreground">No upcoming appointments</p>
-                    <p className="text-xs text-muted-foreground mt-1">Book one with a provider below.</p>
+                    <p className="text-sm font-medium text-slate-300">No upcoming appointments</p>
+                    <p className="text-xs text-slate-500 mt-1">Book one with a provider below.</p>
                   </div>
                 ) : (
                   <ul className="space-y-2">
                     {upcomingAppointments.map((apt) => (
                       <li key={apt.id}>
-                        <Card className="overflow-hidden border-border/80 transition-colors hover:bg-muted/20">
+                        <Card className="overflow-hidden border-white/[0.08] bg-white/[0.03] transition-colors hover:bg-white/[0.06]">
                           <CardContent className="p-0">
                             <div className="flex">
-                              <div className="flex flex-col items-center justify-center w-14 shrink-0 bg-primary/10 text-primary py-2 px-2 text-center">
+                              <div className="flex flex-col items-center justify-center w-14 shrink-0 bg-teal-500/10 text-teal-400 py-2 px-2 text-center">
                                 <span className="text-[10px] font-medium uppercase leading-tight">
                                   {new Date(apt.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
                                 </span>
@@ -267,16 +267,16 @@ export default function AppointmentsPage() {
                                 </span>
                               </div>
                               <div className="flex-1 min-w-0 p-3">
-                                <p className="font-medium text-foreground text-sm truncate">{apt.doctorName}</p>
-                                <p className="text-primary text-xs font-medium">{apt.specialty}</p>
-                                <p className="text-muted-foreground text-xs mt-1">{formatTime(apt.timeSlot)}</p>
+                                <p className="font-medium text-white text-sm truncate">{apt.doctorName}</p>
+                                <p className="text-teal-400 text-xs font-medium">{apt.specialty}</p>
+                                <p className="text-slate-400 text-xs mt-1">{formatTime(apt.timeSlot)}</p>
                                 {apt.reason && (
-                                  <p className="text-muted-foreground text-xs mt-1 truncate" title={apt.reason}>
+                                  <p className="text-slate-500 text-xs mt-1 truncate" title={apt.reason}>
                                     {apt.reason}
                                   </p>
                                 )}
                                 <div className="flex items-center gap-2 mt-2">
-                                  <Badge variant="secondary" className="text-[10px] font-medium text-emerald-700 bg-emerald-50 border-emerald-200/80">
+                                  <Badge variant="secondary" className="text-[10px] font-medium text-teal-300 bg-teal-500/10 border-teal-500/20">
                                     Confirmed
                                   </Badge>
                                   {isUpcoming(apt.date) && (
@@ -284,7 +284,7 @@ export default function AppointmentsPage() {
                                       type="button"
                                       variant="ghost"
                                       size="sm"
-                                      className="h-6 text-xs text-muted-foreground hover:text-destructive px-1"
+                                      className="h-6 text-xs text-slate-500 hover:text-red-400 px-1"
                                       onClick={() => handleCancelAppointment(apt.id)}
                                       disabled={cancellingId === apt.id}
                                     >
@@ -304,18 +304,18 @@ export default function AppointmentsPage() {
             </Card>
           </section>
 
-          {/* Choose a provider — takes 2 columns on lg */}
+          {/* Choose a provider */}
           <section className="lg:col-span-2 order-1 lg:order-2">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div>
-                <h2 className="text-sm font-medium text-foreground">Book a new appointment</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">Select a provider and choose a time</p>
+                <h2 className="text-sm font-medium text-white">Book a new appointment</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Select a provider and choose a time</p>
               </div>
               <Select value={specialtyFilter || 'all'} onValueChange={(v) => setSpecialtyFilter(v === 'all' ? '' : v)}>
-                <SelectTrigger className="w-[180px] h-9 text-sm">
+                <SelectTrigger className="w-[180px] h-9 text-sm border-white/10 bg-white/[0.06] text-slate-300">
                   <SelectValue placeholder="Filter by specialty" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="border-white/10 bg-[#141a2e] text-slate-300">
                   {specialtyOptions.map((opt) => (
                     <SelectItem key={opt.value || 'all'} value={opt.value || 'all'}>
                       {opt.label}
@@ -328,15 +328,15 @@ export default function AppointmentsPage() {
             {loading ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <Card key={i} className="overflow-hidden">
+                  <Card key={i} className="overflow-hidden border-white/[0.08] bg-white/[0.04]">
                     <CardContent className="p-5">
                       <div className="flex gap-4">
-                        <Skeleton className="h-14 w-14 rounded-xl shrink-0" />
+                        <Skeleton className="h-14 w-14 rounded-xl shrink-0 bg-white/[0.06]" />
                         <div className="flex-1 space-y-2">
-                          <Skeleton className="h-5 w-32" />
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-12 w-full mt-2" />
-                          <Skeleton className="h-9 w-28 mt-3" />
+                          <Skeleton className="h-5 w-32 bg-white/[0.06]" />
+                          <Skeleton className="h-4 w-24 bg-white/[0.06]" />
+                          <Skeleton className="h-12 w-full mt-2 bg-white/[0.06]" />
+                          <Skeleton className="h-9 w-28 mt-3 bg-white/[0.06]" />
                         </div>
                       </div>
                     </CardContent>
@@ -344,10 +344,10 @@ export default function AppointmentsPage() {
                 ))}
               </div>
             ) : doctors.length === 0 ? (
-              <Card className="border-dashed">
+              <Card className="border-dashed border-white/[0.1] bg-white/[0.03]">
                 <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground text-sm mb-4">No providers match this filter.</p>
-                  <Button variant="outline" size="sm" asChild>
+                  <p className="text-slate-400 text-sm mb-4">No providers match this filter.</p>
+                  <Button variant="outline" size="sm" asChild className="border-white/10 text-slate-300 hover:bg-white/[0.06]">
                     <Link href="/appointments">Show all providers</Link>
                   </Button>
                 </CardContent>
@@ -356,30 +356,30 @@ export default function AppointmentsPage() {
               <ul className="grid gap-4 sm:grid-cols-2">
                 {doctors.map((doctor) => (
                   <li key={doctor.id}>
-                    <Card className="group h-full overflow-hidden border-border/80 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+                    <Card className="group h-full overflow-hidden border-white/[0.08] bg-white/[0.04] backdrop-blur-lg shadow-lg shadow-black/10 transition-all hover:bg-white/[0.07] hover:border-teal-500/20">
                       <CardContent className="p-0">
                         <div className="flex">
-                          <div className="flex flex-col justify-center w-1.5 shrink-0 rounded-l-md bg-primary/20 group-hover:bg-primary/30 transition-colors" />
+                          <div className="flex flex-col justify-center w-1.5 shrink-0 rounded-l-md bg-teal-500/20 group-hover:bg-teal-500/30 transition-colors" />
                           <div className="flex-1 min-w-0 p-4 sm:p-5">
                             <div className="flex gap-3 sm:gap-4">
-                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary font-semibold text-sm">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 font-semibold text-sm">
                                 {getInitials(doctor.name)}
                               </div>
                               <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-foreground">{doctor.name}</h3>
-                                <p className="text-primary text-sm font-medium">{doctor.specialty}</p>
-                                <p className="text-muted-foreground text-xs mt-0.5">{doctor.credentials}</p>
+                                <h3 className="font-semibold text-white">{doctor.name}</h3>
+                                <p className="text-teal-400 text-sm font-medium">{doctor.specialty}</p>
+                                <p className="text-slate-500 text-xs mt-0.5">{doctor.credentials}</p>
                               </div>
                             </div>
-                            <p className="text-muted-foreground text-sm mt-3 line-clamp-2 leading-snug">{doctor.bio}</p>
-                            <p className="text-muted-foreground text-xs mt-2 flex items-center gap-1.5">
-                              <span className="inline-block size-2 rounded-full bg-emerald-500" />
+                            <p className="text-slate-400 text-sm mt-3 line-clamp-2 leading-snug">{doctor.bio}</p>
+                            <p className="text-slate-500 text-xs mt-2 flex items-center gap-1.5">
+                              <span className="inline-block size-2 rounded-full bg-emerald-400" />
                               {doctor.availability}
                             </p>
                             <Button
                               onClick={() => openBooking(doctor)}
                               size="sm"
-                              className="mt-4 w-full sm:w-auto"
+                              className="mt-4 w-full sm:w-auto bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white border-0"
                             >
                               Book appointment
                             </Button>
@@ -395,20 +395,20 @@ export default function AppointmentsPage() {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/demo" className="text-muted-foreground">← Back to demo</Link>
+          <Button variant="ghost" size="sm" asChild className="text-slate-500 hover:text-teal-400">
+            <Link href="/demo">← Back to demo</Link>
           </Button>
         </div>
       </div>
 
       <Dialog open={!!bookingDoctor} onOpenChange={(open) => !open && closeBooking()}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto sm:rounded-xl">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto sm:rounded-xl border-white/10 bg-[#0f1629]/95 backdrop-blur-xl text-white">
           {bookingDoctor &&
             (bookingSuccess ? (
               <>
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <DialogTitle className="flex items-center gap-2 text-white">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -416,23 +416,23 @@ export default function AppointmentsPage() {
                     Appointment confirmed
                   </DialogTitle>
                 </DialogHeader>
-                <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4 text-sm text-emerald-900">
-                  <p className="font-semibold">{bookingSuccess.doctorName}</p>
-                  <p className="text-emerald-700">{bookingSuccess.specialty}</p>
-                  <p className="mt-2 text-emerald-800">
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4 text-sm text-emerald-300">
+                  <p className="font-semibold text-emerald-200">{bookingSuccess.doctorName}</p>
+                  <p className="text-emerald-400">{bookingSuccess.specialty}</p>
+                  <p className="mt-2 text-emerald-300">
                     {formatDate(bookingSuccess.date)} at {formatTime(bookingSuccess.timeSlot)}
                   </p>
                   {bookingSuccess.reason && (
-                    <p className="mt-1 text-emerald-800/90">Reason: {bookingSuccess.reason}</p>
+                    <p className="mt-1 text-emerald-400/80">Reason: {bookingSuccess.reason}</p>
                   )}
-                  <p className="mt-2 text-xs text-emerald-700/80">A confirmation has been sent to your email.</p>
+                  <p className="mt-2 text-xs text-emerald-500/80">A confirmation has been sent to your email.</p>
                 </div>
                 <DialogFooter className="gap-2 sm:gap-0">
-                  <Button variant="secondary" onClick={closeBooking} className="flex-1">
+                  <Button variant="secondary" onClick={closeBooking} className="flex-1 bg-white/[0.06] border-white/10 text-slate-300 hover:bg-white/[0.1]">
                     Done
                   </Button>
                   <Button
-                    className="flex-1"
+                    className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0"
                     onClick={() => {
                       setBookingSuccess(null);
                       setBookingDate('');
@@ -448,44 +448,44 @@ export default function AppointmentsPage() {
               <>
                 <DialogHeader>
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-semibold text-sm">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400 font-semibold text-sm">
                       {getInitials(bookingDoctor.name)}
                     </div>
                     <div>
-                      <DialogTitle>{bookingDoctor.name}</DialogTitle>
-                      <p className="text-primary text-sm font-medium">{bookingDoctor.specialty}</p>
+                      <DialogTitle className="text-white">{bookingDoctor.name}</DialogTitle>
+                      <p className="text-teal-400 text-sm font-medium">{bookingDoctor.specialty}</p>
                     </div>
                   </div>
                 </DialogHeader>
-                <Separator className="my-1" />
+                <Separator className="my-1 bg-white/[0.06]" />
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label className="text-sm">Date</Label>
+                    <Label className="text-sm text-slate-300">Date</Label>
                     <Input
                       type="date"
                       min={minDate}
                       value={bookingDate}
                       onChange={(e) => setBookingDate(e.target.value)}
-                      className="h-10"
+                      className="h-10 border-white/10 bg-white/[0.06] text-white"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm">Time</Label>
+                    <Label className="text-sm text-slate-300">Time</Label>
                     {slotsLoading ? (
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <div className="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <div className="flex items-center gap-2 text-slate-400 text-sm">
+                        <div className="size-4 border-2 border-teal-400 border-t-transparent rounded-full animate-spin" />
                         Loading slots…
                       </div>
                     ) : !bookingDate ? (
-                      <p className="text-muted-foreground text-sm">Select a date first.</p>
+                      <p className="text-slate-500 text-sm">Select a date first.</p>
                     ) : slots.length === 0 ? (
-                      <p className="text-muted-foreground text-sm">No slots available on this date.</p>
+                      <p className="text-slate-500 text-sm">No slots available on this date.</p>
                     ) : (
                       <Select value={selectedSlot} onValueChange={setSelectedSlot}>
-                        <SelectTrigger className="h-10 w-full">
+                        <SelectTrigger className="h-10 w-full border-white/10 bg-white/[0.06] text-slate-300">
                           <SelectValue placeholder="Choose a time" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="border-white/10 bg-[#141a2e] text-slate-300">
                           {slots.map((slot) => (
                             <SelectItem key={slot} value={slot}>
                               {formatTime(slot)}
@@ -496,24 +496,24 @@ export default function AppointmentsPage() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm">Reason for visit (optional)</Label>
+                    <Label className="text-sm text-slate-300">Reason for visit (optional)</Label>
                     <Textarea
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                       placeholder="e.g. Follow-up from intake, depression screening"
                       rows={2}
-                      className="resize-none"
+                      className="resize-none border-white/10 bg-white/[0.06] text-white placeholder:text-slate-500"
                     />
                   </div>
                 </div>
                 <DialogFooter className="gap-2 sm:gap-0">
-                  <Button variant="outline" onClick={closeBooking}>
+                  <Button variant="outline" onClick={closeBooking} className="border-white/10 text-slate-300 hover:bg-white/[0.06]">
                     Cancel
                   </Button>
-                  <Button onClick={handleConfirmBooking} disabled={!selectedSlot || submitting}>
+                  <Button onClick={handleConfirmBooking} disabled={!selectedSlot || submitting} className="bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0">
                     {submitting ? (
                       <>
-                        <span className="size-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+                        <span className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                         Booking…
                       </>
                     ) : (
