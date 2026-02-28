@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { AppSidebar } from '@/components/AppSidebar';
+import { AppSidebar } from '@/components/application/AppSidebar';
 import { IntakeProvider, useIntake } from '@/contexts/IntakeContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 const INTAKE_PATH = '/demo';
+const DEFAULT_AUTH_REDIRECT = '/dashboard';
 const GATED_PATHS = ['/care', '/appointments', '/resources'];
 
 function AppLayoutInner({ user, children }: { user: { email: string }; children: React.ReactNode }) {
@@ -31,7 +32,7 @@ function AppLayoutInner({ user, children }: { user: { email: string }; children:
   );
 }
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function PagesLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<{ email: string } | null>(null);
@@ -46,7 +47,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           setUser(data.user);
           return fetch('/api/intake', { credentials: 'include' });
         }
-        router.replace(`/login?next=${encodeURIComponent(pathname || INTAKE_PATH)}`);
+        router.replace(`/login?next=${encodeURIComponent(pathname || DEFAULT_AUTH_REDIRECT)}`);
         return null;
       })
       .then((res) => {
@@ -56,7 +57,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       .then((data) => {
         setInitialIntakeCompleted(!!data?.intake?.completedAt);
       })
-      .catch(() => router.replace(`/login?next=${encodeURIComponent(pathname || INTAKE_PATH)}`))
+      .catch(() => router.replace(`/login?next=${encodeURIComponent(pathname || DEFAULT_AUTH_REDIRECT)}`))
       .finally(() => setChecking(false));
   }, [pathname, router]);
 

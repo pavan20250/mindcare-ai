@@ -31,7 +31,7 @@ export default function CTASection() {
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2 mb-12">
               <Link
-                href="/demo"
+                href="/login?next=/demo"
                 className="inline-flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:from-teal-400 hover:to-teal-500 transition-all duration-300"
               >
                 Schedule Demo

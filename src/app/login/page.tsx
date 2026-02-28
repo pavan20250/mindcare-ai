@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import NeuralNetworkBg from '@/components/NeuralNetworkBg';
+import NeuralNetworkBg from '@/components/website/NeuralNetworkBg';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get('next') || '/appointments';
+  const next = searchParams.get('next') || '/dashboard';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -97,7 +97,7 @@ function LoginForm() {
       </Card>
 
       <p className="mt-8 text-center">
-        <Link href={next.includes('appointments') ? '/demo' : '/'} className="text-slate-400 text-sm font-medium hover:text-teal-400 transition-colors">
+        <Link href="/" className="text-slate-400 text-sm font-medium hover:text-teal-400 transition-colors">
           ← Back
         </Link>
       </p>

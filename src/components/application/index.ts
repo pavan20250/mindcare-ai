@@ -1,0 +1,8 @@
+export { DashboardView } from './DashboardView';
+export { AppointmentsView } from './AppointmentsView';
+export type { Doctor, Appointment } from './AppointmentsView';
+export { CareView } from './CareView';
+export { ResourcesView } from './ResourcesView';
+export type { Resource } from './ResourcesView';
+export { DemoView } from './DemoView';
+export type { DemoStep } from './DemoView';

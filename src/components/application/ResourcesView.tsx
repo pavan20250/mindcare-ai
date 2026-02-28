@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-interface Resource {
+export interface Resource {
   id: string;
   title: string;
   description: string;
@@ -71,7 +71,7 @@ const CATEGORY_LABELS: Record<Resource['category'], string> = {
   general: 'General',
 };
 
-export default function ResourcesPage() {
+export function ResourcesView() {
   const byCategory = RESOURCES.reduce<Record<string, Resource[]>>((acc, r) => {
     const cat = r.category;
     if (!acc[cat]) acc[cat] = [];
@@ -130,7 +130,7 @@ export default function ResourcesPage() {
 
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button variant="outline" size="sm" asChild className="rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
-            <Link href="/demo">← Back to demo</Link>
+            <Link href="/dashboard">← Back to dashboard</Link>
           </Button>
           <Button size="sm" asChild className="rounded-lg font-semibold bg-teal-600 hover:bg-teal-700 text-white border-0">
             <Link href="/appointments">Book appointment</Link>

@@ -1,13 +1,13 @@
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
-import ChallengesSection from '@/components/ChallengesSection';
-import FeaturesSection from '@/components/FeaturesSection';
-import PatientJourneySection from '@/components/PatientJourneySection';
-import ClinicalScopeSection from '@/components/ClinicalScopeSection';
-import BenefitsSection from '@/components/BenefitsSection';
-import CTASection from '@/components/CTASection';
-import Footer from '@/components/Footer';
-import NeuralNetworkBg from '@/components/NeuralNetworkBg';
+import Navbar from '@/components/website/Navbar';
+import HeroSection from '@/components/website/HeroSection';
+import ChallengesSection from '@/components/website/ChallengesSection';
+import FeaturesSection from '@/components/website/FeaturesSection';
+import PatientJourneySection from '@/components/website/PatientJourneySection';
+import ClinicalScopeSection from '@/components/website/ClinicalScopeSection';
+import BenefitsSection from '@/components/website/BenefitsSection';
+import CTASection from '@/components/website/CTASection';
+import Footer from '@/components/website/Footer';
+import NeuralNetworkBg from '@/components/website/NeuralNetworkBg';
 
 export default function Home() {
   return (
