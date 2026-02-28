@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  LayoutDashboard,
   MessageCircle,
   Heart,
   Calendar,
@@ -41,7 +42,8 @@ interface AppSidebarProps {
 const INTAKE_HREF = '/demo';
 
 const NAV_LINKS = [
-  { href: INTAKE_HREF, label: 'Intake', icon: MessageCircle, primary: true },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: INTAKE_HREF, label: 'Clinical intake', icon: MessageCircle, primary: true },
   { href: '/care', label: 'My care', icon: Heart },
   { href: '/appointments', label: 'Appointments', icon: Calendar },
   { href: '/resources', label: 'Resources', icon: BookOpen },
@@ -96,7 +98,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
               <SidebarMenu>
                 {NAV_LINKS.map(({ href, label, icon: Icon }) => {
                   const isIntake = href === INTAKE_HREF;
-                  const locked = !isIntake && !intakeCompleted;
+                  const isDashboard = href === '/dashboard';
+                  const locked = !isDashboard && !isIntake && !intakeCompleted;
                   const isActive =
                     pathname === href || pathname.startsWith(href);
                   return (

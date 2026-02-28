@@ -158,7 +158,7 @@ function ScaleButton({ num, onClick }: { num: number; onClick: (v: string) => vo
   );
 }
 
-export default function DemoPage() {
+export function DemoView() {
   const searchParams = useSearchParams();
   const required = searchParams.get('required') === '1';
   const { setIntakeCompleted } = useIntake();
@@ -250,7 +250,7 @@ export default function DemoPage() {
             asChild
             className="rounded-xl bg-teal-600 text-white font-semibold border-0 px-6 hover:bg-teal-700"
           >
-            <Link href="/">Back to Home</Link>
+            <Link href="/dashboard">Back to Home</Link>
           </Button>
         </motion.div>
       </div>
@@ -259,7 +259,6 @@ export default function DemoPage() {
 
   return (
     <div className="flex flex-col h-svh w-full overflow-hidden bg-[#f8fafb]">
-      {/* Header */}
       <header className="shrink-0 border-b border-slate-200/80 bg-white px-5 sm:px-8 py-3.5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
@@ -292,7 +291,6 @@ export default function DemoPage() {
       </header>
 
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar — desktop */}
         <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-slate-200/80 bg-white">
           <div className="flex-1 overflow-y-auto p-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 mb-3 px-1">
@@ -321,7 +319,6 @@ export default function DemoPage() {
           </div>
         </aside>
 
-        {/* Mobile step indicator */}
         <div className="md:hidden shrink-0 border-b border-slate-200/60 bg-white px-5 py-3">
           <div className="flex gap-1.5 items-center">
             {demoSteps.map((_, i) => (
@@ -343,7 +340,6 @@ export default function DemoPage() {
           )}
         </div>
 
-        {/* Main content */}
         <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
           <div
             ref={scrollRef}
@@ -358,7 +354,6 @@ export default function DemoPage() {
                   exit={fadeSlide.exit}
                   transition={fadeSlide.transition}
                 >
-                  {/* AI message */}
                   <div className="flex items-start gap-3">
                     <div className="size-9 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center mt-0.5">
                       <Sparkles className="size-4 text-teal-600" />
@@ -381,7 +376,6 @@ export default function DemoPage() {
                     </div>
                   </div>
 
-                  {/* User response echo */}
                   {responses[currentStepData.id] && (
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -403,7 +397,6 @@ export default function DemoPage() {
 
                   {isTyping && <TypingIndicator />}
 
-                  {/* Continue */}
                   {!isTyping && currentStepData.type === 'message' && (
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -421,7 +414,6 @@ export default function DemoPage() {
                     </motion.div>
                   )}
 
-                  {/* Question options */}
                   {!isTyping && currentStepData.type === 'question' && (
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -457,7 +449,6 @@ export default function DemoPage() {
                     </motion.div>
                   )}
 
-                  {/* Scale */}
                   {!isTyping && currentStepData.type === 'scale' && (
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -482,7 +473,6 @@ export default function DemoPage() {
                     </motion.div>
                   )}
 
-                  {/* Recommendation */}
                   {!isTyping && currentStepData.type === 'recommendation' && (
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -567,9 +557,9 @@ export default function DemoPage() {
                           asChild
                           className="rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 px-4 py-5 font-medium transition-all"
                         >
-                          <Link href="/">
+                          <Link href="/dashboard">
                             <Home className="size-3.5 mr-1.5" />
-                            Home
+                            Dashboard
                           </Link>
                         </Button>
                       </div>

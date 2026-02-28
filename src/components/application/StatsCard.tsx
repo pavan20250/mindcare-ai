@@ -29,4 +29,3 @@ export default function StatsCard({ title, value, description, icon, color }: St
     </div>
   );
 }
-

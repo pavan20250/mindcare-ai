@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
-interface Doctor {
+export interface Doctor {
   id: string;
   name: string;
   specialty: string;
@@ -34,7 +34,7 @@ interface Doctor {
   availability: string;
 }
 
-interface Appointment {
+export interface Appointment {
   id: string;
   doctorId: string;
   doctorName: string;
@@ -67,7 +67,7 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-export default function AppointmentsPage() {
+export function AppointmentsView() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -216,7 +216,6 @@ export default function AppointmentsPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* My appointments */}
           <section className="lg:col-span-1 order-2 lg:order-1">
             <Card className="h-full border-slate-200 bg-white shadow-sm">
               <CardHeader className="pb-3">
@@ -299,7 +298,6 @@ export default function AppointmentsPage() {
             </Card>
           </section>
 
-          {/* Choose a provider */}
           <section className="lg:col-span-2 order-1 lg:order-2">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div>
@@ -391,7 +389,7 @@ export default function AppointmentsPage() {
 
         <div className="mt-6 flex justify-center">
           <Button variant="ghost" size="sm" asChild className="text-slate-400 hover:text-teal-600 hover:bg-teal-50">
-            <Link href="/demo">← Back to demo</Link>
+            <Link href="/dashboard">← Back to dashboard</Link>
           </Button>
         </div>
       </div>
