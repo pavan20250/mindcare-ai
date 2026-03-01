@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const SESSION_COOKIE = 'mindcare_session';
+const SESSION_COOKIE = 'neuralcare_session';
 
 // In-memory store: email -> { responses, completedAt }. Replace with DB in production.
 const intakeStore = new Map<string, { responses: Record<string, string>; completedAt?: number }>();

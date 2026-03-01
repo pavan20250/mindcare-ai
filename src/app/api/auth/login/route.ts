@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const SESSION_COOKIE = 'mindcare_session';
+const SESSION_COOKIE = 'neuralcare_session';
 const MAX_AGE = 60 * 60 * 24; // 24 hours
 
 const DEMO_EMAIL = 'care@neuralforge.com';

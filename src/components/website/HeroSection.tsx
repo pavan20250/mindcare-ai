@@ -25,7 +25,7 @@ function HeroVideo() {
           loop
           autoPlay
           preload="metadata"
-          aria-label="MindCare AI patient journey demo"
+          aria-label="NeuralCare AI patient journey demo"
         />
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
       </div>

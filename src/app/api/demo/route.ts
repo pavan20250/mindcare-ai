@@ -17,7 +17,7 @@ export interface DemoStep {
 const DEMO_STEPS: DemoStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to MindCare AI',
+    title: 'Welcome to NeuralCare AI',
     message:
       "Hello! I'm your AI care assistant. I'm here to help you get the care you need. Let's start by understanding how you've been feeling lately. Can you tell me about your main concerns?",
     type: 'message',

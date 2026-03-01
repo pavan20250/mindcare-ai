@@ -67,7 +67,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
     <Sidebar side="left" variant="sidebar" collapsible="offcanvas" className="border-r border-slate-200">
       <SidebarHeader className="border-b border-slate-200/80 bg-white px-3 py-2">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="text-teal-700 text-base font-bold tracking-tight">MindCare AI</span>
+          <span className="text-teal-700 text-base font-bold tracking-tight">NeuralCare AI</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="bg-white">

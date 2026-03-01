@@ -26,8 +26,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const STORAGE_KEY = 'mindcare_profile';
-const NOTIF_KEY = 'mindcare_notifications';
+const STORAGE_KEY = 'neuralcare_profile';
+const NOTIF_KEY = 'neuralcare_notifications';
 
 interface Profile {
   firstName: string;
@@ -242,7 +242,7 @@ export function SettingsView() {
                   <div className="flex items-center justify-between mb-5">
                     <div>
                       <h2 className="text-sm font-bold text-slate-900">Personal Information</h2>
-                      <p className="text-[11px] text-slate-400 mt-0.5">Update your details used across MindCare.</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Update your details used across NeuralCare.</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {saved && (
