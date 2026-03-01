@@ -2,7 +2,6 @@ import Navbar from '@/components/website/Navbar';
 import HeroSection from '@/components/website/HeroSection';
 import ChallengesSection from '@/components/website/ChallengesSection';
 import FeaturesSection from '@/components/website/FeaturesSection';
-import PatientJourneySection from '@/components/website/PatientJourneySection';
 import ClinicalScopeSection from '@/components/website/ClinicalScopeSection';
 import BenefitsSection from '@/components/website/BenefitsSection';
 import CTASection from '@/components/website/CTASection';
@@ -21,7 +20,6 @@ export default function Home() {
           <HeroSection />
           <ChallengesSection />
           <FeaturesSection />
-          <PatientJourneySection />
           <ClinicalScopeSection />
           <BenefitsSection />
           <CTASection />
