@@ -63,19 +63,18 @@ export default function ClinicalScopeSection() {
   ];
 
   return (
-    <section className="section-padding relative overflow-hidden">
+    <section id="clinical" className="section-padding relative overflow-hidden">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-center">
           <div className="text-center lg:text-left space-y-4">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] text-teal-300 text-xs font-semibold uppercase tracking-wider border border-white/[0.08]">
-              Clinical Scope
+              Clinical Coverage
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-[1.2]">
-              Evidence-based,
-              <span className="block text-teal-400">DSM-5 aligned</span>
+              Grounded in <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">clinical science</span>
             </h2>
             <p className="text-slate-400 text-base max-w-md mx-auto lg:mx-0 leading-relaxed">
-              Comprehensive screening across all major behavioral health domains.
+              DSM-5 aligned screening across every major behavioral health domain.
             </p>
           </div>
 

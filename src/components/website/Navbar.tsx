@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 const navItems = [
-  { href: '#features', label: 'Features' },
-  { href: '#journey', label: 'Journey' },
+  { href: '#challenges', label: 'Why Us' },
+  { href: '#features', label: 'Platform' },
+  { href: '#clinical', label: 'Clinical Scope' },
   { href: '#benefits', label: 'Benefits' },
   { href: '#contact', label: 'Contact' },
 ];
