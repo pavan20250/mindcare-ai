@@ -1,4 +1,4 @@
-# MindCare AI - AI-Powered Behavioral Health Platform
+# NeuralCare AI - AI-Powered Behavioral Health Platform
 
 A comprehensive web platform showcasing AI-powered behavioral health coordination and care delivery. Built with Next.js, TypeScript, and Tailwind CSS.
 
@@ -183,4 +183,4 @@ For support and questions:
 
 ---
 
-**MindCare AI** - Transforming behavioral health care through intelligent automation and AI-powered solutions.
+**NeuralCare AI** - Transforming behavioral health care through intelligent automation and AI-powered solutions.

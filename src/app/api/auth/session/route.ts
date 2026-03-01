@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const SESSION_COOKIE = 'mindcare_session';
+const SESSION_COOKIE = 'neuralcare_session';
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE)?.value;

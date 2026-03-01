@@ -56,7 +56,7 @@ export default function LoginForm() {
             Welcome back
           </CardTitle>
           <CardDescription className="text-slate-400 text-[13px]">
-            Sign in to your MindCare AI account
+            Sign in to your NeuralCare AI account
           </CardDescription>
         </CardHeader>
 

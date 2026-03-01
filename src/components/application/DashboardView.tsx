@@ -109,7 +109,7 @@ function todayStr(): string {
 function readMoods(): MoodEntry[] {
   if (typeof window === 'undefined') return [];
   try {
-    return JSON.parse(localStorage.getItem('mindcare_moods') ?? '[]');
+    return JSON.parse(localStorage.getItem('neuralcare_moods') ?? '[]');
   } catch {
     return [];
   }
@@ -118,7 +118,7 @@ function readMoods(): MoodEntry[] {
 function writeMood(entry: MoodEntry) {
   const all = readMoods().filter((e) => e.date !== entry.date);
   all.push(entry);
-  localStorage.setItem('mindcare_moods', JSON.stringify(all.slice(-90)));
+  localStorage.setItem('neuralcare_moods', JSON.stringify(all.slice(-90)));
 }
 
 function computeStreak(history: MoodEntry[]): number {

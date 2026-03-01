@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
             <Link href="/" className="text-lg sm:text-xl font-bold bg-gradient-to-r from-teal-300 to-teal-500 bg-clip-text text-transparent">
-              MindCare AI
+              NeuralCare AI
             </Link>
             <Link
               href="/"

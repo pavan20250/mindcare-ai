@@ -11,7 +11,7 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </div>
-              <span className="text-sm font-bold text-white">MindCare AI</span>
+              <span className="text-sm font-bold text-white">NeuralCare AI</span>
             </div>
             <p className="text-slate-500 text-[11px] leading-relaxed max-w-[180px] mb-2.5">
               Intelligent automation for behavioral health.
@@ -68,7 +68,7 @@ export default function Footer() {
 
         <div className="border-t border-white/[0.06] mt-5 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-slate-600 text-[11px]">
-            &copy; {new Date().getFullYear()} MindCare AI. All rights reserved.
+            &copy; {new Date().getFullYear()} NeuralCare AI. All rights reserved.
           </p>
           <div className="flex items-center gap-1">
             <span className="text-slate-600 text-[10px]">Built with</span>

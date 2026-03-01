@@ -9,20 +9,20 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MindCare AI - AI-Powered Behavioral Health Platform",
+  title: "NeuralCare AI - AI-Powered Behavioral Health Platform",
   description: "Transform behavioral health delivery with intelligent automation and Generative AI. From conversational intake to AI-generated clinical insights, we ensure personalized, efficient care for patients and clinicians.",
   keywords: "behavioral health, AI, mental health, healthcare, DSM-5, clinical insights, patient care, healthcare automation",
-  authors: [{ name: "MindCare AI" }],
+  authors: [{ name: "NeuralCare AI" }],
   robots: "index, follow",
   openGraph: {
-    title: "MindCare AI - AI-Powered Behavioral Health Platform",
+    title: "NeuralCare AI - AI-Powered Behavioral Health Platform",
     description: "Transform behavioral health delivery with intelligent automation and Generative AI.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MindCare AI - AI-Powered Behavioral Health Platform",
+    title: "NeuralCare AI - AI-Powered Behavioral Health Platform",
     description: "Transform behavioral health delivery with intelligent automation and Generative AI.",
   },
 };

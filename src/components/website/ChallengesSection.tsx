@@ -28,7 +28,7 @@ export default function ChallengesSection() {
         >
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] text-teal-300 text-xs font-semibold uppercase tracking-wider border border-white/[0.08]">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-            Why MindCare
+            Why NeuralCare
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-[1.2]">
             Care without <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">compromise</span>

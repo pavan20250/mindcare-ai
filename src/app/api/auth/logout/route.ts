@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const SESSION_COOKIE = 'mindcare_session';
+const SESSION_COOKIE = 'neuralcare_session';
 
 export async function POST() {
   const res = NextResponse.json({ success: true });

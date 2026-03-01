@@ -80,7 +80,7 @@ export default function SignupForm() {
             Create account
           </CardTitle>
           <CardDescription className="text-slate-400 text-[13px]">
-            Get started with MindCare AI — it&apos;s free
+            Get started with NeuralCare AI — it&apos;s free
           </CardDescription>
         </CardHeader>
 

@@ -23,7 +23,7 @@ export default function CTASection() {
             </span>
           </h2>
           <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
-            Book a demo and see how MindCare AI transforms intake, triage, and patient outcomes.
+            Book a demo and see how NeuralCare AI transforms intake, triage, and patient outcomes.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-1">

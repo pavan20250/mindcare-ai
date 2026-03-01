@@ -55,7 +55,7 @@ export default function Navbar() {
               href="/"
               className="flex items-center gap-2.5 hover:opacity-80 transition-opacity font-semibold"
             >
-              <span className="text-lg tracking-tight bg-gradient-to-r from-teal-300 to-teal-500 bg-clip-text text-transparent">MindCare AI</span>
+              <span className="text-lg tracking-tight bg-gradient-to-r from-teal-300 to-teal-500 bg-clip-text text-transparent">NeuralCare AI</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-0.5">

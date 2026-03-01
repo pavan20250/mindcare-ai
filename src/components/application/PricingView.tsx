@@ -272,7 +272,7 @@ export function PricingView() {
           <p className="text-xs text-slate-400 mt-1">
             Need a custom plan for your organization?{' '}
             <a
-              href="mailto:support@mindcare.ai"
+              href="mailto:support@neuralcare.ai"
               className="text-teal-600 hover:text-teal-700 font-medium underline underline-offset-2"
             >
               Contact us
