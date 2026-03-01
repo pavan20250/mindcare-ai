@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server';
 const SESSION_COOKIE = 'mindcare_session';
 const MAX_AGE = 60 * 60 * 24; // 24 hours
 
-// Demo: accept any email + password "demo" (or any non-empty password for flexibility)
+const DEMO_EMAIL = 'care@neuralforge.com';
+const DEMO_PASSWORD = 'care@123';
+
 function validateCredentials(email: string, password: string): boolean {
-  const hasEmail = typeof email === 'string' && email.trim().length > 0;
-  const hasPassword = typeof password === 'string' && password.length > 0;
-  return hasEmail && hasPassword;
+  return email === DEMO_EMAIL && password === DEMO_PASSWORD;
 }
 
 export async function POST(request: Request) {
@@ -18,8 +18,8 @@ export async function POST(request: Request) {
 
     if (!validateCredentials(email, password)) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
+        { error: 'Invalid email or password.' },
+        { status: 401 }
       );
     }
 
