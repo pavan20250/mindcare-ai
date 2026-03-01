@@ -111,7 +111,7 @@ export default function HeroSection() {
                 </span>
               </a>
               <Link
-                href="/login?next=/demo"
+                href="/login?next=/dashboard"
                 className="group rounded-xl px-8 py-4 text-sm font-semibold w-full sm:w-auto inline-flex items-center justify-center border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:border-white/25 transition-all duration-300 backdrop-blur-sm"
               >
                 <span className="flex items-center gap-2">
