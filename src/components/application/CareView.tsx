@@ -77,7 +77,7 @@ export function CareView() {
               <Button asChild size="sm" className="rounded-lg font-semibold bg-teal-600 hover:bg-teal-700 text-white border-0">
                 <Link href="/appointments">Book appointment</Link>
               </Button>
-              <Button variant="outline" size="sm" asChild className="rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
+              <Button size="sm" asChild className="rounded-lg bg-violet-600 hover:bg-violet-700 font-semibold text-white border-0 shadow-sm shadow-violet-600/15">
                 <Link href="/resources">Self-help resources</Link>
               </Button>
               <Button variant="ghost" size="sm" asChild className="rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50">

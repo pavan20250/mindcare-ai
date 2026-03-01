@@ -142,8 +142,8 @@ export default function FeaturesSection() {
 
   return (
     <section id="features" className="section-padding relative overflow-hidden">
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 space-y-3">
+      <div className="relative max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12 space-y-3">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] text-teal-300 text-xs font-semibold uppercase tracking-wider border border-white/[0.08]">
             Platform
           </span>
@@ -155,9 +155,9 @@ export default function FeaturesSection() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
           {features.map((f) => (
-            <div key={f.title} className="group bg-white/[0.04] backdrop-blur-lg rounded-xl p-6 border border-white/[0.08] hover:border-white/[0.12] shadow-lg shadow-black/10 hover:bg-white/[0.07] transition-all duration-300 hover:-translate-y-0.5">
+            <div key={f.title} className="group bg-white/[0.04] backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/[0.08] hover:border-white/[0.12] shadow-lg shadow-black/10 hover:bg-white/[0.07] transition-all duration-300 hover:-translate-y-0.5">
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center shadow-md ${f.shadowColor} shrink-0 group-hover:scale-110 transition-transform duration-500`}>
                   {f.icon}

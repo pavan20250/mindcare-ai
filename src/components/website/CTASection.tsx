@@ -9,7 +9,7 @@ const badges = [
 export default function CTASection() {
   return (
     <section id="contact" className="relative overflow-hidden">
-      <div className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6">
+      <div className="relative py-14 sm:py-24 lg:py-28 px-5 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <div className="text-center space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.08]">
@@ -29,10 +29,10 @@ export default function CTASection() {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2 mb-12">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2 mb-12 w-full sm:w-auto">
               <Link
                 href="/login?next=/demo"
-                className="inline-flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:from-teal-400 hover:to-teal-500 transition-all duration-300"
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:from-teal-400 hover:to-teal-500 transition-all duration-300 w-full sm:w-auto"
               >
                 Schedule Demo
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -41,13 +41,13 @@ export default function CTASection() {
               </Link>
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-base font-semibold text-white/90 bg-white/[0.06] border border-white/[0.12] hover:bg-white/[0.1] hover:border-white/20 transition-all duration-300 backdrop-blur-sm"
+                className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-base font-semibold text-white/90 bg-white/[0.06] border border-white/[0.12] hover:bg-white/[0.1] hover:border-white/20 transition-all duration-300 backdrop-blur-sm w-full sm:w-auto"
               >
                 Contact Sales
               </button>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-5">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-12 gap-y-4 sm:gap-y-5">
               {badges.map(({ label, desc }) => (
                 <div key={label} className="flex items-center gap-3 text-white/50">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08]">

@@ -6,3 +6,5 @@ export { ResourcesView } from './ResourcesView';
 export type { Resource } from './ResourcesView';
 export { DemoView } from './DemoView';
 export type { DemoStep } from './DemoView';
+export { PricingView } from './PricingView';
+export { SettingsView } from './SettingsView';

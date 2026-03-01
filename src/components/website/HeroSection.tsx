@@ -44,8 +44,8 @@ export default function HeroSection() {
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-cyan-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-500/[0.02] rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-20 lg:py-24 w-full">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           <div className="text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -66,7 +66,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.08 }}
-              className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-white mb-5 whitespace-nowrap"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-white mb-5"
             >
               Care that{' '}
               <span className="relative">
@@ -142,7 +142,7 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          <div className="relative order-first lg:order-last flex items-center justify-center min-h-[240px]">
+          <div className="relative order-first lg:order-last flex items-center justify-center min-h-[200px] sm:min-h-[240px]">
             <HeroVideo />
           </div>
         </div>

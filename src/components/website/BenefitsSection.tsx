@@ -107,9 +107,9 @@ export default function BenefitsSection() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
           {items.map((item) => (
-            <div key={item.who} className="group bg-white/[0.04] backdrop-blur-lg rounded-xl p-6 border border-white/[0.08] hover:border-white/[0.12] shadow-lg shadow-black/10 hover:bg-white/[0.07] transition-all duration-300 hover:-translate-y-0.5">
+            <div key={item.who} className="group bg-white/[0.04] backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/[0.08] hover:border-white/[0.12] shadow-lg shadow-black/10 hover:bg-white/[0.07] transition-all duration-300 hover:-translate-y-0.5">
               <div className="flex items-center gap-3">
                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-md ${item.shadow} shrink-0 group-hover:scale-110 transition-transform duration-500`}>
                   {item.icon}
