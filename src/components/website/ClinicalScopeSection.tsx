@@ -65,7 +65,7 @@ export default function ClinicalScopeSection() {
   return (
     <section className="section-padding relative overflow-hidden">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-center">
           <div className="text-center lg:text-left space-y-4">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] text-teal-300 text-xs font-semibold uppercase tracking-wider border border-white/[0.08]">
               Clinical Scope
@@ -79,17 +79,17 @@ export default function ClinicalScopeSection() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {domains.map((d) => (
               <div
                 key={d.label}
-                className="group relative bg-white/[0.04] backdrop-blur-lg rounded-xl p-4 border border-white/[0.08] hover:border-white/[0.12] shadow-lg shadow-black/10 hover:bg-white/[0.07] transition-all duration-300 hover:-translate-y-0.5 text-center"
+                className="group relative bg-white/[0.04] backdrop-blur-lg rounded-xl p-3 sm:p-4 border border-white/[0.08] hover:border-white/[0.12] shadow-lg shadow-black/10 hover:bg-white/[0.07] transition-all duration-300 hover:-translate-y-0.5 text-center"
               >
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${d.gradient} flex items-center justify-center mx-auto mb-2 text-white shadow group-hover:scale-110 transition-transform duration-400`}>
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br ${d.gradient} flex items-center justify-center mx-auto mb-2 text-white shadow group-hover:scale-110 transition-transform duration-400`}>
                   {d.icon}
                 </div>
-                <p className="font-semibold text-white text-xs leading-tight">{d.label}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">{d.sub}</p>
+                <p className="font-semibold text-white text-[11px] sm:text-xs leading-tight">{d.label}</p>
+                <p className="text-[9px] sm:text-[10px] text-slate-500 mt-0.5">{d.sub}</p>
               </div>
             ))}
           </div>

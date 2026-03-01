@@ -8,6 +8,8 @@ import {
   Heart,
   Calendar,
   BookOpen,
+  CreditCard,
+  Settings,
   LogOut,
   User,
   Lock,
@@ -47,6 +49,7 @@ const NAV_LINKS = [
   { href: '/care', label: 'My care', icon: Heart },
   { href: '/appointments', label: 'Appointments', icon: Calendar },
   { href: '/resources', label: 'Resources', icon: BookOpen },
+  { href: '/pricing', label: 'Pricing', icon: CreditCard },
 ] as const;
 
 export function AppSidebar({ user }: AppSidebarProps) {
@@ -99,7 +102,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
                 {NAV_LINKS.map(({ href, label, icon: Icon }) => {
                   const isIntake = href === INTAKE_HREF;
                   const isDashboard = href === '/dashboard';
-                  const locked = !isDashboard && !isIntake && !intakeCompleted;
+                  const isPricing = href === '/pricing';
+                  const locked = !isDashboard && !isIntake && !isPricing && !intakeCompleted;
                   const isActive =
                     pathname === href || pathname.startsWith(href);
                   return (
@@ -149,6 +153,14 @@ export function AppSidebar({ user }: AppSidebarProps) {
       </SidebarContent>
       <SidebarFooter className="border-t border-slate-200/80 bg-white">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === '/settings'} className={pathname === '/settings' ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}>
+              <Link href="/settings">
+                <Settings className="size-4" />
+                <span>Settings</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={handleSignOut} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
               <LogOut className="size-4" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 const navItems = [
@@ -19,6 +19,24 @@ export default function Navbar() {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const el = document.querySelector(href);
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
   }, []);
 
   return (
@@ -44,6 +62,7 @@ export default function Navbar() {
                 <a
                   key={item.href}
                   href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className="text-slate-400 hover:text-white px-3.5 py-2 text-sm font-medium rounded-lg hover:bg-white/[0.06] transition-colors"
                 >
                   {item.label}
@@ -79,32 +98,39 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {mobileMenuOpen && (
+      <div
+        className={`fixed inset-0 z-[99] md:hidden transition-all duration-300 ease-in-out ${
+          mobileMenuOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        } bg-[#0a0e1a]/98 backdrop-blur-xl`}
+        aria-hidden={!mobileMenuOpen}
+      >
         <div
-          className="fixed inset-0 z-[99] md:hidden bg-[#0a0e1a]/98 backdrop-blur-xl"
-          aria-hidden={false}
+          className={`flex flex-col pt-24 px-6 gap-0 transition-transform duration-300 ease-out ${
+            mobileMenuOpen ? 'translate-y-0' : '-translate-y-4'
+          }`}
         >
-          <div className="flex flex-col pt-24 px-6 gap-0">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="text-slate-300 hover:text-white py-4 text-base font-medium border-b border-white/[0.06]"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-            <Link
-              href="/login"
-              className="text-teal-400 py-4 text-base font-medium"
-              onClick={() => setMobileMenuOpen(false)}
+          {navItems.map((item, i) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="text-slate-300 hover:text-white py-4 text-base font-medium border-b border-white/[0.06] transition-all duration-200"
+              style={{ transitionDelay: mobileMenuOpen ? `${i * 50}ms` : '0ms' }}
+              onClick={(e) => handleNavClick(e, item.href)}
             >
-              Log in
-            </Link>
-          </div>
+              {item.label}
+            </a>
+          ))}
+          <Link
+            href="/login"
+            className="text-teal-400 py-4 text-base font-medium"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Log in
+          </Link>
         </div>
-      )}
+      </div>
     </>
   );
 }

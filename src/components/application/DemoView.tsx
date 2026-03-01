@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { useIntake } from '@/contexts/IntakeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,9 +20,10 @@ import {
   CalendarCheck,
   BookOpen,
   ShieldCheck,
-  Activity,
   AlertTriangle,
 } from 'lucide-react';
+
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface DemoStep {
   id: string;
@@ -34,6 +37,8 @@ export interface DemoStep {
   nextSteps?: string[];
 }
 
+// ─── API ────────────────────────────────────────────────────────────────────
+
 function saveIntake(responses: Record<string, string>, completed?: boolean) {
   return fetch('/api/intake', {
     method: 'POST',
@@ -43,100 +48,83 @@ function saveIntake(responses: Record<string, string>, completed?: boolean) {
   });
 }
 
-const fadeSlide = {
-  initial: { opacity: 0, y: 14 },
+// ─── Animation presets ──────────────────────────────────────────────────────
+
+const fade = {
+  initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -10 },
-  transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  exit: { opacity: 0, y: -8 },
+  transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
 };
 
-function StepIndicator({ steps, current }: { steps: DemoStep[]; current: number }) {
+const stagger = (i: number, base = 0.15) => ({
+  initial: { opacity: 0, x: -6 },
+  animate: { opacity: 1, x: 0 },
+  transition: { delay: base + i * 0.05, duration: 0.25 },
+});
+
+// ─── Sub-components ─────────────────────────────────────────────────────────
+
+function StepNav({ steps, current }: { steps: DemoStep[]; current: number }) {
   return (
-    <div className="flex flex-col gap-0.5">
+    <nav className="flex flex-col gap-px" aria-label="Assessment steps">
       {steps.map((step, i) => {
-        const isActive = i === current;
-        const isCompleted = i < current;
+        const done = i < current;
+        const active = i === current;
         return (
           <div
             key={step.id}
-            className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 ${
-              isActive
-                ? 'bg-teal-50 border border-teal-200/60'
-                : 'border border-transparent'
+            className={`relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-all duration-150 ${
+              active ? 'bg-teal-50/80' : ''
             }`}
           >
+            {active && (
+              <motion.div
+                layoutId="step-indicator"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[2.5px] h-4 rounded-full bg-teal-600"
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+            )}
             <span
-              className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-all ${
-                isActive
-                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
-                  : isCompleted
-                    ? 'bg-teal-100 text-teal-700'
+              className={`flex size-5.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-all ${
+                done
+                  ? 'bg-teal-600 text-white'
+                  : active
+                    ? 'bg-teal-600 text-white shadow-sm shadow-teal-500/20'
                     : 'bg-slate-100 text-slate-400'
               }`}
+              style={{ width: 22, height: 22 }}
             >
-              {isCompleted ? (
-                <Check className="size-3.5" strokeWidth={2.5} />
-              ) : (
-                i + 1
-              )}
+              {done ? <Check className="size-3" strokeWidth={2.5} /> : i + 1}
             </span>
             <span
-              className={`text-[13px] truncate transition-colors ${
-                isActive
-                  ? 'text-teal-800 font-semibold'
-                  : isCompleted
-                    ? 'text-slate-600'
-                    : 'text-slate-400'
+              className={`text-xs truncate transition-colors ${
+                active ? 'text-teal-800 font-semibold' : done ? 'text-slate-600' : 'text-slate-400'
               }`}
             >
               {step.title}
             </span>
-            {isActive && (
-              <motion.div
-                layoutId="step-bar"
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-teal-600"
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
-            )}
           </div>
         );
       })}
-    </div>
+    </nav>
   );
 }
 
-function ProgressBar({ value }: { value: number }) {
+function TypingDots() {
   return (
-    <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
-      <motion.div
-        className="h-full rounded-full bg-gradient-to-r from-teal-500 to-teal-400"
-        initial={{ width: 0 }}
-        animate={{ width: `${value}%` }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-      />
-    </div>
-  );
-}
-
-function TypingIndicator() {
-  return (
-    <div className="flex items-center gap-3 mt-5">
-      <div className="size-9 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center">
-        <Sparkles className="size-4 text-teal-600" />
+    <div className="flex items-center gap-2.5 mt-4">
+      <div className="size-8 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center">
+        <Sparkles className="size-3.5 text-teal-600" />
       </div>
-      <div className="rounded-2xl rounded-tl-sm bg-slate-50 border border-slate-200/60 px-5 py-3">
-        <div className="flex gap-1.5">
+      <div className="rounded-2xl rounded-tl-sm bg-slate-50 border border-slate-200/60 px-4 py-2.5">
+        <div className="flex gap-1">
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}
-              className="w-1.5 h-1.5 bg-teal-500 rounded-full"
-              animate={{ opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: 'easeInOut',
-              }}
+              className="w-1.5 h-1.5 bg-teal-400 rounded-full"
+              animate={{ opacity: [0.3, 1, 0.3], scale: [0.85, 1.1, 0.85] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }}
             />
           ))}
         </div>
@@ -145,23 +133,240 @@ function TypingIndicator() {
   );
 }
 
-function ScaleButton({ num, onClick }: { num: number; onClick: (v: string) => void }) {
+function AiBubble({
+  step,
+  children,
+}: {
+  step: DemoStep;
+  children?: React.ReactNode;
+}) {
   return (
-    <motion.button
-      whileHover={{ scale: 1.08, y: -2 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => onClick(num.toString())}
-      className="size-11 rounded-full border border-slate-200 bg-white font-medium text-sm text-slate-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 transition-colors shadow-sm"
-    >
-      {num}
-    </motion.button>
+    <div className="flex items-start gap-2.5">
+      <div className="size-8 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center mt-0.5">
+        <Sparkles className="size-3.5 text-teal-600" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="rounded-2xl rounded-tl-sm bg-white border border-slate-200/80 px-4 py-3.5 shadow-sm">
+          <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">
+            {step.title}
+          </span>
+          <p className="text-[14px] leading-relaxed text-slate-700 mt-1.5">
+            {step.message}
+          </p>
+        </div>
+        {children}
+      </div>
+    </div>
   );
 }
+
+function UserBubble({ text }: { text: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex justify-end mt-3"
+    >
+      <div className="flex items-start gap-2.5 max-w-sm">
+        <div className="rounded-2xl rounded-tr-sm bg-teal-600 px-4 py-2.5 shadow-sm shadow-teal-600/10">
+          <p className="text-sm text-white font-medium">{text}</p>
+        </div>
+        <div className="size-8 shrink-0 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mt-0.5">
+          <User className="size-3.5 text-slate-500" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function OptionList({
+  options,
+  onSelect,
+}: {
+  options: string[];
+  onSelect: (v: string) => void;
+}) {
+  return (
+    <div className="mt-4 space-y-1.5" role="listbox" aria-label="Choose an answer">
+      {options.map((option, i) => (
+        <motion.button
+          key={i}
+          {...stagger(i)}
+          whileHover={{ x: 2 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => onSelect(option)}
+          role="option"
+          aria-selected={false}
+          className="group w-full flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/40 py-2.5 px-3.5 text-left transition-all shadow-sm hover:shadow-md hover:shadow-teal-500/5"
+        >
+          <span className="size-6 shrink-0 rounded-md bg-slate-50 border border-slate-200/80 group-hover:bg-teal-100 group-hover:border-teal-200 flex items-center justify-center transition-all">
+            <span className="text-[10px] font-bold text-slate-400 group-hover:text-teal-700 transition-colors">
+              {String.fromCharCode(65 + i)}
+            </span>
+          </span>
+          <span className="text-sm text-slate-600 group-hover:text-slate-800 font-medium transition-colors flex-1">
+            {option}
+          </span>
+          <ArrowRight className="size-3 text-slate-300 group-hover:text-teal-500 shrink-0 opacity-0 group-hover:opacity-100 transition-all" />
+        </motion.button>
+      ))}
+    </div>
+  );
+}
+
+function ScaleInput({ onSelect }: { onSelect: (v: string) => void }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.15 }}
+      className="mt-4"
+    >
+      <div className="flex items-center justify-between text-[10px] font-medium text-slate-400 mb-2 px-0.5">
+        <span>Not at all</span>
+        <span>Extremely</span>
+      </div>
+      <div className="flex gap-1.5" role="radiogroup" aria-label="Rate severity 1 to 10">
+        {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => {
+          const intensity = num / 10;
+          const isHot = hovered !== null && num <= hovered;
+          return (
+            <motion.button
+              key={num}
+              whileHover={{ scale: 1.1, y: -2 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={() => onSelect(num.toString())}
+              onMouseEnter={() => setHovered(num)}
+              onMouseLeave={() => setHovered(null)}
+              role="radio"
+              aria-checked={false}
+              aria-label={`${num} out of 10`}
+              className={`flex-1 aspect-square max-w-[42px] rounded-lg border font-semibold text-sm transition-all duration-150 ${
+                isHot
+                  ? 'border-teal-300 bg-teal-50 text-teal-700 shadow-sm'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-teal-200'
+              }`}
+              style={{
+                ...(isHot ? {} : { opacity: 0.5 + intensity * 0.5 }),
+              }}
+            >
+              {num}
+            </motion.button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
+function RecommendationPanel({
+  step,
+  onRestart,
+}: {
+  step: DemoStep;
+  onRestart: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 }}
+      className="mt-4 space-y-4"
+    >
+      {step.severity && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge className="text-[10px] px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-200 font-bold shadow-none gap-1">
+            <Check className="size-3" />
+            Assessment complete
+          </Badge>
+          <Badge
+            variant="secondary"
+            className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 font-bold shadow-none gap-1"
+          >
+            <span className="size-1.5 rounded-full bg-amber-500" />
+            {step.severity} severity
+          </Badge>
+        </div>
+      )}
+
+      <Card className="rounded-xl border-slate-200/80 bg-white shadow-sm overflow-hidden">
+        <CardContent className="p-0">
+          <div className="px-4 py-3 border-b border-slate-100">
+            <h3 className="text-sm font-semibold text-slate-900">Recommended next steps</h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Based on your responses</p>
+          </div>
+          <div className="p-4 space-y-2.5">
+            {step.nextSteps?.map((text, i) => (
+              <motion.div
+                key={i}
+                {...stagger(i, 0.25)}
+                className="flex items-start gap-2.5"
+              >
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700">
+                  <Check className="size-2.5" strokeWidth={3} />
+                </span>
+                <span className="text-sm text-slate-600 leading-snug">{text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex flex-wrap gap-2">
+        <Button
+          asChild
+          size="sm"
+          className="rounded-lg bg-teal-600 hover:bg-teal-700 font-semibold text-white border-0 shadow-sm shadow-teal-600/15 text-xs h-9 px-4"
+        >
+          <Link href="/appointments?specialty=psychologist">
+            <CalendarCheck className="size-3.5 mr-1.5" />
+            Book appointment
+          </Link>
+        </Button>
+        <Button
+          size="sm"
+          asChild
+          className="rounded-lg bg-violet-600 hover:bg-violet-700 font-semibold text-white border-0 shadow-sm shadow-violet-600/15 text-xs h-9 px-4"
+        >
+          <Link href="/resources">
+            <BookOpen className="size-3.5 mr-1.5" />
+            Resources
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRestart}
+          className="rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 font-medium text-xs h-9 px-3"
+        >
+          <RotateCcw className="size-3 mr-1" />
+          Restart
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 font-medium text-xs h-9 px-3"
+        >
+          <Link href="/dashboard">
+            <Home className="size-3 mr-1" />
+            Dashboard
+          </Link>
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────────────────
 
 export function DemoView() {
   const searchParams = useSearchParams();
   const required = searchParams.get('required') === '1';
   const { setIntakeCompleted } = useIntake();
+
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [isTyping, setIsTyping] = useState(false);
@@ -173,11 +378,11 @@ export function DemoView() {
   useEffect(() => {
     fetch('/api/demo')
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to load demo');
+        if (!res.ok) throw new Error('Failed to load');
         return res.json();
       })
       .then((data) => setDemoSteps(data.steps ?? []))
-      .catch(() => setError('Unable to load demo. Please try again.'))
+      .catch(() => setError('Unable to load assessment. Please try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -189,21 +394,17 @@ export function DemoView() {
     (response: string) => {
       const stepId = demoSteps[currentStep]?.id;
       if (!stepId) return;
-      const nextResponses = { ...responses, [stepId]: response };
-      setResponses(nextResponses);
-      const reachedRecommendation = currentStep + 1 >= demoSteps.length - 1;
-      saveIntake(nextResponses, reachedRecommendation)
-        .then(() => {
-          if (reachedRecommendation) setIntakeCompleted(true);
-        })
+      const next = { ...responses, [stepId]: response };
+      setResponses(next);
+      const isLast = currentStep + 1 >= demoSteps.length - 1;
+      saveIntake(next, isLast)
+        .then(() => { if (isLast) setIntakeCompleted(true); })
         .catch(() => {});
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
-        if (currentStep < demoSteps.length - 1) {
-          setCurrentStep((prev) => prev + 1);
-        }
-      }, 1200);
+        if (currentStep < demoSteps.length - 1) setCurrentStep((p) => p + 1);
+      }, 1000);
     },
     [demoSteps, currentStep, responses, setIntakeCompleted],
   );
@@ -214,43 +415,42 @@ export function DemoView() {
     saveIntake({}).catch(() => {});
   }, []);
 
-  const currentStepData = demoSteps[currentStep];
-  const progress = demoSteps.length ? ((currentStep + 1) / demoSteps.length) * 100 : 0;
+  const step = demoSteps[currentStep];
+  const pct = demoSteps.length ? ((currentStep + 1) / demoSteps.length) * 100 : 0;
 
+  // ── Loading state ──
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="size-9 border-2 border-teal-500 border-t-transparent rounded-full"
+          className="size-8 border-2 border-teal-500 border-t-transparent rounded-full"
         />
-        <p className="text-slate-500 text-sm font-medium tracking-wide">
-          Preparing your assessment…
-        </p>
+        <p className="text-slate-500 text-sm font-medium">Preparing assessment…</p>
       </div>
     );
   }
 
-  if (error || demoSteps.length === 0) {
+  // ── Error state ──
+  if (error || !demoSteps.length) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-sm w-full rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg"
+          className="max-w-xs w-full rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm"
         >
-          <div className="size-12 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
-            <Info className="size-5 text-red-500" />
+          <div className="size-10 mx-auto mb-3 rounded-full bg-red-50 flex items-center justify-center">
+            <Info className="size-4 text-red-500" />
           </div>
-          <p className="text-slate-600 mb-6 text-sm leading-relaxed">
-            {error ?? 'No assessment steps available.'}
-          </p>
+          <p className="text-slate-600 text-sm mb-4">{error ?? 'No steps available.'}</p>
           <Button
             asChild
-            className="rounded-xl bg-teal-600 text-white font-semibold border-0 px-6 hover:bg-teal-700"
+            size="sm"
+            className="rounded-lg bg-teal-600 text-white font-semibold border-0 hover:bg-teal-700"
           >
-            <Link href="/dashboard">Back to Home</Link>
+            <Link href="/dashboard">Back to dashboard</Link>
           </Button>
         </motion.div>
       </div>
@@ -259,68 +459,70 @@ export function DemoView() {
 
   return (
     <div className="flex flex-col h-svh w-full overflow-hidden bg-[#f8fafb]">
-      <header className="shrink-0 border-b border-slate-200/80 bg-white px-5 sm:px-8 py-3.5">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-teal-600 text-white shadow-sm shadow-teal-600/20">
-              <MessageCircle className="size-4" />
+      {/* ── Header ── */}
+      <header className="shrink-0 border-b border-slate-200/80 bg-white px-4 sm:px-6 py-2.5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-white shadow-sm shadow-teal-600/20">
+              <MessageCircle className="size-3.5" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-[15px] font-semibold tracking-tight text-slate-900 truncate">
-                Clinical Intake Assessment
+              <h1 className="text-sm font-semibold tracking-tight text-slate-900 truncate">
+                Clinical Intake
               </h1>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Step {currentStep + 1} of {demoSteps.length}
+              <p className="text-[11px] text-slate-400">
+                Step {currentStep + 1}/{demoSteps.length}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="hidden sm:block text-right">
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Progress
-              </p>
-              <p className="text-sm font-bold tabular-nums text-slate-700">
-                {Math.round(progress)}%
-              </p>
-            </div>
-            <div className="w-20 sm:w-28">
-              <ProgressBar value={progress} />
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="hidden sm:inline text-xs font-bold tabular-nums text-slate-500">
+              {Math.round(pct)}%
+            </span>
+            <div className="w-20 sm:w-24 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-teal-500 to-teal-400"
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              />
             </div>
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 min-h-0">
-        <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-slate-200/80 bg-white">
-          <div className="flex-1 overflow-y-auto p-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 mb-3 px-1">
+        {/* ── Desktop sidebar ── */}
+        <aside className="hidden md:flex w-52 shrink-0 flex-col border-r border-slate-200/80 bg-white">
+          <div className="flex-1 overflow-y-auto p-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400 mb-2 px-2.5">
               Steps
             </p>
-            <StepIndicator steps={demoSteps} current={currentStep} />
+            <StepNav steps={demoSteps} current={currentStep} />
           </div>
-          <div className="p-4 border-t border-slate-100 space-y-3">
+          <div className="p-3 border-t border-slate-100 space-y-2">
             {required && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
-                  <span className="text-xs font-semibold text-amber-700">Required</span>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-2.5">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <AlertTriangle className="size-3 text-amber-500 shrink-0" />
+                  <span className="text-[10px] font-bold text-amber-700">Required</span>
                 </div>
-                <p className="text-[11px] text-amber-600 leading-relaxed">
-                  Complete this assessment to access all features.
+                <p className="text-[10px] text-amber-600 leading-relaxed">
+                  Complete to unlock all features.
                 </p>
               </div>
             )}
-            <div className="flex items-start gap-2 px-1">
-              <ShieldCheck className="size-3.5 text-teal-500 shrink-0 mt-0.5" />
-              <span className="text-[11px] text-slate-400 leading-relaxed">
-                Responses saved securely &amp; HIPAA compliant
+            <div className="flex items-start gap-1.5 px-2.5">
+              <ShieldCheck className="size-3 text-teal-500 shrink-0 mt-0.5" />
+              <span className="text-[10px] text-slate-400 leading-relaxed">
+                HIPAA compliant &amp; encrypted
               </span>
             </div>
           </div>
         </aside>
 
-        <div className="md:hidden shrink-0 border-b border-slate-200/60 bg-white px-5 py-3">
-          <div className="flex gap-1.5 items-center">
+        {/* ── Mobile step pills ── */}
+        <div className="md:hidden shrink-0 border-b border-slate-200/60 bg-white px-4 py-2.5">
+          <div className="flex gap-1 items-center">
             {demoSteps.map((_, i) => (
               <div
                 key={i}
@@ -330,241 +532,63 @@ export function DemoView() {
               />
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-2 font-medium">
-            {currentStepData.title}
-          </p>
+          <p className="text-[11px] text-slate-500 mt-1.5 font-medium">{step.title}</p>
           {required && (
-            <p className="text-amber-600 text-[10px] mt-1 font-medium">
-              Complete assessment to unlock all features
+            <p className="text-amber-600 text-[10px] mt-0.5 font-medium">
+              Required to unlock all features
             </p>
           )}
         </div>
 
+        {/* ── Chat area ── */}
         <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
-          <div
-            ref={scrollRef}
-            className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-8 py-6 sm:py-10"
-          >
-            <div className="mx-auto max-w-2xl">
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-8 py-5 sm:py-8">
+            <div className="mx-auto max-w-xl">
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentStepData.id}
-                  initial={fadeSlide.initial}
-                  animate={fadeSlide.animate}
-                  exit={fadeSlide.exit}
-                  transition={fadeSlide.transition}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="size-9 shrink-0 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center mt-0.5">
-                      <Sparkles className="size-4 text-teal-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="rounded-2xl rounded-tl-sm bg-white border border-slate-200/80 p-5 shadow-sm">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[11px] font-bold text-teal-600 uppercase tracking-wider">
-                            MindCare AI
-                          </span>
-                          <span className="size-1 rounded-full bg-slate-300" />
-                          <span className="text-[11px] text-slate-400 font-medium">
-                            {currentStepData.title}
-                          </span>
-                        </div>
-                        <p className="text-[15px] leading-relaxed text-slate-700">
-                          {currentStepData.message}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                <motion.div key={step.id} {...fade}>
 
-                  {responses[currentStepData.id] && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex justify-end mt-4"
-                    >
-                      <div className="flex items-start gap-3 max-w-md">
-                        <div className="rounded-2xl rounded-tr-sm bg-teal-600 px-5 py-3 shadow-sm shadow-teal-600/10">
-                          <p className="text-sm text-white font-medium">
-                            {responses[currentStepData.id]}
-                          </p>
-                        </div>
-                        <div className="size-9 shrink-0 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mt-0.5">
-                          <User className="size-4 text-slate-500" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
+                  <AiBubble step={step}>
+                    {/* User's response echo */}
+                    {responses[step.id] && <UserBubble text={responses[step.id]} />}
 
-                  {isTyping && <TypingIndicator />}
+                    {/* Typing indicator */}
+                    {isTyping && <TypingDots />}
 
-                  {!isTyping && currentStepData.type === 'message' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
-                      className="mt-6 flex justify-start ml-12"
-                    >
-                      <Button
-                        onClick={() => handleResponse('')}
-                        className="rounded-xl bg-teal-600 hover:bg-teal-700 px-7 py-5 font-semibold text-white border-0 shadow-md shadow-teal-600/15 transition-all"
+                    {/* ── Continue (message type) ── */}
+                    {!isTyping && step.type === 'message' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.12 }}
+                        className="mt-4"
                       >
-                        Continue
-                        <ArrowRight className="size-4 ml-1.5" />
-                      </Button>
-                    </motion.div>
-                  )}
-
-                  {!isTyping && currentStepData.type === 'question' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
-                      className="mt-6 ml-12 space-y-2"
-                    >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 mb-3">
-                        Choose one
-                      </p>
-                      {currentStepData.options?.map((option, index) => (
-                        <motion.button
-                          key={index}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.06 * index + 0.2 }}
-                          whileHover={{ x: 3 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => handleResponse(option)}
-                          className="group w-full flex items-center gap-3 rounded-xl border border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/50 py-3.5 px-4 text-left transition-all shadow-sm hover:shadow-md hover:shadow-teal-500/5"
-                        >
-                          <span className="size-7 shrink-0 rounded-lg bg-slate-50 border border-slate-200/80 group-hover:bg-teal-100 group-hover:border-teal-200 flex items-center justify-center transition-all">
-                            <span className="text-xs font-semibold text-slate-400 group-hover:text-teal-700 transition-colors">
-                              {String.fromCharCode(65 + index)}
-                            </span>
-                          </span>
-                          <span className="text-sm text-slate-600 group-hover:text-slate-800 font-medium transition-colors">
-                            {option}
-                          </span>
-                          <ArrowRight className="size-3.5 text-slate-300 group-hover:text-teal-500 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-all" />
-                        </motion.button>
-                      ))}
-                    </motion.div>
-                  )}
-
-                  {!isTyping && currentStepData.type === 'scale' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
-                      className="mt-6 ml-12 space-y-4"
-                    >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 text-center">
-                        Rate impact on daily life
-                      </p>
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="flex flex-wrap justify-center gap-2.5">
-                          {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                            <ScaleButton key={num} num={num} onClick={handleResponse} />
-                          ))}
-                        </div>
-                        <div className="flex justify-between w-full max-w-xs text-[11px] text-slate-400 font-medium mt-1 px-1">
-                          <span>Not at all</span>
-                          <span>Extremely</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {!isTyping && currentStepData.type === 'recommendation' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
-                      className="mt-6 ml-12 space-y-5"
-                    >
-                      {currentStepData.severity && (
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center gap-2">
-                            <Activity className="size-4 text-teal-600" />
-                            <span className="text-xs font-bold uppercase tracking-wider text-teal-700">
-                              Assessment Complete
-                            </span>
-                          </div>
-                          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-[11px] font-semibold text-amber-700 uppercase tracking-wider">
-                            <span className="size-1.5 rounded-full bg-amber-500" />
-                            {currentStepData.severity} severity
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
-                        <div className="px-6 pt-5 pb-4 border-b border-slate-100">
-                          <h3 className="text-base font-semibold text-slate-900">
-                            Recommended Next Steps
-                          </h3>
-                          <p className="text-sm text-slate-400 mt-0.5">
-                            Personalized based on your responses
-                          </p>
-                        </div>
-                        <div className="p-6 space-y-3.5">
-                          {currentStepData.nextSteps?.map((step, index) => (
-                            <motion.div
-                              key={index}
-                              initial={{ opacity: 0, x: -8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.1 * index + 0.3 }}
-                              className="flex items-start gap-3"
-                            >
-                              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700">
-                                <Check className="size-3" strokeWidth={2.5} />
-                              </span>
-                              <span className="text-sm text-slate-600 leading-relaxed">
-                                {step}
-                              </span>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-3 pt-1">
                         <Button
-                          asChild
-                          className="rounded-xl bg-teal-600 hover:bg-teal-700 px-5 py-5 font-semibold text-white border-0 shadow-md shadow-teal-600/15 transition-all"
+                          onClick={() => handleResponse('')}
+                          size="sm"
+                          className="rounded-lg bg-teal-600 hover:bg-teal-700 px-5 font-semibold text-white border-0 shadow-sm shadow-teal-600/15 text-xs h-9"
                         >
-                          <Link href="/appointments?specialty=psychologist">
-                            <CalendarCheck className="size-4 mr-2" />
-                            Book Appointment
-                          </Link>
+                          Continue
+                          <ArrowRight className="size-3.5 ml-1.5" />
                         </Button>
-                        <Button
-                          variant="outline"
-                          asChild
-                          className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 px-5 py-5 font-medium transition-all"
-                        >
-                          <Link href="/resources">
-                            <BookOpen className="size-4 mr-2" />
-                            Self-Help Resources
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={handleRestart}
-                          className="rounded-xl text-slate-400 hover:text-teal-600 hover:bg-teal-50 px-4 py-5 font-medium transition-all"
-                        >
-                          <RotateCcw className="size-3.5 mr-1.5" />
-                          Restart
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          asChild
-                          className="rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 px-4 py-5 font-medium transition-all"
-                        >
-                          <Link href="/dashboard">
-                            <Home className="size-3.5 mr-1.5" />
-                            Dashboard
-                          </Link>
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
+                      </motion.div>
+                    )}
+
+                    {/* ── Multiple choice ── */}
+                    {!isTyping && step.type === 'question' && step.options && (
+                      <OptionList options={step.options} onSelect={handleResponse} />
+                    )}
+
+                    {/* ── Scale 1-10 ── */}
+                    {!isTyping && step.type === 'scale' && (
+                      <ScaleInput onSelect={handleResponse} />
+                    )}
+
+                    {/* ── Recommendation ── */}
+                    {!isTyping && step.type === 'recommendation' && (
+                      <RecommendationPanel step={step} onRestart={handleRestart} />
+                    )}
+                  </AiBubble>
+
                 </motion.div>
               </AnimatePresence>
             </div>

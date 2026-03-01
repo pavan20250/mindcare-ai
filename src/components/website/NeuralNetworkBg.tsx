@@ -30,12 +30,15 @@ export default function NeuralNetworkBg({
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const sizeRef = useRef({ w: 0, h: 0 });
 
-  const MOUSE_RADIUS = 200;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const effectiveNodeCount = isMobile ? Math.round(nodeCount * 0.4) : nodeCount;
+  const effectiveConnectionDist = isMobile ? Math.round(connectionDist * 0.7) : connectionDist;
+  const MOUSE_RADIUS = isMobile ? 120 : 200;
 
   const initNodes = useCallback(
     (w: number, h: number) => {
       const nodes: Node[] = [];
-      for (let i = 0; i < nodeCount; i++) {
+      for (let i = 0; i < effectiveNodeCount; i++) {
         nodes.push({
           x: Math.random() * w,
           y: Math.random() * h,
@@ -49,7 +52,7 @@ export default function NeuralNetworkBg({
       }
       return nodes;
     },
-    [nodeCount],
+    [effectiveNodeCount],
   );
 
   useEffect(() => {
@@ -113,9 +116,9 @@ export default function NeuralNetworkBg({
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist > connectionDist) continue;
+          if (dist > effectiveConnectionDist) continue;
 
-          const alpha = (1 - dist / connectionDist) * 0.25;
+          const alpha = (1 - dist / effectiveConnectionDist) * 0.25;
           const boost = mouseInfluence * 0.6;
 
           ctx.beginPath();
@@ -159,7 +162,7 @@ export default function NeuralNetworkBg({
       canvas.removeEventListener('mousemove', handleMouse);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [initNodes, connectionDist]);
+  }, [initNodes, effectiveConnectionDist]);
 
   return (
     <canvas

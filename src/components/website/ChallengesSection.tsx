@@ -41,8 +41,8 @@ const challenges = [
 export default function ChallengesSection() {
   return (
     <section id="challenges" className="section-padding relative overflow-hidden">
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="relative max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -83,7 +83,7 @@ export default function ChallengesSection() {
                     className="group relative"
                   >
                     <div
-                      className="relative bg-white/[0.04] backdrop-blur-lg rounded-xl p-5 sm:p-6 shadow-lg shadow-black/10 border border-white/[0.08] transition-all duration-300 hover:bg-white/[0.07] hover:border-white/[0.12]"
+                      className="relative bg-white/[0.04] backdrop-blur-lg rounded-xl p-4 sm:p-6 shadow-lg shadow-black/10 border border-white/[0.08] transition-all duration-300 hover:bg-white/[0.07] hover:border-white/[0.12]"
                       style={{ transform: `rotate(${c.rotate})` }}
                     >
                       <div className="flex items-center gap-4">
@@ -119,7 +119,7 @@ export default function ChallengesSection() {
                 ))}
 
                 <motion.div variants={item} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
-                  <div className="relative overflow-hidden rounded-xl bg-teal-500/[0.08] backdrop-blur-lg p-5 sm:p-6 border border-teal-500/20 shadow-lg shadow-teal-500/10 transition-all duration-300 hover:bg-teal-500/[0.12]">
+                  <div className="relative overflow-hidden rounded-xl bg-teal-500/[0.08] backdrop-blur-lg p-4 sm:p-6 border border-teal-500/20 shadow-lg shadow-teal-500/10 transition-all duration-300 hover:bg-teal-500/[0.12]">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-teal-400/[0.06] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
                     <div className="relative flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shrink-0 shadow-lg shadow-teal-500/20">
