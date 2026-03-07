@@ -24,18 +24,6 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If coming from signup after email confirmation, stay on login (don't auto-redirect to dashboard)
-  const fromSignup = searchParams.get('from') === 'signup';
-  useEffect(() => {
-    if (fromSignup) return;
-    fetch('/api/auth/session', { credentials: 'include' })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.user) router.replace(next);
-      })
-      .catch(() => {});
-  }, [next, router, fromSignup]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
