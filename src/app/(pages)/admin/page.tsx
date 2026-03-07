@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 type Stats = {
   uniqueUsersWithAppointments: number;
@@ -34,7 +35,7 @@ export default function AdminPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="size-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

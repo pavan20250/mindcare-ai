@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export interface Doctor {
   id: string;
@@ -466,7 +467,7 @@ export function AppointmentsView() {
                     <Label className="text-sm text-slate-700 font-medium">Time</Label>
                     {slotsLoading ? (
                       <div className="flex items-center gap-2 text-slate-400 text-sm">
-                        <div className="size-4 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                        <LoadingSpinner size="xs" />
                         Loading slots…
                       </div>
                     ) : !bookingDate ? (
@@ -506,7 +507,7 @@ export function AppointmentsView() {
                   <Button onClick={handleConfirmBooking} disabled={!selectedSlot || submitting} className="bg-teal-600 hover:bg-teal-700 text-white border-0">
                     {submitting ? (
                       <>
-                        <span className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                        <LoadingSpinner size="xs" variant="inverted" className="mr-2" />
                         Booking…
                       </>
                     ) : (

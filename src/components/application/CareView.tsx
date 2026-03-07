@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 const INTAKE_STEP_LABELS: Record<string, string> = {
   welcome: 'Initial concerns',
@@ -41,7 +42,7 @@ export function CareView() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="size-7 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+            <LoadingSpinner />
           </div>
         ) : entries.length === 0 ? (
           <Card className="rounded-xl border-slate-200 bg-white shadow-sm">
