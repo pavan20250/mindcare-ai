@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { SESSION_COOKIE } from '@/lib/auth';
 import { ensureUserRole, getRoleForUserId } from '@/lib/roles';
+import {
+  getTenantSlugFromRequest,
+  getTenantSlugFromUserMetadata,
+} from '@/lib/tenant';
 
 const MAX_AGE = 60 * 60 * 24; // 24 hours
 
@@ -10,11 +14,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const email = body.email?.trim() ?? '';
     const password = body.password ?? '';
+    const tenantSlug = getTenantSlugFromRequest(request);
 
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,7 +31,21 @@ export async function POST(request: Request) {
     if (error || !data.user) {
       return NextResponse.json(
         { error: error?.message || 'Invalid email or password.' },
-        { status: 401 }
+        { status: 401 },
+      );
+    }
+
+    const userTenant = getTenantSlugFromUserMetadata(
+      (data.user.user_metadata as Record<string, unknown>) ?? null,
+    );
+
+    if (tenantSlug && tenantSlug !== userTenant) {
+      return NextResponse.json(
+        {
+          error:
+            'This account does not belong to this organization. Please sign in using your organization-specific login link.',
+        },
+        { status: 403 },
       );
     }
 

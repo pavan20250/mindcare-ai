@@ -1,7 +1,12 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import type { Role } from '@/lib/auth';
 
-export type UserRoleRow = { user_id: string; role: Role; created_at?: string };
+export type UserRoleRow = {
+  user_id: string;
+  role: Role;
+  tenant_slug?: string | null;
+  created_at?: string;
+};
 
 const DEFAULT_ROLE: Role = 'user';
 
@@ -31,12 +36,22 @@ export async function getRoleForUserId(userId: string): Promise<Role> {
 
 /**
  * Ensures a row exists for user. Safe to call multiple times.
+ * Optionally updates the tenant slug when provided.
  * Returns the role after ensuring.
  */
-export async function ensureUserRole(userId: string, role: Role = DEFAULT_ROLE): Promise<Role> {
+export async function ensureUserRole(
+  userId: string,
+  role: Role = DEFAULT_ROLE,
+  tenantSlug?: string | null,
+): Promise<Role> {
+  const payload: UserRoleRow = { user_id: userId, role };
+  if (typeof tenantSlug !== 'undefined') {
+    payload.tenant_slug = tenantSlug;
+  }
+
   const { data, error } = await supabaseAdmin
     .from('user_roles')
-    .upsert({ user_id: userId, role }, { onConflict: 'user_id' })
+    .upsert(payload, { onConflict: 'user_id' })
     .select('role')
     .maybeSingle();
 
