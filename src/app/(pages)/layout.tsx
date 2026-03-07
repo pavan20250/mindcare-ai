@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { AppSidebar } from '@/components/application/AppSidebar';
 import { IntakeProvider, useIntake } from '@/contexts/IntakeContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 const INTAKE_PATH = '/demo';
 const DEFAULT_AUTH_REDIRECT = '/dashboard';
@@ -66,7 +67,7 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
   if (checking || !user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#f8fafb]">
-        <div className="size-9 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="xl" />
         <p className="text-slate-400 text-sm font-medium">Loading…</p>
       </div>
     );

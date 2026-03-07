@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { AuthField, AuthError, AuthSuccess, PasswordField, SubmitButton } from '@/components/auth/shared';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 type State = 'loading' | 'ready' | 'success' | 'invalid_link';
 
@@ -72,7 +73,7 @@ export default function ResetPasswordPage() {
   if (state === 'loading') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#0c1220] px-4">
-        <div className="size-9 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="xl" />
         <p className="mt-4 text-slate-400 text-sm">Verifying link…</p>
       </div>
     );

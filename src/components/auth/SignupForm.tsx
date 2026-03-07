@@ -139,27 +139,28 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="w-full max-w-[560px] sm:max-w-[620px] mx-auto px-4 sm:px-6">
-      <Card className="border-white/[0.08] bg-white/[0.04] backdrop-blur-2xl shadow-2xl shadow-black/30 rounded-2xl">
-        <CardHeader className="pb-0 space-y-1">
-          <CardTitle className="text-[22px] font-semibold tracking-tight text-white">
+    <div className="w-full max-w-[520px] sm:max-w-[560px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <Card className="relative overflow-hidden border-white/[0.08] bg-gradient-to-br from-white/[0.03] via-white/[0.015] to-teal-500/[0.06] backdrop-blur-2xl shadow-2xl shadow-black/30 rounded-2xl">
+        <div className="pointer-events-none absolute inset-x-12 -top-28 h-40 rounded-full bg-teal-500/18 blur-3xl" />
+        <CardHeader className="relative pb-1.5 space-y-1 text-center">
+          <CardTitle className="text-[22px] sm:text-[24px] font-semibold tracking-tight text-white">
             Create account
           </CardTitle>
-          <CardDescription className="text-slate-400 text-[13px]">
+          <CardDescription className="text-slate-400 text-[13px] sm:text-[14px]">
             Get started with NeuralCare AI — it&apos;s free
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-3 pb-4 space-y-3">
+        <CardContent className="relative pt-2.5 pb-4 space-y-3">
           <GoogleOAuthButton label="Sign up with Google" />
           <OAuthDivider />
 
-          <form onSubmit={handleSubmit} className="space-y-2.5">
+          <form onSubmit={handleSubmit} className="space-y-2">
             <AuthError message={error} />
             <AuthSuccess message={success} />
             {createdEmail && (
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2">
-                <div className="text-xs text-slate-400">
+              <div className="flex items-center justify-between gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2">
+                <div className="text-xs text-slate-400 leading-snug">
                   Didn&apos;t get the email for <span className="text-slate-200">{createdEmail}</span>?
                 </div>
                 <Button
@@ -167,14 +168,14 @@ export default function SignupForm() {
                   variant="outline"
                   onClick={handleResend}
                   disabled={cooldownSeconds > 0 || resending}
-                  className="h-9 rounded-xl border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white"
+                  className="h-8 rounded-xl border-white/10 bg-white/[0.05] hover:bg-white/[0.09] text-white text-[11px] sm:text-xs"
                 >
                   {cooldownSeconds > 0 ? `Resend in ${formatCooldown(cooldownSeconds)}` : resending ? 'Resending…' : 'Resend'}
                 </Button>
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
+            <div className="space-y-2 sm:space-y-2.5">
               <AuthField
                 label="Full name"
                 fieldId="signup-name"
@@ -197,7 +198,7 @@ export default function SignupForm() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               <div>
                 <PasswordField
                   label="Password"
@@ -209,7 +210,7 @@ export default function SignupForm() {
                   required
                 />
                 {password.length > 0 && (
-                  <div className="mt-1.5 space-y-1">
+                  <div className="mt-1 space-y-1">
                     <div className="flex gap-1">
                       {[1, 2, 3, 4].map((i) => (
                         <div
@@ -220,7 +221,7 @@ export default function SignupForm() {
                         />
                       ))}
                     </div>
-                    <p className="text-[11px] text-slate-500">{strength.label}</p>
+                    <p className="text-[11px] font-medium text-slate-300">{strength.label} password</p>
                   </div>
                 )}
               </div>
