@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   AuthField,
   PasswordField,
   AuthError,
+  AuthSuccess,
   SubmitButton,
   OAuthDivider,
   GoogleOAuthButton,
@@ -29,19 +31,79 @@ function getPasswordStrength(pw: string): { score: number; label: string; color:
 
 export default function SignupForm() {
   const router = useRouter();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [createdEmail, setCreatedEmail] = useState('');
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [resending, setResending] = useState(false);
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
+
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const t = window.setInterval(() => {
+      setCooldownSeconds((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => window.clearInterval(t);
+  }, [cooldownSeconds]);
+
+  // When user confirms email in another tab, session is set; redirect this tab to login
+  useEffect(() => {
+    if (!createdEmail) return;
+    const poll = () =>
+      fetch('/api/auth/session', { credentials: 'include' })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.user) router.replace('/login?from=signup');
+        })
+        .catch(() => {});
+    const id = window.setInterval(poll, 2500);
+    poll();
+    return () => window.clearInterval(id);
+  }, [createdEmail, router]);
+
+  const formatCooldown = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
+
+  const handleResend = async () => {
+    if (!createdEmail || cooldownSeconds > 0 || resending) return;
+    setError('');
+    setSuccess('');
+    setResending(true);
+    try {
+      const res = await fetch('/api/auth/resend-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: createdEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Failed to resend email. Please try again.');
+        return;
+      }
+      setSuccess('Verification email resent. Please check your inbox.');
+      setCooldownSeconds(120);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setResending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    setCreatedEmail('');
+    setCooldownSeconds(0);
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
@@ -64,7 +126,11 @@ export default function SignupForm() {
         setError(data.error || 'Signup failed. Please try again.');
         return;
       }
-      router.push('/login');
+      setSuccess('Account created. Please check your email for the verification link or code to complete signup before logging in.');
+      setCreatedEmail(email.trim());
+      setCooldownSeconds(120);
+      setPassword('');
+      setConfirmPassword('');
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -73,9 +139,9 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="w-full max-w-[420px] mx-auto px-4">
+    <div className="w-full max-w-[560px] sm:max-w-[620px] mx-auto px-4 sm:px-6">
       <Card className="border-white/[0.08] bg-white/[0.04] backdrop-blur-2xl shadow-2xl shadow-black/30 rounded-2xl">
-        <CardHeader className="pb-1 space-y-1">
+        <CardHeader className="pb-0 space-y-1">
           <CardTitle className="text-[22px] font-semibold tracking-tight text-white">
             Create account
           </CardTitle>
@@ -84,14 +150,31 @@ export default function SignupForm() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-4">
+        <CardContent className="pt-3 pb-4 space-y-3">
           <GoogleOAuthButton label="Sign up with Google" />
           <OAuthDivider />
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-2.5">
             <AuthError message={error} />
+            <AuthSuccess message={success} />
+            {createdEmail && (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2">
+                <div className="text-xs text-slate-400">
+                  Didn&apos;t get the email for <span className="text-slate-200">{createdEmail}</span>?
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleResend}
+                  disabled={cooldownSeconds > 0 || resending}
+                  className="h-9 rounded-xl border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white"
+                >
+                  {cooldownSeconds > 0 ? `Resend in ${formatCooldown(cooldownSeconds)}` : resending ? 'Resending…' : 'Resend'}
+                </Button>
+              </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
               <AuthField
                 label="Full name"
                 fieldId="signup-name"
@@ -114,7 +197,7 @@ export default function SignupForm() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5">
               <div>
                 <PasswordField
                   label="Password"
@@ -126,7 +209,7 @@ export default function SignupForm() {
                   required
                 />
                 {password.length > 0 && (
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-1.5 space-y-1">
                     <div className="flex gap-1">
                       {[1, 2, 3, 4].map((i) => (
                         <div

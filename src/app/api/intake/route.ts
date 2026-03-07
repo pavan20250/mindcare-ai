@@ -1,20 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const SESSION_COOKIE = 'neuralcare_session';
+import { getSession } from '@/lib/auth';
 
 // In-memory store: email -> { responses, completedAt }. Replace with DB in production.
 const intakeStore = new Map<string, { responses: Record<string, string>; completedAt?: number }>();
-
-function getSession(request: NextRequest): { email: string } | null {
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(Buffer.from(token, 'base64url').toString('utf8'));
-    return payload?.email ? { email: payload.email } : null;
-  } catch {
-    return null;
-  }
-}
 
 /**
  * POST /api/intake
