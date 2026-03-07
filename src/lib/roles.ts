@@ -35,6 +35,26 @@ export async function getRoleForUserId(userId: string): Promise<Role> {
 }
 
 /**
+ * Reads a user's tenant slug from `public.user_roles`.
+ * Returns null if no row exists or value is missing/invalid.
+ */
+export async function getTenantForUserId(
+  userId: string,
+): Promise<string | null> {
+  const { data, error } = await supabaseAdmin
+    .from('user_roles')
+    .select('tenant_slug')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+  const value = (data as { tenant_slug?: unknown }).tenant_slug;
+  return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+/**
  * Ensures a row exists for user. Safe to call multiple times.
  * Optionally updates the tenant slug when provided.
  * Returns the role after ensuring.

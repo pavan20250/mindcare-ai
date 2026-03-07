@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { SESSION_COOKIE } from '@/lib/auth';
-import { ensureUserRole, getRoleForUserId } from '@/lib/roles';
+import { ensureUserRole, getRoleForUserId, getTenantForUserId } from '@/lib/roles';
 import {
   getTenantSlugFromRequest,
   getTenantSlugFromUserMetadata,
@@ -31,15 +31,29 @@ export async function POST(request: Request) {
       );
     }
 
-    const userTenant = getTenantSlugFromUserMetadata(
+    const dbTenant = data.user.id
+      ? await getTenantForUserId(data.user.id)
+      : null;
+    const metadataTenant = getTenantSlugFromUserMetadata(
       (data.user.user_metadata as Record<string, unknown>) ?? null,
     );
+    const userTenant = dbTenant ?? metadataTenant ?? null;
 
-    if (tenantSlug && tenantSlug !== userTenant) {
+    if (tenantSlug) {
+      if (tenantSlug !== userTenant) {
+        return NextResponse.json(
+          {
+            error:
+              'This account does not belong to this organization. Please sign in using your organization-specific login link.',
+          },
+          { status: 403 },
+        );
+      }
+    } else if (userTenant) {
       return NextResponse.json(
         {
           error:
-            'This account does not belong to this organization. Please sign in using your organization-specific login link.',
+            'This account belongs to an organization. Please sign in using your organization-specific login link.',
         },
         { status: 403 },
       );
