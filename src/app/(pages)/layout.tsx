@@ -10,7 +10,9 @@ const INTAKE_PATH = '/demo';
 const DEFAULT_AUTH_REDIRECT = '/dashboard';
 const GATED_PATHS = ['/care', '/appointments', '/resources'];
 
-function AppLayoutInner({ user, children }: { user: { email: string }; children: React.ReactNode }) {
+type SessionUser = { email: string; name?: string; id?: string; role?: string; roleLabel?: string };
+
+function AppLayoutInner({ user, children }: { user: SessionUser; children: React.ReactNode }) {
   const { intakeCompleted } = useIntake();
   const pathname = usePathname();
   const router = useRouter();
@@ -35,7 +37,7 @@ function AppLayoutInner({ user, children }: { user: { email: string }; children:
 export default function PagesLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [initialIntakeCompleted, setInitialIntakeCompleted] = useState(false);
   const [checking, setChecking] = useState(true);
 

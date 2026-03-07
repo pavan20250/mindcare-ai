@@ -8,24 +8,20 @@ const MAX_AGE = 60 * 60 * 24; // 24 hours
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = body.email?.trim() ?? '';
-    const password = body.password ?? '';
+    const accessToken = body.accessToken as string | undefined;
 
-    if (!email || !password) {
+    if (!accessToken) {
       return NextResponse.json(
-        { error: 'Email and password are required.' },
+        { error: 'Missing access token.' },
         { status: 400 }
       );
     }
 
-    const { data, error } = await supabaseAdmin.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
 
     if (error || !data.user) {
       return NextResponse.json(
-        { error: error?.message || 'Invalid email or password.' },
+        { error: error?.message || 'Invalid or expired token.' },
         { status: 401 }
       );
     }
@@ -46,15 +42,7 @@ export async function POST(request: Request) {
     });
     const value = Buffer.from(payload).toString('base64url');
 
-    const res = NextResponse.json({
-      success: true,
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        name: displayName,
-      },
-    });
-
+    const res = NextResponse.json({ success: true });
     res.cookies.set(SESSION_COOKIE, value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

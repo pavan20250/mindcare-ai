@@ -140,12 +140,30 @@ export function SettingsView() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
+    const storedProfile = readProfile();
+    setProfile(storedProfile);
+    setNotifs(readNotifs());
+
     fetch('/api/auth/session', { credentials: 'include' })
       .then((r) => r.json())
-      .then((data) => setEmail(data.user?.email ?? ''))
+      .then((data) => {
+        const user = data.user as { email?: string; name?: string } | undefined;
+        if (user?.email) {
+          setEmail(user.email);
+        }
+        if (user?.name) {
+          const parts = user.name.trim().split(/\s+/);
+          setProfile((prev) => {
+            if (prev.firstName || prev.lastName) return prev;
+            return {
+              ...prev,
+              firstName: parts[0] || prev.firstName,
+              lastName: parts.slice(1).join(' ') || prev.lastName,
+            };
+          });
+        }
+      })
       .catch(() => {});
-    setProfile(readProfile());
-    setNotifs(readNotifs());
   }, []);
 
   const handleProfileChange = useCallback(

@@ -14,6 +14,7 @@ import {
   User,
   Lock,
   CheckCircle2,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -38,7 +39,7 @@ import { Badge } from '@/components/ui/badge';
 import { useIntake } from '@/contexts/IntakeContext';
 
 interface AppSidebarProps {
-  user: { email: string };
+  user: { email: string; name?: string; role?: string; roleLabel?: string };
 }
 
 const INTAKE_HREF = '/demo';
@@ -82,10 +83,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-medium text-slate-800 leading-tight">
-                  {user.email.split('@')[0].slice(0, 5)}
+                  {user.name || user.email.split('@')[0]}
                 </p>
                 <p className="truncate text-[11px] text-slate-400 leading-tight">
-                  Patient
+                  {user.roleLabel ?? 'User'}
                 </p>
               </div>
             </div>
@@ -153,6 +154,19 @@ export function AppSidebar({ user }: AppSidebarProps) {
       </SidebarContent>
       <SidebarFooter className="border-t border-slate-200/80 bg-white">
         <SidebarMenu>
+          {user.role === 'admin' && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname === '/admin'} className={pathname === '/admin' ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}>
+                <Link href="/admin">
+                  <ShieldCheck className="size-4" />
+                  <span>Admin</span>
+                  <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 bg-amber-100 text-amber-800 border border-amber-200">
+                    Admin
+                  </Badge>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={pathname === '/settings'} className={pathname === '/settings' ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}>
               <Link href="/settings">
