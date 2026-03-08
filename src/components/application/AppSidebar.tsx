@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -66,9 +67,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="offcanvas" className="border-r border-slate-200">
-      <SidebarHeader className="border-b border-slate-200/80 bg-white px-3 py-2">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="text-teal-700 text-base font-bold tracking-tight">NeuralCare AI</span>
+      <SidebarHeader className="border-b border-slate-200/80 bg-white">
+        <Link href="/dashboard" className="flex items-center font-semibold">
+          <Image src="/NeuralCare_logo/website_logo.png" alt="NeuralCare AI" width={180} height={100} className="h-40 -mb-14 -mt-12 w-auto" />
         </Link>
       </SidebarHeader>
       <SidebarContent className="bg-white">

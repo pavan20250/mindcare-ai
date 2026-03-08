@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden text-white border-t border-white/[0.06]">
@@ -5,13 +7,8 @@ export default function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-md shadow-teal-500/20">
-                <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </div>
-              <span className="text-sm font-bold text-white">NeuralCare AI</span>
+            <div className="flex items-center gap-2">
+              <Image src="/NeuralCare_logo/website_logo.png" alt="NeuralCare AI" width={180} height={100} className="h-32 w-auto" />
             </div>
             <p className="text-slate-500 text-[11px] leading-relaxed max-w-[180px] mb-2.5">
               Intelligent automation for behavioral health.
