@@ -155,14 +155,25 @@ export function AppSidebar({ user }: AppSidebarProps) {
       </SidebarContent>
       <SidebarFooter className="border-t border-slate-200/80 bg-white">
         <SidebarMenu>
-          {user.role === 'admin' && (
+          {(user.role === 'admin' || user.role === 'superadmin') && (
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/admin'} className={pathname === '/admin' ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/admin'}
+                className={
+                  pathname === '/admin'
+                    ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                }
+              >
                 <Link href="/admin">
                   <ShieldCheck className="size-4" />
                   <span>Admin</span>
-                  <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 bg-amber-100 text-amber-800 border border-amber-200">
-                    Admin
+                  <Badge
+                    variant="secondary"
+                    className="ml-auto text-[10px] px-1.5 py-0 bg-amber-100 text-amber-800 border border-amber-200"
+                  >
+                    {user.role === 'superadmin' ? 'Superadmin' : 'Admin'}
                   </Badge>
                 </Link>
               </SidebarMenuButton>
