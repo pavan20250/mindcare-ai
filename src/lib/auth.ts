@@ -4,7 +4,7 @@ import { getRoleForUserId } from '@/lib/roles';
 export const SESSION_COOKIE = 'neuralcare_session';
 
 /** Supported roles. Default for new users is `user`. */
-export type Role = 'user' | 'admin';
+export type Role = 'user' | 'admin' | 'superadmin';
 
 /** Session payload stored in cookie and returned from getSession. */
 export interface SessionUser {
@@ -16,7 +16,7 @@ export interface SessionUser {
 
 const DEFAULT_ROLE: Role = 'user';
 
-const VALID_ROLES: Role[] = ['user', 'admin'];
+const VALID_ROLES: Role[] = ['user', 'admin', 'superadmin'];
 
 function parseRole(value: unknown): Role {
   if (typeof value === 'string' && VALID_ROLES.includes(value as Role)) {
@@ -116,6 +116,8 @@ export function getRoleLabel(role: Role): string {
   switch (role) {
     case 'admin':
       return 'Admin';
+    case 'superadmin':
+      return 'Superadmin';
     case 'user':
     default:
       return 'User';

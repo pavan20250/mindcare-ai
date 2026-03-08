@@ -11,7 +11,10 @@ export type UserRoleRow = {
 const DEFAULT_ROLE: Role = 'user';
 
 function normalizeRole(value: unknown): Role {
-  return value === 'admin' ? 'admin' : 'user';
+  if (value === 'admin' || value === 'superadmin') {
+    return value as Role;
+  }
+  return DEFAULT_ROLE;
 }
 
 /**

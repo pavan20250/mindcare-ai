@@ -22,20 +22,22 @@ type TenantStats = {
 /**
  * GET /api/admin/stats
  * Returns stats for either:
- * - Global scope (when no tenant in URL)
- * - Tenant scope (when subdomain/tenant is present)
+ * - Global scope (when no tenant in URL, or for superadmins)
+ * - Tenant scope (when subdomain/tenant is present for tenant admins)
  *
- * Admin role required.
+ * Admin or superadmin role required.
  */
 export async function GET(request: NextRequest) {
-  const sessionOrRes = await requireRoleDb(request, ['admin']);
+  const sessionOrRes = await requireRoleDb(request, ['admin', 'superadmin']);
   if (sessionOrRes instanceof NextResponse) {
     return sessionOrRes;
   }
 
+  const session = sessionOrRes;
   const tenantSlug = getTenantSlugFromRequest(request);
 
-  if (tenantSlug) {
+  // Superadmins always see global, cross-tenant stats regardless of subdomain.
+  if (tenantSlug && session.role !== 'superadmin') {
     // Tenant-scoped stats: only users belonging to this tenant.
     const { data, error } = await supabaseAdmin
       .from('user_roles')
