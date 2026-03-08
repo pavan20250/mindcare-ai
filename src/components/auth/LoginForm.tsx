@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -9,8 +10,6 @@ import {
   PasswordField,
   AuthError,
   SubmitButton,
-  OAuthDivider,
-  GoogleOAuthButton,
   AuthFooter,
 } from './shared';
 
@@ -51,7 +50,17 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-[420px] mx-auto px-4">
       <Card className="border-white/[0.08] bg-white/[0.04] backdrop-blur-2xl shadow-2xl shadow-black/30 rounded-2xl">
-        <CardHeader className="pb-1 space-y-1">
+        <CardHeader className="pb-1 space-y-0.5">
+          <div className="flex justify-center mb-1">
+            <Image
+              src="/NeuralCare_logo/website_logo.png"
+              alt="NeuralCare AI"
+              width={180}
+              height={100}
+              className="h-40 w-auto -mb-10 -mt-10"
+              priority
+            />
+          </div>
           <CardTitle className="text-[22px] font-semibold tracking-tight text-white">
             Welcome back
           </CardTitle>
@@ -60,10 +69,7 @@ export default function LoginForm() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-4">
-          <GoogleOAuthButton label="Sign in with Google" />
-          <OAuthDivider />
-
+        <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <AuthError message={error} />
 

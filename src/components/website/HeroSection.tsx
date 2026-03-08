@@ -19,7 +19,7 @@ function HeroVideo() {
         </div>
         <video
           className="w-full aspect-video object-cover"
-          src="/MindCare_AI_Homepage_Video_Generation.mp4"
+          src="/NeuralCare_AI_Intro.mp4"
           playsInline
           muted
           loop

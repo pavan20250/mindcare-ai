@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AuthField, AuthError, AuthSuccess, SubmitButton } from './shared';
@@ -39,6 +40,16 @@ export default function ForgotPasswordForm() {
     <div className="w-full max-w-[420px] mx-auto px-4">
       <Card className="border-white/[0.08] bg-white/[0.04] backdrop-blur-2xl shadow-2xl shadow-black/30 rounded-2xl">
         <CardHeader className="pb-1 space-y-1">
+          <div className="flex justify-center mb-2">
+            <Image
+              src="/NeuralCare_logo/website_logo.png"
+              alt="NeuralCare AI"
+              width={220}
+              height={80}
+              className="h-10 w-auto"
+              priority
+            />
+          </div>
           <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-teal-500/10 ring-1 ring-teal-500/20">
             <svg className="size-6 text-teal-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />

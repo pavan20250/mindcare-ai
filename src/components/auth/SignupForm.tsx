@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,8 +11,6 @@ import {
   AuthError,
   AuthSuccess,
   SubmitButton,
-  OAuthDivider,
-  GoogleOAuthButton,
   AuthFooter,
 } from './shared';
 
@@ -141,8 +140,18 @@ export default function SignupForm() {
   return (
     <div className="w-full max-w-[520px] sm:max-w-[560px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <Card className="relative overflow-hidden border-white/[0.08] bg-gradient-to-br from-white/[0.03] via-white/[0.015] to-teal-500/[0.06] backdrop-blur-2xl shadow-2xl shadow-black/30 rounded-2xl">
-        <div className="pointer-events-none absolute inset-x-12 -top-28 h-40 rounded-full bg-teal-500/18 blur-3xl" />
-        <CardHeader className="relative pb-1.5 space-y-1 text-center">
+        <div className="pointer-events-none absolute h-40 rounded-full bg-teal-500/18 blur-3xl" />
+        <CardHeader className="relative text-center pb-1 space-y-0.5">
+          <div className="flex justify-center mb-1">
+            <Image
+              src="/NeuralCare_logo/website_logo.png"
+              alt="NeuralCare AI"
+              width={180}
+              height={100}
+              className="h-40 w-auto -mb-10 -mt-10"
+              priority
+            />
+          </div>
           <CardTitle className="text-[22px] sm:text-[24px] font-semibold tracking-tight text-white">
             Create account
           </CardTitle>
@@ -151,10 +160,7 @@ export default function SignupForm() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="relative pt-2.5 pb-4 space-y-3">
-          <GoogleOAuthButton label="Sign up with Google" />
-          <OAuthDivider />
-
+        <CardContent>
           <form onSubmit={handleSubmit} className="space-y-2">
             <AuthError message={error} />
             <AuthSuccess message={success} />

@@ -15,16 +15,22 @@ export const metadata: Metadata = {
   keywords: "behavioral health, AI, mental health, healthcare, DSM-5, clinical insights, patient care, healthcare automation",
   authors: [{ name: "NeuralCare AI" }],
   robots: "index, follow",
+  icons: {
+    icon: "/NeuralCare_logo/url_logo.png",
+    apple: "/NeuralCare_logo/url_logo.png",
+  },
   openGraph: {
     title: "NeuralCare AI - AI-Powered Behavioral Health Platform",
     description: "Transform behavioral health delivery with intelligent automation and Generative AI.",
     type: "website",
     locale: "en_US",
+    images: ["/NeuralCare_logo/url_logo.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "NeuralCare AI - AI-Powered Behavioral Health Platform",
     description: "Transform behavioral health delivery with intelligent automation and Generative AI.",
+    images: ["/NeuralCare_logo/url_logo.png"],
   },
 };
 
