@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface Node {
   x: number;
@@ -30,52 +30,59 @@ export default function NeuralNetworkBg({
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const sizeRef = useRef({ w: 0, h: 0 });
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const effectiveNodeCount = isMobile ? Math.round(nodeCount * 0.4) : nodeCount;
-  const effectiveConnectionDist = isMobile ? Math.round(connectionDist * 0.7) : connectionDist;
-  const MOUSE_RADIUS = isMobile ? 120 : 200;
-
-  const initNodes = useCallback(
-    (w: number, h: number) => {
-      const nodes: Node[] = [];
-      for (let i = 0; i < effectiveNodeCount; i++) {
-        nodes.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          radius: Math.random() * 1.8 + 0.8,
-          opacity: Math.random() * 0.5 + 0.3,
-          pulsePhase: Math.random() * Math.PI * 2,
-          pulseSpeed: Math.random() * 0.02 + 0.01,
-        });
-      }
-      return nodes;
-    },
-    [effectiveNodeCount],
-  );
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.parentElement!.getBoundingClientRect();
-      sizeRef.current = { w: rect.width, h: rect.height };
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (nodesRef.current.length === 0) {
-        nodesRef.current = initNodes(rect.width, rect.height);
-      }
+    // ── Helpers ────────────────────────────────────────────────────────────
+    const isMobileNow = () => window.innerWidth < 768;
+
+    const getConfig = () => {
+      const mobile = isMobileNow();
+      return {
+        effectiveNodeCount: mobile ? Math.round(nodeCount * 0.4) : nodeCount,
+        effectiveConnectionDist: mobile
+          ? Math.round(connectionDist * 0.7)
+          : connectionDist,
+        MOUSE_RADIUS: mobile ? 120 : 200,
+      };
     };
 
-    const handleMouse = (e: MouseEvent) => {
+    const initNodes = (w: number, h: number, count: number): Node[] =>
+      Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.8 + 0.8,
+        opacity: Math.random() * 0.5 + 0.3,
+        pulsePhase: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.02 + 0.01,
+      }));
+
+    // ── Resize ─────────────────────────────────────────────────────────────
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      sizeRef.current = { w, h };
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Always re-init nodes on resize so they stay within new bounds
+      const { effectiveNodeCount } = getConfig();
+      nodesRef.current = initNodes(w, h, effectiveNodeCount);
+    };
+
+    // ── Mouse (desktop only — no pointer capture on mobile) ───────────────
+    const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
@@ -83,28 +90,24 @@ export default function NeuralNetworkBg({
       mouseRef.current = { x: -1000, y: -1000 };
     };
 
-    resize();
-    window.addEventListener('resize', resize);
-    canvas.addEventListener('mousemove', handleMouse);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-
+    // ── Draw loop ──────────────────────────────────────────────────────────
     const draw = () => {
       const { w, h } = sizeRef.current;
       const nodes = nodesRef.current;
       const mouse = mouseRef.current;
+      const { effectiveConnectionDist, MOUSE_RADIUS } = getConfig();
 
       ctx.clearRect(0, 0, w, h);
 
+      // Update positions & draw connections
       for (let i = 0; i < nodes.length; i++) {
         const a = nodes[i];
         a.x += a.vx;
         a.y += a.vy;
         a.pulsePhase += a.pulseSpeed;
 
-        if (a.x < 0 || a.x > w) a.vx *= -1;
-        if (a.y < 0 || a.y > h) a.vy *= -1;
-        a.x = Math.max(0, Math.min(w, a.x));
-        a.y = Math.max(0, Math.min(h, a.y));
+        if (a.x < 0 || a.x > w) { a.vx *= -1; a.x = Math.max(0, Math.min(w, a.x)); }
+        if (a.y < 0 || a.y > h) { a.vy *= -1; a.y = Math.max(0, Math.min(h, a.y)); }
 
         const dxM = a.x - mouse.x;
         const dyM = a.y - mouse.y;
@@ -130,6 +133,7 @@ export default function NeuralNetworkBg({
         }
       }
 
+      // Draw nodes
       for (const node of nodes) {
         const pulse = Math.sin(node.pulsePhase) * 0.3 + 0.7;
         const dxM = node.x - mouse.x;
@@ -140,11 +144,13 @@ export default function NeuralNetworkBg({
         const r = node.radius + mouseGlow * 2;
         const alpha = node.opacity * pulse + mouseGlow * 0.4;
 
+        // Glow halo
         ctx.beginPath();
         ctx.arc(node.x, node.y, r + 3, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(45, 212, 191, ${alpha * 0.15})`;
         ctx.fill();
 
+        // Core dot
         ctx.beginPath();
         ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(45, 212, 191, ${alpha})`;
@@ -154,21 +160,32 @@ export default function NeuralNetworkBg({
       animationRef.current = requestAnimationFrame(draw);
     };
 
+    // ── Init ───────────────────────────────────────────────────────────────
+    resize();
+
+    // Use passive listeners throughout — never block scroll
+    window.addEventListener('resize', resize, { passive: true });
+    // Mouse events only on the canvas wrapper, not window
+    canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
+    canvas.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+
     animationRef.current = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
       window.removeEventListener('resize', resize);
-      canvas.removeEventListener('mousemove', handleMouse);
+      canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [initNodes, effectiveConnectionDist]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodeCount, connectionDist]); // only re-mount if base props change
 
   return (
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 w-full h-full ${className}`}
-      style={{ pointerEvents: 'auto' }}
+      // pointer-events: none → canvas never intercepts clicks, taps, or scroll
+      style={{ pointerEvents: 'none' }}
     />
   );
 }
