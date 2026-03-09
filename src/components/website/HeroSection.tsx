@@ -1,111 +1,5 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-
-function HeroVideo() {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [shouldLoad, setShouldLoad] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
-
-        // Start loading slightly before it fully enters the viewport.
-        if (entry.isIntersecting) {
-          setShouldLoad(true);
-        }
-      },
-      { root: null, rootMargin: '200px 0px', threshold: 0.15 },
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!shouldLoad) return;
-
-    const v = videoRef.current;
-    if (!v) return;
-
-    // Attempt autoplay as soon as we decide to load; muted + playsInline
-    // is required for iOS/Android autoplay.
-    const tryPlay = () => {
-      const p = v.play();
-      if (p && typeof (p as Promise<void>).catch === 'function') {
-        (p as Promise<void>).catch(() => {
-          // Autoplay may be blocked in rare cases; keep poster visible.
-        });
-      }
-    };
-
-    // If enough data is already available, play immediately.
-    if (v.readyState >= 2) {
-      tryPlay();
-      return;
-    }
-
-    v.addEventListener('canplay', tryPlay, { once: true });
-    return () => v.removeEventListener('canplay', tryPlay);
-  }, [shouldLoad]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, delay: 0.3 }}
-      className="relative w-full max-w-xl mx-auto"
-      ref={wrapperRef}
-    >
-      <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/20 via-cyan-500/10 to-teal-500/20 rounded-2xl blur-xl" />
-      <div className="relative rounded-2xl overflow-hidden bg-black/60 backdrop-blur-sm shadow-2xl shadow-teal-900/20 ring-1 ring-white/10">
-        <div className="absolute top-3 left-3 z-10 flex items-center gap-2 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium">
-          <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
-          Demo
-        </div>
-        {/* Poster overlay while video is loading/initializing (prevents "black flash" on iOS). */}
-        <div
-          className={[
-            'absolute inset-0 z-[1] transition-opacity duration-300',
-            isReady ? 'opacity-0 pointer-events-none' : 'opacity-100',
-          ].join(' ')}
-          aria-hidden="true"
-          style={{
-            backgroundImage: 'url(/website_logo.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <video
-          ref={videoRef}
-          className="relative z-0 w-full aspect-video object-cover"
-          src={shouldLoad ? '/NeuralCare_AI_Intro.mp4' : undefined}
-          poster="/website_logo.png"
-          playsInline
-          muted
-          loop
-          autoPlay
-          preload="metadata"
-          aria-label="NeuralCare AI patient journey demo"
-          onLoadedData={() => setIsReady(true)}
-        />
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
-      </div>
-      <p className="mt-3 text-center text-sm text-slate-400 tracking-wide">
-        Intake to care matching
-      </p>
-    </motion.div>
-  );
-}
+import HeroVideo from './HeroVideo';
 
 export default function HeroSection() {
   return (
@@ -122,12 +16,7 @@ export default function HeroSection() {
           <div className="text-center lg:text-left w-full order-1">
 
             {/* Hero label — primary identity statement */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-7 sm:mb-9"
-            >
+            <div className="mb-7 sm:mb-9">
               <div className="flex flex-col items-center lg:items-start gap-2">
                 {/* Category label */}
                 <span
@@ -149,25 +38,16 @@ export default function HeroSection() {
                   >
                     AI-Powered Behavioral Health
                   </span>
-                  {/* Animated underline rule */}
-                  <motion.span
+                  <span
                     className="absolute -bottom-1.5 left-0 right-0 h-px block"
                     style={{ background: 'linear-gradient(90deg, rgba(45,212,191,0.5), rgba(103,232,249,0.2), transparent)' }}
-                    initial={{ scaleX: 0, originX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
                   />
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-              className="text-[1.6rem] sm:text-[2rem] lg:text-[2.4rem] font-bold tracking-[-0.025em] leading-[1.15] text-white mb-4 sm:mb-5"
-            >
+            <h1 className="text-[1.6rem] sm:text-[2rem] lg:text-[2.4rem] font-bold tracking-[-0.025em] leading-[1.15] text-white mb-4 sm:mb-5">
               Care that{' '}
               <span className="relative inline-block">
                 <span
@@ -176,48 +56,32 @@ export default function HeroSection() {
                 >
                   understands
                 </span>
-                <motion.span
+                <span
                   className="absolute -bottom-1 left-0 right-0 h-px"
                   style={{ background: 'linear-gradient(90deg, transparent, rgba(94,234,212,0.45), transparent)' }}
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.9, delay: 0.65 }}
                 />
               </span>
-            </motion.h1>
+            </h1>
 
             {/* Feature pills */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-7 sm:mb-8"
-            >
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-7 sm:mb-8">
               {[
                 { icon: '⚡', label: 'Intelligent intake' },
                 { icon: '◎', label: 'Instant insights' },
                 { icon: '↗', label: 'Better outcomes' },
-              ].map((item, i) => (
-                <motion.span
+              ].map((item) => (
+                <span
                   key={item.label}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.18 + i * 0.07 }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.72rem] font-medium text-slate-300 border border-white/[0.08] bg-white/[0.04]"
                 >
                   <span className="text-teal-400 text-[0.7rem]">{item.icon}</span>
                   {item.label}
-                </motion.span>
+                </span>
               ))}
-            </motion.div>
+            </div>
 
             {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.22 }}
-              className="flex flex-row items-center justify-center lg:justify-start gap-3 mb-7 sm:mb-9"
-            >
+            <div className="flex flex-row items-center justify-center lg:justify-start gap-3 mb-7 sm:mb-9">
               <a
                 href="#contact"
                 className="group relative rounded-xl px-5 py-2.5 text-xs sm:text-sm font-semibold inline-flex items-center justify-center overflow-hidden whitespace-nowrap"
@@ -246,15 +110,10 @@ export default function HeroSection() {
                   Try Demo
                 </span>
               </Link>
-            </motion.div>
+            </div>
 
             {/* Trust badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.32 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6"
-            >
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6">
               {[{ label: 'HIPAA Compliant' }, { label: 'DSM-5 Aligned' }].map((item) => (
                 <div key={item.label} className="flex items-center gap-2 text-slate-400">
                   <span className="flex h-5 w-5 items-center justify-center rounded-md border border-teal-500/25 bg-teal-500/[0.08] shrink-0">
@@ -262,10 +121,12 @@ export default function HeroSection() {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </span>
-                  <span className="text-slate-400 font-medium tracking-wide text-xs sm:text-[0.8rem]">{item.label}</span>
+                  <span className="text-slate-400 font-medium tracking-wide text-xs sm:text-[0.8rem]">
+                    {item.label}
+                  </span>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Video — below text on mobile, right column on desktop */}
