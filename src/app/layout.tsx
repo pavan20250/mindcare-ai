@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import AuthHashHandler from "@/components/auth/AuthHashHandler";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -55,12 +54,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${plusJakarta.variable} antialiased text-slate-200 min-h-screen font-sans`}>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var h=window.location.hash;if(!h||h.indexOf("access_token=")===-1)return;var p=new URLSearchParams(h.substring(1)),t=p.get("access_token");if(!t)return;if(p.get("type")==="recovery")return;fetch("/api/auth/supabase-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({accessToken:t})}).then(function(r){if(r.ok){window.history.replaceState(null,"",window.location.pathname+window.location.search);window.location.replace("/dashboard");}});})();`,
-          }}
-        />
-        <AuthHashHandler />
         {children}
       </body>
     </html>
