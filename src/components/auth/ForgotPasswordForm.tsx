@@ -44,9 +44,9 @@ export default function ForgotPasswordForm() {
             <Image
               src="/NeuralCare_logo/website_logo.png"
               alt="NeuralCare AI"
-              width={220}
-              height={80}
-              className="h-10 w-auto"
+              width={180}
+              height={100}
+              className="h-36 -mb-10 -mt-10 w-auto"
               priority
             />
           </div>
