@@ -6,12 +6,19 @@ import { AppSidebar } from '@/components/application/AppSidebar';
 import { IntakeProvider, useIntake } from '@/contexts/IntakeContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import type { Role } from '@/lib/auth';
 
 const INTAKE_PATH = '/demo';
 const DEFAULT_AUTH_REDIRECT = '/dashboard';
 const GATED_PATHS = ['/care', '/appointments', '/resources'];
 
-type SessionUser = { email: string; name?: string; id?: string; role?: string; roleLabel?: string };
+type SessionUser = {
+  email: string;
+  name?: string;
+  id?: string;
+  role?: Role;
+  roleLabel?: string;
+};
 
 function AppLayoutInner({ user, children }: { user: SessionUser; children: React.ReactNode }) {
   const { intakeCompleted } = useIntake();

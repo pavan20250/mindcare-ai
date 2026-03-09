@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
+
 import {
   LayoutDashboard,
   MessageCircle,
@@ -17,6 +19,7 @@ import {
   CheckCircle2,
   ShieldCheck,
 } from 'lucide-react';
+
 import {
   Sidebar,
   SidebarContent,
@@ -30,17 +33,26 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+
 import { Badge } from '@/components/ui/badge';
 import { useIntake } from '@/contexts/IntakeContext';
 
+interface UserProps {
+  email: string;
+  name?: string;
+  role?: 'user' | 'admin' | 'superadmin';
+  roleLabel?: string;
+}
+
 interface AppSidebarProps {
-  user: { email: string; name?: string; role?: string; roleLabel?: string };
+  user: UserProps;
 }
 
 const INTAKE_HREF = '/demo';
@@ -59,33 +71,81 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const router = useRouter();
   const { intakeCompleted } = useIntake();
 
-  const handleSignOut = async () => {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-    router.replace('/login?next=' + encodeURIComponent(pathname));
-    router.refresh();
-  };
+  const userDisplayName = useMemo(() => {
+    return user.name || user.email.split('@')[0];
+  }, [user]);
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+      router.refresh();
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  }, [pathname, router]);
+
+  const isLocked = useCallback(
+    (href: string) => {
+      const isDashboard = href === '/dashboard';
+      const isIntake = href === INTAKE_HREF;
+      const isPricing = href === '/pricing';
+
+      return !isDashboard && !isIntake && !isPricing && !intakeCompleted;
+    },
+    [intakeCompleted]
+  );
+
+  const isActiveRoute = useCallback(
+    (href: string) => pathname === href || pathname.startsWith(href),
+    [pathname]
+  );
 
   return (
-    <Sidebar side="left" variant="sidebar" collapsible="offcanvas" className="border-r border-slate-200">
+    <Sidebar
+      side="left"
+      variant="sidebar"
+      collapsible="icon"
+      className="border-r border-slate-200"
+    >
+      {/* HEADER */}
       <SidebarHeader className="border-b border-slate-200/80 bg-white">
         <Link href="/dashboard" className="flex items-center font-semibold">
-          <Image src="/NeuralCare_logo/website_logo.png" alt="NeuralCare AI" width={180} height={100} className="h-40 -mb-14 -mt-12 w-auto" />
+          <Image
+            src="/NeuralCare_logo/website_logo.png"
+            alt="NeuralCare AI"
+            width={180}
+            height={100}
+            priority
+            className="h-40 -mb-14 -mt-12 w-auto"
+          />
         </Link>
       </SidebarHeader>
+
+      {/* CONTENT */}
       <SidebarContent className="bg-white">
+
+        {/* ACCOUNT */}
         <SidebarGroup className="p-1.5 pb-0">
           <SidebarGroupLabel className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.14em] px-1.5 mb-0.5">
             Account
           </SidebarGroupLabel>
+
           <SidebarGroupContent>
             <div className="flex items-center gap-2.5 px-1.5 py-1">
               <div className="flex size-7 items-center justify-center rounded-full bg-teal-50 border border-teal-100 text-teal-600">
                 <User className="size-3.5" />
               </div>
+
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-medium text-slate-800 leading-tight">
-                  {user.name || user.email.split('@')[0]}
+                  {userDisplayName}
                 </p>
+
                 <p className="truncate text-[11px] text-slate-400 leading-tight">
                   {user.roleLabel ?? 'User'}
                 </p>
@@ -93,21 +153,23 @@ export function AppSidebar({ user }: AppSidebarProps) {
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
+
         <SidebarSeparator className="bg-slate-200/80 mx-2 my-1" />
+
+        {/* NAVIGATION */}
         <SidebarGroup className="p-1.5 pt-0">
           <SidebarGroupLabel className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.14em] px-1.5 mb-0.5">
             Navigation
           </SidebarGroupLabel>
+
           <SidebarGroupContent>
             <TooltipProvider delayDuration={300}>
               <SidebarMenu>
                 {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+                  const locked = isLocked(href);
+                  const isActive = isActiveRoute(href);
                   const isIntake = href === INTAKE_HREF;
-                  const isDashboard = href === '/dashboard';
-                  const isPricing = href === '/pricing';
-                  const locked = !isDashboard && !isIntake && !isPricing && !intakeCompleted;
-                  const isActive =
-                    pathname === href || pathname.startsWith(href);
+
                   return (
                     <SidebarMenuItem key={href}>
                       {locked ? (
@@ -119,24 +181,42 @@ export function AppSidebar({ user }: AppSidebarProps) {
                             >
                               <Lock className="size-4 text-slate-400" />
                               <span>{label}</span>
-                              <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 bg-slate-100 text-slate-400 border border-slate-200">
+
+                              <Badge
+                                variant="secondary"
+                                className="ml-auto text-[10px] px-1.5 py-0 bg-slate-100 text-slate-400 border border-slate-200"
+                              >
                                 Complete intake
                               </Badge>
                             </SidebarMenuButton>
                           </TooltipTrigger>
-                          <TooltipContent side="right" className="bg-white border-slate-200 text-slate-600 shadow-lg">
+
+                          <TooltipContent
+                            side="right"
+                            className="bg-white border-slate-200 text-slate-600 shadow-lg"
+                          >
                             Complete your intake to unlock
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <SidebarMenuButton asChild isActive={isActive} className={isActive ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive}
+                          className={
+                            isActive
+                              ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium'
+                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                          }
+                        >
                           <Link href={href}>
                             {isIntake && intakeCompleted ? (
                               <CheckCircle2 className="size-4 text-teal-600" />
                             ) : (
                               <Icon className="size-4" />
                             )}
+
                             <span>{label}</span>
+
                             {isIntake && !intakeCompleted && (
                               <Badge className="ml-auto bg-teal-50 text-teal-700 text-[10px] px-1.5 py-0 border border-teal-200">
                                 Step 1
@@ -153,8 +233,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* FOOTER */}
       <SidebarFooter className="border-t border-slate-200/80 bg-white">
         <SidebarMenu>
+
           {(user.role === 'admin' || user.role === 'superadmin') && (
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -169,6 +252,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                 <Link href="/admin">
                   <ShieldCheck className="size-4" />
                   <span>Admin</span>
+
                   <Badge
                     variant="secondary"
                     className="ml-auto text-[10px] px-1.5 py-0 bg-amber-100 text-amber-800 border border-amber-200"
@@ -179,20 +263,34 @@ export function AppSidebar({ user }: AppSidebarProps) {
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
+
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === '/settings'} className={pathname === '/settings' ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === '/settings'}
+              className={
+                pathname === '/settings'
+                  ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+              }
+            >
               <Link href="/settings">
                 <Settings className="size-4" />
                 <span>Settings</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleSignOut} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+            <SidebarMenuButton
+              onClick={handleSignOut}
+              className="text-slate-400 hover:text-red-600 hover:bg-red-50"
+            >
               <LogOut className="size-4" />
               <span>Sign out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
