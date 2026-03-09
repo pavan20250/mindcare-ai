@@ -1,15 +1,70 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 function HeroVideo() {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+
+        // Start loading slightly before it fully enters the viewport.
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+        }
+      },
+      { root: null, rootMargin: '200px 0px', threshold: 0.15 },
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoad) return;
+
+    const v = videoRef.current;
+    if (!v) return;
+
+    // Attempt autoplay as soon as we decide to load; muted + playsInline
+    // is required for iOS/Android autoplay.
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof (p as Promise<void>).catch === 'function') {
+        (p as Promise<void>).catch(() => {
+          // Autoplay may be blocked in rare cases; keep poster visible.
+        });
+      }
+    };
+
+    // If enough data is already available, play immediately.
+    if (v.readyState >= 2) {
+      tryPlay();
+      return;
+    }
+
+    v.addEventListener('canplay', tryPlay, { once: true });
+    return () => v.removeEventListener('canplay', tryPlay);
+  }, [shouldLoad]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.7, delay: 0.3 }}
       className="relative w-full max-w-xl mx-auto"
+      ref={wrapperRef}
     >
       <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/20 via-cyan-500/10 to-teal-500/20 rounded-2xl blur-xl" />
       <div className="relative rounded-2xl overflow-hidden bg-black/60 backdrop-blur-sm shadow-2xl shadow-teal-900/20 ring-1 ring-white/10">
@@ -17,15 +72,31 @@ function HeroVideo() {
           <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
           Demo
         </div>
+        {/* Poster overlay while video is loading/initializing (prevents "black flash" on iOS). */}
+        <div
+          className={[
+            'absolute inset-0 z-[1] transition-opacity duration-300',
+            isReady ? 'opacity-0 pointer-events-none' : 'opacity-100',
+          ].join(' ')}
+          aria-hidden="true"
+          style={{
+            backgroundImage: 'url(/website_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
         <video
-          className="w-full aspect-video object-cover"
-          src="/NeuralCare_AI_Intro.mp4"
+          ref={videoRef}
+          className="relative z-0 w-full aspect-video object-cover"
+          src={shouldLoad ? '/NeuralCare_AI_Intro.mp4' : undefined}
+          poster="/website_logo.png"
           playsInline
           muted
           loop
           autoPlay
-          preload="auto"
+          preload="metadata"
           aria-label="NeuralCare AI patient journey demo"
+          onLoadedData={() => setIsReady(true)}
         />
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
       </div>
