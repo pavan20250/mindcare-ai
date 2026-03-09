@@ -2,18 +2,22 @@
 
 import { useState, type InputHTMLAttributes } from 'react';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
-/*  Google icon (official brand SVG)                                   */
+/*  Shared class constants                                             */
+/* ------------------------------------------------------------------ */
+const inputClass =
+  'w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 text-sm text-slate-200 placeholder-slate-600 outline-none transition-all duration-150 hover:border-white/[0.13] hover:bg-white/[0.06] focus:border-teal-500/40 focus:bg-white/[0.06] focus:ring-2 focus:ring-teal-500/10';
+
+const labelClass =
+  'text-[11px] font-medium uppercase tracking-widest text-slate-500';
+
+/* ------------------------------------------------------------------ */
+/*  Google icon                                                        */
 /* ------------------------------------------------------------------ */
 export function GoogleIcon({ className }: { className?: string }) {
   return (
-    <svg className={cn('size-5', className)} viewBox="0 0 24 24" aria-hidden="true">
+    <svg className={className ?? 'size-5'} viewBox="0 0 24 24" aria-hidden="true">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
@@ -27,15 +31,14 @@ export function GoogleIcon({ className }: { className?: string }) {
 /* ------------------------------------------------------------------ */
 export function GoogleOAuthButton({ label = 'Continue with Google' }: { label?: string }) {
   return (
-    <Button
+    <button
       type="button"
-      variant="outline"
-      className="w-full h-11 rounded-xl border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white font-medium gap-2.5 transition-all duration-200"
       onClick={() => { window.location.href = '/api/auth/google'; }}
+      className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] py-2.5 text-sm font-medium text-slate-200 transition-all duration-150 hover:border-white/[0.13] hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-teal-500/10"
     >
       <GoogleIcon className="size-[18px]" />
       {label}
-    </Button>
+    </button>
   );
 }
 
@@ -46,33 +49,30 @@ export function OAuthDivider() {
   return (
     <div className="relative my-5">
       <div className="absolute inset-0 flex items-center" aria-hidden="true">
-        <div className="w-full border-t border-white/[0.08]" />
+        <div className="w-full border-t border-white/[0.06]" />
       </div>
-      <div className="relative flex justify-center text-xs uppercase tracking-wider">
-        <span className="bg-[#0c1220] px-3 text-slate-500 select-none">or</span>
+      <div className="relative flex justify-center">
+        <span className="bg-transparent px-3 text-[11px] uppercase tracking-widest text-slate-600 select-none">
+          or
+        </span>
       </div>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Styled form field (label + input)                                  */
+/*  Auth field (label + input)                                         */
 /* ------------------------------------------------------------------ */
-const inputClasses =
-  'rounded-xl border-white/10 bg-white/[0.05] h-11 text-white placeholder:text-slate-500 focus:border-teal-400/60 focus:ring-2 focus:ring-teal-400/20 transition-all duration-200';
-
 interface AuthFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   fieldId: string;
 }
 
-export function AuthField({ label, fieldId, className, ...props }: AuthFieldProps) {
+export function AuthField({ label, fieldId, ...props }: AuthFieldProps) {
   return (
-    <div className="space-y-1.5">
-      <Label htmlFor={fieldId} className="text-slate-300 text-[13px] font-medium">
-        {label}
-      </Label>
-      <Input id={fieldId} className={cn(inputClasses, className)} {...props} />
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={fieldId} className={labelClass}>{label}</label>
+      <input id={fieldId} className={inputClass} {...props} />
     </div>
   );
 }
@@ -85,18 +85,16 @@ interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   fieldId: string;
 }
 
-export function PasswordField({ label, fieldId, className, ...props }: PasswordFieldProps) {
+export function PasswordField({ label, fieldId, ...props }: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
   return (
-    <div className="space-y-1.5">
-      <Label htmlFor={fieldId} className="text-slate-300 text-[13px] font-medium">
-        {label}
-      </Label>
-      <div className="relative">
-        <Input
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={fieldId} className={labelClass}>{label}</label>
+      <div className="relative flex items-center">
+        <input
           id={fieldId}
           type={visible ? 'text' : 'password'}
-          className={cn(inputClasses, 'pr-11', className)}
+          className={`${inputClass} pr-10`}
           {...props}
         />
         <button
@@ -104,16 +102,18 @@ export function PasswordField({ label, fieldId, className, ...props }: PasswordF
           tabIndex={-1}
           aria-label={visible ? 'Hide password' : 'Show password'}
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+          className="absolute right-3 text-slate-600 hover:text-slate-400 transition-colors duration-150"
         >
           {visible ? (
-            <svg className="size-[18px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12c1.292 4.338 5.31 7.5 10.066 7.5.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
             </svg>
           ) : (
-            <svg className="size-[18px]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
             </svg>
           )}
         </button>
@@ -128,11 +128,12 @@ export function PasswordField({ label, fieldId, className, ...props }: PasswordF
 export function AuthError({ message }: { message: string }) {
   if (!message) return null;
   return (
-    <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/[0.07] px-3.5 py-2.5 text-red-300 text-sm animate-in fade-in slide-in-from-top-1 duration-200">
-      <svg className="size-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+    <div role="alert" className="flex items-start gap-2.5 rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5">
+      <svg className="mt-px shrink-0 text-red-400" width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M8 5v3.5M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
-      <span>{message}</span>
+      <p className="text-[13px] text-red-300 leading-snug">{message}</p>
     </div>
   );
 }
@@ -143,47 +144,49 @@ export function AuthError({ message }: { message: string }) {
 export function AuthSuccess({ message }: { message: string }) {
   if (!message) return null;
   return (
-    <div role="status" className="flex items-start gap-2.5 rounded-xl border border-teal-500/20 bg-teal-500/[0.07] px-3.5 py-2.5 text-teal-300 text-sm animate-in fade-in slide-in-from-top-1 duration-200">
-      <svg className="size-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <div role="status" className="flex items-start gap-2.5 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.08] px-3.5 py-2.5">
+      <svg className="mt-px shrink-0 text-emerald-400" width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M5 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
-      <span>{message}</span>
+      <p className="text-[13px] text-emerald-300 leading-snug">{message}</p>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Submit button with loading spinner                                 */
+/*  Submit button                                                      */
 /* ------------------------------------------------------------------ */
 export function SubmitButton({ loading, children }: { loading: boolean; children: React.ReactNode }) {
   return (
-    <Button
+    <button
       type="submit"
       disabled={loading}
-      className="w-full h-11 rounded-xl font-semibold bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 active:scale-[0.98] text-white border-0 shadow-lg shadow-teal-500/20 transition-all duration-200 disabled:opacity-60"
+      className="mt-1 w-full rounded-lg py-2.5 bg-gradient-to-r from-teal-400 to-cyan-500 text-sm font-medium text-slate-900 transition-all duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-teal-500/40"
     >
       {loading ? (
-        <span className="flex items-center gap-2">
-          <LoadingSpinner size="xs" variant="inverted" />
+        <span className="flex items-center justify-center gap-2">
+          <svg className="animate-spin size-4 text-slate-900/60" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+          </svg>
           Please wait…
         </span>
-      ) : (
-        children
-      )}
-    </Button>
+      ) : children}
+    </button>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Auth footer link                                                   */
+/*  Auth footer                                                        */
 /* ------------------------------------------------------------------ */
 export function AuthFooter({ text, linkText, href }: { text: string; linkText: string; href: string }) {
   return (
-    <p className="mt-5 text-center text-slate-400 text-sm">
+    <div className="mt-5 pt-5 border-t border-white/[0.05] text-center text-[13px] text-slate-600">
       {text}{' '}
-      <Link href={href} className="text-teal-400 font-medium hover:text-teal-300 transition-colors">
+      <Link href={href} className="text-teal-400 font-medium hover:opacity-80 transition-opacity">
         {linkText}
       </Link>
-    </p>
+    </div>
   );
 }
