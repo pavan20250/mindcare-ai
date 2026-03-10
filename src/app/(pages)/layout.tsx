@@ -7,6 +7,7 @@ import { IntakeProvider, useIntake } from '@/contexts/IntakeContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import type { Role } from '@/lib/auth';
+import { getPageKeyFromPath, hasAccess, type Role as RbacRole } from '@/lib/permissions';
 
 const INTAKE_PATH = '/demo';
 const DEFAULT_AUTH_REDIRECT = '/dashboard';
@@ -48,6 +49,7 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
   const [user, setUser] = useState<SessionUser | null>(null);
   const [initialIntakeCompleted, setInitialIntakeCompleted] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [rbacRedirecting, setRbacRedirecting] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth/session', { credentials: 'include' })
@@ -71,7 +73,20 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
       .finally(() => setChecking(false));
   }, [pathname, router]);
 
-  if (checking || !user) {
+  useEffect(() => {
+    if (checking || !user) return;
+    const pageKey = getPageKeyFromPath(pathname || '');
+    if (!pageKey) return;
+    const role = (user.role ?? 'user') as RbacRole;
+    if (!hasAccess(role, pageKey)) {
+      setRbacRedirecting(true);
+      router.replace('/unauthorized');
+    } else {
+      setRbacRedirecting(false);
+    }
+  }, [checking, pathname, router, user]);
+
+  if (checking || !user || rbacRedirecting) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#f8fafb]">
         <LoadingSpinner size="xl" />

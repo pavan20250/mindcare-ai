@@ -482,8 +482,8 @@ export function SettingsView() {
                         size="sm"
                         className="rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold border-0 shadow-sm shadow-teal-600/15 text-xs h-8 px-3.5"
                       >
-                        <Link href="/pricing">
-                          Upgrade
+                        <Link href="/settings?tab=account">
+                          Manage
                           <ChevronRight className="size-3 ml-0.5" />
                         </Link>
                       </Button>
