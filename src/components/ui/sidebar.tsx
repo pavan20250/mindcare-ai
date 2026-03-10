@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { getAccessiblePages, type PageKey, type Role } from "@/lib/permissions"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -721,4 +722,20 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+}
+
+export type SidebarNavItem = {
+  page: PageKey
+} & Record<string, unknown>
+
+/**
+ * Filters a nav item list using centralized RBAC permissions.
+ * Permission rules remain in `src/lib/permissions.ts`.
+ */
+export function filterSidebarNavItemsByRole<T extends SidebarNavItem>(
+  role: Role,
+  items: readonly T[]
+): T[] {
+  const allowed = new Set(getAccessiblePages(role))
+  return items.filter((item) => allowed.has(item.page))
 }

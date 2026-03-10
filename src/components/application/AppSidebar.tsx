@@ -11,6 +11,7 @@ import {
   Heart,
   Calendar,
   BookOpen,
+  BarChart3,
   CreditCard,
   Settings,
   LogOut,
@@ -43,6 +44,8 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { useIntake } from '@/contexts/IntakeContext';
+import type { Role } from '@/lib/permissions';
+import { NavMenu } from '@/components/navigation/NavMenu';
 
 interface UserProps {
   email: string;
@@ -59,17 +62,19 @@ const INTAKE_HREF = '/demo';
 
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/profile', label: 'Profile', icon: User },
   { href: INTAKE_HREF, label: 'Clinical intake', icon: MessageCircle, primary: true },
   { href: '/care', label: 'My care', icon: Heart },
   { href: '/appointments', label: 'Appointments', icon: Calendar },
   { href: '/resources', label: 'Resources', icon: BookOpen },
-  { href: '/pricing', label: 'Pricing', icon: CreditCard },
+  { href: '/reports', label: 'Reports', icon: BarChart3 },
 ] as const;
 
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { intakeCompleted } = useIntake();
+  const role = (user.role ?? 'user') as Role;
 
   const userDisplayName = useMemo(() => {
     return user.name || user.email.split('@')[0];
@@ -92,10 +97,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const isLocked = useCallback(
     (href: string) => {
       const isDashboard = href === '/dashboard';
+      const isProfile = href === '/profile';
+      const isReports = href === '/reports';
       const isIntake = href === INTAKE_HREF;
-      const isPricing = href === '/pricing';
 
-      return !isDashboard && !isIntake && !isPricing && !intakeCompleted;
+      return !isDashboard && !isProfile && !isReports && !isIntake && !intakeCompleted;
     },
     [intakeCompleted]
   );
@@ -156,10 +162,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
         <SidebarSeparator className="bg-slate-200/80 mx-2 my-1" />
 
-        {/* NAVIGATION */}
+        {/* GENERAL */}
         <SidebarGroup className="p-1.5 pt-0">
           <SidebarGroupLabel className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.14em] px-1.5 mb-0.5">
-            Navigation
+            General
           </SidebarGroupLabel>
 
           <SidebarGroupContent>
@@ -232,37 +238,16 @@ export function AppSidebar({ user }: AppSidebarProps) {
             </TooltipProvider>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarSeparator className="bg-slate-200/80 mx-2 my-1" />
+
+        {/* ROLE-BASED NAVIGATION (RBAC) */}
+        <NavMenu role={role} />
       </SidebarContent>
 
       {/* FOOTER */}
       <SidebarFooter className="border-t border-slate-200/80 bg-white">
         <SidebarMenu>
-
-          {(user.role === 'admin' || user.role === 'superadmin') && (
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/admin'}
-                className={
-                  pathname === '/admin'
-                    ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                }
-              >
-                <Link href="/admin">
-                  <ShieldCheck className="size-4" />
-                  <span>Admin</span>
-
-                  <Badge
-                    variant="secondary"
-                    className="ml-auto text-[10px] px-1.5 py-0 bg-amber-100 text-amber-800 border border-amber-200"
-                  >
-                    {user.role === 'superadmin' ? 'Superadmin' : 'Admin'}
-                  </Badge>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )}
 
           <SidebarMenuItem>
             <SidebarMenuButton
