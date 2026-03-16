@@ -8,3 +8,4 @@ export { DemoView } from './DemoView';
 export type { DemoStep } from './DemoView';
 export { PricingView } from './PricingView';
 export { SettingsView } from './SettingsView';
+export { AiChatView } from './AiChatView';
