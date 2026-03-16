@@ -9,6 +9,7 @@ import {
   KeyRound,
   LayoutDashboard,
   ListChecks,
+  Sparkles,
   ScrollText,
   Settings,
   Shield,
@@ -30,11 +31,12 @@ import {
 
 type PageDef = (typeof PAGES)[PageKey];
 
-const CATEGORY_ORDER: Array<PageDef['category']> = ['General', 'Admin', 'SuperAdmin'];
+const CATEGORY_ORDER: Array<PageDef['category']> = ['Admin', 'SuperAdmin'];
 
 const ICONS: Record<PageKey, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
   profile: UserIcon,
+  chat: Sparkles,
   reports: BarChart3,
 
   team: Users,
@@ -51,7 +53,7 @@ const ICONS: Record<PageKey, React.ComponentType<{ className?: string }>> = {
 export function NavMenu({ role }: { role: Role }) {
   const pathname = usePathname();
   const pages = getAccessiblePages(role).filter(
-    (key) => key !== 'dashboard' && key !== 'profile' && key !== 'reports'
+    (key) => key !== 'dashboard' && key !== 'profile' && key !== 'chat' && key !== 'reports'
   );
 
   const byCategory = pages.reduce<Record<PageDef['category'], PageKey[]>>(

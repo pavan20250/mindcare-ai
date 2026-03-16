@@ -16,7 +16,7 @@ export default function Footer() {
                 alt="NeuralCare AI"
                 width={180}
                 height={100}
-                className="h-20 sm:h-24 w-auto"
+                className="h-32 -mb-8 -mt-10 sm:h-24 w-auto"
               />
             </div>
             <p className="text-slate-500 text-[11px] leading-relaxed max-w-[200px] sm:max-w-[180px] mb-3">
@@ -60,10 +60,10 @@ export default function Footer() {
             <h4 className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-2.5">Product</h4>
             <ul className="space-y-1.5">
               {[
-                { href: '#challenges', label: 'Why Us' },
-                { href: '#features', label: 'Platform' },
-                { href: '#clinical', label: 'Clinical Scope' },
-                { href: '#benefits', label: 'Benefits' },
+                { href: 'challenges', label: 'Why Us' },
+                { href: 'features', label: 'Platform' },
+                { href: 'clinical', label: 'Clinical Scope' },
+                { href: 'benefits', label: 'Benefits' },
               ].map(({ href, label }) => (
                 <li key={label}>
                   <a href={href} className="text-slate-400 hover:text-white text-xs transition-colors">

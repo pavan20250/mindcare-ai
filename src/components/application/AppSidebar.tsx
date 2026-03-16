@@ -19,6 +19,7 @@ import {
   Lock,
   CheckCircle2,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 
 import {
@@ -63,6 +64,7 @@ const INTAKE_HREF = '/demo';
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/profile', label: 'Profile', icon: User },
+  { href: '/chat', label: 'Chat', icon: Sparkles },
   { href: INTAKE_HREF, label: 'Clinical intake', icon: MessageCircle, primary: true },
   { href: '/care', label: 'My care', icon: Heart },
   { href: '/appointments', label: 'Appointments', icon: Calendar },
@@ -98,10 +100,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
     (href: string) => {
       const isDashboard = href === '/dashboard';
       const isProfile = href === '/profile';
+      const isChat = href === '/chat';
       const isReports = href === '/reports';
       const isIntake = href === INTAKE_HREF;
 
-      return !isDashboard && !isProfile && !isReports && !isIntake && !intakeCompleted;
+      return !isDashboard && !isProfile && !isChat && !isReports && !isIntake && !intakeCompleted;
     },
     [intakeCompleted]
   );

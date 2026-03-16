@@ -12,6 +12,7 @@ export type Role = AuthRole;
 export const PAGES = {
   dashboard: { href: '/dashboard', label: 'Dashboard', category: 'General' },
   profile: { href: '/profile', label: 'Profile', category: 'General' },
+  chat: { href: '/chat', label: 'Chat', category: 'General' },
   reports: { href: '/reports', label: 'Reports', category: 'General' },
 
   team: { href: '/team', label: 'Team', category: 'Admin' },
@@ -28,11 +29,12 @@ export const PAGES = {
 export type PageKey = keyof typeof PAGES;
 
 export const ROLE_PERMISSIONS: Record<Role, readonly PageKey[]> = {
-  user: ['dashboard', 'profile', 'reports'],
-  admin: ['dashboard', 'profile', 'reports', 'team', 'billing', 'audit_logs'],
+  user: ['dashboard', 'profile', 'chat', 'reports'],
+  admin: ['dashboard', 'profile', 'chat', 'reports', 'team', 'billing', 'audit_logs'],
   superadmin: [
     'dashboard',
     'profile',
+    'chat',
     'reports',
     'team',
     'billing',
