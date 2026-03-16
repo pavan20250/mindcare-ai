@@ -65,6 +65,26 @@ export function AiChatView() {
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Prevent the whole document from scrolling while in chat.
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevBodyOverscroll = body.style.overscrollBehavior;
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    body.style.overscrollBehavior = 'none';
+
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      body.style.overscrollBehavior = prevBodyOverscroll;
+    };
+  }, []);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages.length, sending]);
@@ -130,9 +150,9 @@ export function AiChatView() {
   }, [draft, messages, sending]);
 
   return (
-    <div className="flex h-full min-h-[calc(100vh-80px)] flex-col bg-[#f8fafb]">
+    <div className="flex h-dvh overflow-hidden flex-col bg-[#f8fafb]">
       {/* Header */}
-      <header className="border-b border-slate-200/80 bg-white px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/95 backdrop-blur px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex size-9 items-center justify-center rounded-xl bg-teal-600 text-white shadow-sm shadow-teal-600/20">
             <Sparkles className="size-4" />
@@ -158,7 +178,7 @@ export function AiChatView() {
       </header>
 
       {/* Main chat area */}
-      <main className="flex-1 min-h-0">
+      <main className="flex-1 min-h-0 overflow-hidden">
         {error && (
           <div className="px-4 sm:px-8 pt-3">
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
@@ -175,22 +195,24 @@ export function AiChatView() {
 
         <div
           ref={scrollRef}
-          className="mt-3 h-full min-h-0 overflow-y-auto px-4 sm:px-8 pb-4 pt-1 space-y-4"
+          className="mt-3 h-full min-h-0 overflow-y-auto px-4 sm:px-8 pb-4 pt-1"
         >
-          {messages.map((m) => (
-            <Bubble key={m.id} role={m.role} content={m.content} />
-          ))}
-          {sending && (
-            <div className="flex items-center gap-2 text-slate-400 text-xs">
-              <span className="inline-block size-2 rounded-full bg-teal-400 animate-pulse" />
-              Thinking…
-            </div>
-          )}
+          <div className="min-h-full flex flex-col justify-end gap-4">
+            {messages.map((m) => (
+              <Bubble key={m.id} role={m.role} content={m.content} />
+            ))}
+            {sending && (
+              <div className="flex items-center gap-2 text-slate-400 text-xs">
+                <span className="inline-block size-2 rounded-full bg-teal-400 animate-pulse" />
+                Thinking…
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
       {/* Composer */}
-      <footer className="border-t border-slate-200/80 bg-white px-4 sm:px-8 py-3">
+      <footer className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/95 backdrop-blur px-4 sm:px-8 py-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
         <div className="flex gap-3 items-end">
           <Textarea
             value={draft}
