@@ -211,51 +211,84 @@ export function ProfileView() {
   );
 
   return (
-    <div className="min-h-full bg-[#f8fafb]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5">
+    <div className="min-h-full overflow-x-hidden bg-gradient-to-b from-slate-50 to-white">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-5">
 
         {/* ── Hero Card ── */}
         <Card className="border-slate-200/80 shadow-sm overflow-hidden">
-          {/* Teal banner */}
-          <div className="h-24 bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 relative">
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{
-                backgroundImage: `radial-gradient(circle at 20% 50%, white 1px, transparent 1px),
-                  radial-gradient(circle at 80% 20%, white 1px, transparent 1px)`,
-                backgroundSize: '30px 30px',
-              }}
-            />
-          </div>
-
-          <CardContent className="px-5 sm:px-6 pb-5">
-            <div className="flex items-end justify-between -mt-10 mb-4">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
               {/* Avatar */}
-              <div className="relative">
-                <div className="flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white text-2xl font-bold shadow-lg shadow-teal-500/25 border-4 border-white">
-                  {initials}
+              <div className="flex items-start gap-4 min-w-0">
+                <div className="relative shrink-0">
+                  <div className="flex size-16 sm:size-18 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white text-xl sm:text-2xl font-bold shadow-md shadow-teal-500/15 border border-white">
+                    {initials}
+                  </div>
+                  <button className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm hover:bg-teal-50 hover:border-teal-200 transition-colors">
+                    <Camera className="size-3 text-slate-500" />
+                  </button>
                 </div>
-                <button className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm hover:bg-teal-50 hover:border-teal-200 transition-colors">
-                  <Camera className="size-3 text-slate-500" />
-                </button>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">
+                      {displayName}
+                    </h1>
+                    <Badge className="text-[9px] px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-200 font-bold shadow-none gap-1">
+                      <Shield className="size-2.5" /> Patient
+                    </Badge>
+                    {saved && (
+                      <Badge className="text-[9px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold shadow-none gap-1">
+                        <Check className="size-2.5" /> Saved
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1 min-w-0">
+                    <Mail className="size-3.5 text-slate-400 shrink-0" />
+                    <p className="text-[13px] text-slate-500 truncate">{email || 'No email'}</p>
+                  </div>
+                  {profile.bio && (
+                    <p className="text-[13px] text-slate-600 mt-2 leading-relaxed">
+                      {profile.bio}
+                    </p>
+                  )}
+
+                  <div className="mt-4 rounded-xl border border-slate-100 bg-white/70 p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-semibold text-slate-600">Profile completion</span>
+                      <span className="text-[11px] font-bold text-teal-700">{completion}%</span>
+                    </div>
+                    <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full transition-all duration-500"
+                        style={{ width: `${completion}%` }}
+                      />
+                    </div>
+                    {completion < 100 && (
+                      <p className="text-[10px] text-slate-400 mt-1.5">
+                        Complete your profile to unlock all features
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Edit / Save buttons */}
-              <div className="flex gap-2 mt-10">
+              {/* Actions */}
+              <div className="flex gap-2 flex-wrap lg:justify-end lg:pt-1">
                 {editing ? (
                   <>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleCancel}
-                      className="h-8 text-xs border-slate-200 text-slate-600"
+                      className="h-9 text-xs border-slate-200 text-slate-700 bg-white"
                     >
                       Cancel
                     </Button>
                     <Button
                       size="sm"
                       onClick={handleSave}
-                      className="h-8 text-xs bg-teal-600 hover:bg-teal-700 text-white border-0 shadow-sm shadow-teal-600/20"
+                      className="h-9 text-xs bg-teal-600 hover:bg-teal-700 text-white border-0 shadow-sm shadow-teal-600/20"
                     >
                       <Save className="size-3 mr-1.5" />
                       Save changes
@@ -266,7 +299,7 @@ export function ProfileView() {
                     variant="outline"
                     size="sm"
                     onClick={handleEdit}
-                    className="h-8 text-xs border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700 hover:bg-teal-50"
+                    className="h-9 text-xs border-slate-200 text-slate-700 bg-white hover:border-teal-300 hover:text-teal-700 hover:bg-teal-50"
                   >
                     <Edit3 className="size-3 mr-1.5" />
                     Edit profile
@@ -274,53 +307,12 @@ export function ProfileView() {
                 )}
               </div>
             </div>
-
-            {/* Name + email */}
-            <div className="mb-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-lg font-bold text-slate-900 tracking-tight">{displayName}</h1>
-                <Badge className="text-[9px] px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-200 font-bold shadow-none gap-1">
-                  <Shield className="size-2.5" /> Patient
-                </Badge>
-                {saved && (
-                  <Badge className="text-[9px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold shadow-none gap-1">
-                    <Check className="size-2.5" /> Saved
-                  </Badge>
-                )}
-              </div>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Mail className="size-3 text-slate-400" />
-                <p className="text-[12px] text-slate-400">{email || 'No email'}</p>
-              </div>
-              {profile.bio && (
-                <p className="text-[13px] text-slate-500 mt-2 leading-relaxed">{profile.bio}</p>
-              )}
-            </div>
-
-            {/* Profile completion bar */}
-            <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold text-slate-600">Profile completion</span>
-                <span className="text-[11px] font-bold text-teal-600">{completion}%</span>
-              </div>
-              <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full transition-all duration-500"
-                  style={{ width: `${completion}%` }}
-                />
-              </div>
-              {completion < 100 && (
-                <p className="text-[10px] text-slate-400 mt-1.5">
-                  Complete your profile to unlock all features
-                </p>
-              )}
-            </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* ── Left column: forms ── */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-8 space-y-4">
 
             {/* Personal Info */}
             <Card className="border-slate-200/80 shadow-sm">
@@ -478,12 +470,12 @@ export function ProfileView() {
           </div>
 
           {/* ── Right column: stats + quick links ── */}
-          <div className="space-y-4">
+          <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-6 h-fit">
 
             {/* Stats */}
             <Card className="border-slate-200/80 shadow-sm">
-              <CardContent className="p-5 space-y-2.5">
-                <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-3">
+              <CardContent className="p-5 sm:p-6 space-y-2.5">
+                <h2 className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-3">
                   Overview
                 </h2>
                 <StatCard
@@ -515,8 +507,8 @@ export function ProfileView() {
 
             {/* Quick actions */}
             <Card className="border-slate-200/80 shadow-sm">
-              <CardContent className="p-5">
-                <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-3">
+              <CardContent className="p-5 sm:p-6">
+                <h2 className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-3">
                   Quick links
                 </h2>
                 <div className="space-y-0.5">
@@ -529,7 +521,7 @@ export function ProfileView() {
                     <a
                       key={href}
                       href={href}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors group"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-colors group"
                     >
                       <Icon className={`size-3.5 shrink-0 ${color}`} />
                       <span className="text-[13px] text-slate-600 group-hover:text-slate-900 transition-colors flex-1 font-medium">
@@ -543,7 +535,7 @@ export function ProfileView() {
             </Card>
 
             {/* HIPAA badge */}
-            <div className="flex items-start gap-2.5 rounded-xl border border-teal-100 bg-teal-50/60 px-3.5 py-3">
+            <div className="flex items-start gap-2.5 rounded-xl border border-teal-100 bg-teal-50/60 px-4 py-3.5">
               <Shield className="size-4 text-teal-600 shrink-0 mt-0.5" />
               <div>
                 <p className="text-[12px] font-semibold text-teal-700">HIPAA Compliant</p>
