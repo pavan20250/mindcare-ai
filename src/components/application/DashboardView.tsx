@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIntake } from '@/contexts/IntakeContext';
+import { PageBackground } from '@/components/application/PageBg';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -532,13 +533,13 @@ export function DashboardView() {
       primary: !intakeCompleted,
       done: intakeCompleted,
     },
-    { href: '/care',         label: 'My care plan',  description: 'Insights & next steps',         icon: Heart,    accent: 'text-rose-500',   locked: !intakeCompleted },
+    { href: '/care',         label: 'My care plan',  description: 'Insights & next steps',           icon: Heart,    accent: 'text-rose-500',   locked: !intakeCompleted },
     { href: '/appointments', label: 'Appointments',  description: `${upcomingCount} upcoming · Book`, icon: Calendar, accent: 'text-blue-600',   locked: !intakeCompleted },
-    { href: '/resources',    label: 'Resources',     description: 'Guides & exercises',             icon: BookOpen, accent: 'text-violet-600', locked: !intakeCompleted },
+    { href: '/resources',    label: 'Resources',     description: 'Guides & exercises',               icon: BookOpen, accent: 'text-violet-600', locked: !intakeCompleted },
   ];
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-100 via-white to-slate-50">
+    <PageBackground>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-4">
 
         <WelcomeBanner intakeCompleted={intakeCompleted} />
@@ -568,6 +569,6 @@ export function DashboardView() {
         </section>
 
       </div>
-    </div>
+    </PageBackground>
   );
 }

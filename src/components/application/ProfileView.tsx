@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PageBackground } from '@/components/application/PageBg';
 
 interface Profile {
   firstName: string; lastName: string; phone: string; dateOfBirth: string;
@@ -102,7 +103,7 @@ export function ProfileView() {
   const completion = Math.round((completionFields.filter((f) => profile[f]?.trim()).length / completionFields.length) * 100);
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-100 via-white to-slate-50">
+    <PageBackground>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-5">
 
         {/* Hero */}
@@ -242,10 +243,10 @@ export function ProfileView() {
             <Card>
               <CardContent className="p-5 sm:p-6 space-y-2.5">
                 <h2 className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-3">Overview</h2>
-                <StatCard icon={Clock}    label="Member since"     value={memberSince}              color="text-teal-600" />
-                <StatCard icon={Shield}   label="Account status"   value="Active"                   color="text-emerald-600" />
+                <StatCard icon={Clock}    label="Member since"     value={memberSince}               color="text-teal-600" />
+                <StatCard icon={Shield}   label="Account status"   value="Active"                    color="text-emerald-600" />
                 <StatCard icon={Activity} label="Profile strength" value={`${completion}% complete`} color="text-blue-500" />
-                <StatCard icon={Heart}    label="Care plan"        value="Intake required"          color="text-rose-500" />
+                <StatCard icon={Heart}    label="Care plan"        value="Intake required"           color="text-rose-500" />
               </CardContent>
             </Card>
 
@@ -279,6 +280,6 @@ export function ProfileView() {
           </div>
         </div>
       </div>
-    </div>
+    </PageBackground>
   );
 }
