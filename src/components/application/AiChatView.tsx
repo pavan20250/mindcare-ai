@@ -1,491 +1,293 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Send,
-  AlertTriangle,
-  ChevronDown,
-  Shield,
-  Brain,
-  Plus,
-  HeartPulse,
-  BookOpen,
-  Lightbulb,
-  Sparkles,
-  Lock,
-  Activity,
-} from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
-import { PageBackground } from '@/components/application/PageBg';
+import { ArrowUp, SquarePen, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
+import { PageBackground } from '@/components/application/PageBg';
 
 /* ───────────────────────── TYPES ───────────────────────── */
 type Role = 'user' | 'assistant';
-
-type Message = {
-  id: string;
-  role: Role;
-  content: string;
-  timestamp?: Date;
-};
-
+type Message = { id: string; role: Role; content: string; timestamp?: Date };
 const uid = () => crypto.randomUUID();
 
 /* ───────────────────────── PROMPTS ───────────────────────── */
 const PROMPTS = [
-  {
-    icon: HeartPulse,
-    label: "Managing anxiety",
-    subtitle: "Where do I start?",
-    value: "I've been feeling anxious lately — where do I start?",
-    color: "from-rose-500/10 to-pink-500/5 border-rose-200/40 hover:border-rose-300/60",
-    iconColor: "text-rose-500",
-  },
-  {
-    icon: Brain,
-    label: 'Panic attack coping',
-    subtitle: "Strategies that help",
-    value: 'What coping strategies help with panic attacks?',
-    color: "from-violet-500/10 to-purple-500/5 border-violet-200/40 hover:border-violet-300/60",
-    iconColor: "text-violet-500",
-  },
-  {
-    icon: Lightbulb,
-    label: 'Seeking therapy?',
-    subtitle: "Signs you need help",
-    value: 'How do I know if I need professional help?',
-    color: "from-amber-500/10 to-yellow-500/5 border-amber-200/40 hover:border-amber-300/60",
-    iconColor: "text-amber-500",
-  },
-  {
-    icon: BookOpen,
-    label: 'Understanding CBT',
-    subtitle: "What therapy involves",
-    value: 'Can you explain what CBT therapy involves?',
-    color: "from-teal-500/10 to-emerald-500/5 border-teal-200/40 hover:border-teal-300/60",
-    iconColor: "text-teal-500",
-  },
+  { label: 'Managing anxiety',   sub: 'Where do I start?',    value: "I've been feeling anxious lately — where do I start?" },
+  { label: 'Panic attack coping', sub: 'Strategies that help', value: 'What coping strategies help with panic attacks?' },
+  { label: 'Do I need therapy?', sub: 'Signs to look for',    value: 'How do I know if I need professional help?' },
+  { label: 'Understanding CBT',  sub: 'What it involves',     value: 'Can you explain what CBT therapy involves?' },
 ];
 
-/* ───────────────────────── HELPERS ───────────────────────── */
-const formatTime = (date?: Date) => {
-  if (!date) return '';
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-};
-
-/* ───────────────────────── UI COMPONENTS ───────────────────────── */
-
-const AvatarAI = () => (
-  <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
-    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-600 opacity-20 blur-sm" />
-    <div className="relative flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-md shadow-teal-500/20 border border-white/20 overflow-hidden">
-      <Image
-        src="/NeuralCare_logo/url_logo.png"
-        alt="NeuralCare"
-        width={70}
-        height={70}
-        className="h-full w-full object-cover"
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = 'none';
-        }}
-      />
-      <Brain className="absolute h-4 w-4 text-white opacity-0 peer-[img:not([src])]:opacity-100" />
-    </div>
-  </div>
-);
-
-const AvatarUser = () => (
-  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-800 border border-slate-700/60 text-xs font-bold text-slate-100 shadow-sm tracking-wide">
-    YOU
-  </div>
-);
-
-const Bubble = ({ role, content, timestamp }: Message) => {
+/* ───────────────────────── BUBBLE ───────────────────────── */
+const Bubble = ({ role, content }: Message) => {
   const isUser = role === 'user';
-
   return (
-    <div className={`group flex gap-3 px-4 py-1.5 ${isUser ? 'flex-row-reverse' : ''}`}>
-      {!isUser && <AvatarAI />}
-
-      <div className={`flex max-w-[70%] flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
+    <div className={`flex w-full mb-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      {isUser ? (
         <div
-          className={`rounded-2xl px-4 py-3 text-[13.5px] leading-relaxed shadow-sm
-          ${
-            isUser
-              ? 'bg-gradient-to-br from-slate-800 to-slate-900 text-slate-100 rounded-tr-sm border border-slate-700/50 shadow-slate-900/20'
-              : 'bg-white/80 backdrop-blur-md border border-slate-200/60 text-slate-700 rounded-tl-sm shadow-slate-100/50'
-          }`}
+          className="max-w-[68%] rounded-[18px_18px_4px_18px] px-4 py-[11px] text-[15px] leading-[1.65] tracking-[0.01em]"
+          style={{ background: '#3d2c1e', color: '#fdf6ee', fontFamily: "'Crimson Pro', Georgia, serif" }}
         >
           {content}
         </div>
-        <span className="px-1 text-[10px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-medium tracking-wide">
-          {formatTime(timestamp)}
-        </span>
-      </div>
-
-      {isUser && <AvatarUser />}
+      ) : (
+        <div
+          className="max-w-[84%] text-[15.5px] leading-[1.82] tracking-[0.01em] whitespace-pre-wrap"
+          style={{ color: '#3d2c1e', fontFamily: "'Crimson Pro', Georgia, serif" }}
+        >
+          {content}
+        </div>
+      )}
     </div>
   );
 };
 
-const TypingIndicator = () => (
-  <div className="flex gap-3 px-4 py-1.5">
-    <AvatarAI />
-    <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-slate-200/60 bg-white/80 backdrop-blur-md px-4 py-3 shadow-sm">
-      <span className="text-[11px] text-slate-400 font-medium mr-1.5 tracking-wide">Thinking</span>
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400" style={{ animationDelay: '0ms' }} />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400" style={{ animationDelay: '150ms' }} />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400" style={{ animationDelay: '300ms' }} />
-    </div>
-  </div>
-);
+/* ───────────────────────── WELCOME ───────────────────────── */
+const Welcome = ({ onSelect }: { onSelect: (t: string) => void }) => (
+  <div className="flex h-full flex-col items-center justify-center gap-9 px-7">
 
-const Welcome = ({ onSelect }: { onSelect: (text: string) => void }) => (
-  <div className="flex h-full flex-col items-center justify-center gap-8 px-6 py-10 text-center">
-
-    {/* Logo & Brand */}
+    {/* Logo + Brand */}
     <div className="flex flex-col items-center gap-4">
-      <div className="relative">
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-teal-400/30 to-cyan-500/30 blur-xl scale-110" />
-        <div className="relative flex items-center justify-center rounded-3xl ">
-          <Image
-            src="/NeuralCare_logo/url_logo.png"
-            alt="NeuralCare AI"
-            width={120}
-            height={120}
-            className="h-full w-full object-cover"
-            onError={(e) => {
-              const parent = (e.target as HTMLElement).parentElement;
-              if (parent) {
-                (e.target as HTMLImageElement).style.display = 'none';
-                const fallback = parent.querySelector('.logo-fallback') as HTMLElement;
-                if (fallback) fallback.style.display = 'flex';
-              }
-            }}
-          />
-          <div className="logo-fallback absolute inset-0 hidden items-center justify-center rounded-3xl bg-gradient-to-br from-teal-500 to-cyan-600">
-            <Brain className="h-9 w-9 text-white" />
-          </div>
-        </div>
+      <div
+        className="flex h-[58px] w-[58px] items-center justify-center overflow-hidden rounded-[18px] border"
+        style={{ background: '#f5e8d4', borderColor: '#dfc9a8', boxShadow: '0 4px 18px rgba(139,94,60,0.14)' }}
+      >
+        <Image
+          src="/NeuralCare_logo/url_logo.png"
+          alt="NeuralCare"
+          width={58}
+          height={58}
+          className="h-full w-full object-cover"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        />
       </div>
 
-      <div>
-        <div className="flex items-center justify-center gap-2.5 mb-1">
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
-            NeuralCare AI
-          </h1>
-          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 border border-teal-200/60 px-2.5 py-0.5 text-[10px] font-bold text-teal-700 tracking-widest uppercase">
-            <Sparkles className="h-2.5 w-2.5" />
-            Beta
-          </span>
-        </div>
-        <p className="text-[13px] text-slate-500 leading-relaxed max-w-xs font-medium">
-          Your confidential behavioral health companion. Ask anything — we're here to help.
+      <div className="text-center">
+        <h1
+          className="m-0 text-[31px] font-medium leading-none tracking-[-0.015em]"
+          style={{ fontFamily: "'Cormorant', Georgia, serif", color: '#3d2c1e' }}
+        >
+          NeuralCare AI
+        </h1>
+        <p
+          className="mt-[7px] text-[15px] font-normal italic tracking-[0.01em]"
+          style={{ fontFamily: "'Crimson Pro', Georgia, serif", color: '#a07850' }}
+        >
+          A gentle space to think through what you're feeling
         </p>
       </div>
     </div>
 
-    {/* Prompt Cards */}
-    <div className="grid w-full max-w-xl grid-cols-2 gap-3">
-      {PROMPTS.map(({ icon: Icon, label, subtitle, value, color, iconColor }) => (
+    {/* Prompt cards */}
+    <div className="grid w-full max-w-[460px] grid-cols-2 gap-[10px]">
+      {PROMPTS.map(({ label, sub, value }) => (
         <button
           key={label}
           onClick={() => onSelect(value)}
-          className={`group flex flex-col items-start gap-3 rounded-2xl border bg-gradient-to-br p-4 text-left transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 ${color}`}
+          className="group rounded-[14px] border px-4 py-[14px] text-left transition-all duration-[180ms] hover:-translate-y-px"
+          style={{
+            fontFamily: "'Crimson Pro', Georgia, serif",
+            background: '#fdf6ee',
+            borderColor: '#e8d8c4',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#f5e8d8';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = '#d4b896';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#fdf6ee';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8d8c4';
+          }}
         >
-          <div className={`flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 shadow-sm border border-white/80`}>
-            <Icon className={`h-4 w-4 ${iconColor}`} />
-          </div>
-          <div>
-            <p className="text-[12.5px] font-semibold text-slate-700 leading-tight">{label}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5 font-medium">{subtitle}</p>
-          </div>
+          <p className="m-0 text-[14.5px] font-semibold leading-[1.3]" style={{ color: '#3d2c1e' }}>{label}</p>
+          <p className="mt-1 text-[13px] italic" style={{ color: '#a07850' }}>{sub}</p>
         </button>
       ))}
     </div>
 
-    {/* Trust badges */}
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-1.5 rounded-xl bg-white/60 border border-slate-200/60 backdrop-blur-sm px-3 py-1.5 text-[11px] font-semibold text-slate-500 shadow-sm">
-        <Lock className="h-3 w-3 text-teal-500" />
-        HIPAA Compliant
-      </div>
-      <div className="flex items-center gap-1.5 rounded-xl bg-white/60 border border-slate-200/60 backdrop-blur-sm px-3 py-1.5 text-[11px] font-semibold text-slate-500 shadow-sm">
-        <Shield className="h-3 w-3 text-teal-500" />
-        End-to-End Encrypted
-      </div>
-      <div className="flex items-center gap-1.5 rounded-xl bg-white/60 border border-slate-200/60 backdrop-blur-sm px-3 py-1.5 text-[11px] font-semibold text-slate-500 shadow-sm">
-        <Activity className="h-3 w-3 text-emerald-500" />
-        24/7 Available
-      </div>
-    </div>
+    <p
+      className="m-0 text-[12.5px] tracking-[0.025em]"
+      style={{ fontFamily: "'Crimson Pro', serif", color: '#c4a882' }}
+    >
+      Not a substitute for professional care
+    </p>
   </div>
 );
 
-/* ───────────────────────── DIVIDER ───────────────────────── */
-const DateDivider = ({ label }: { label: string }) => (
-  <div className="flex items-center gap-3 px-4 py-2">
-    <div className="h-px flex-1 bg-slate-200/60" />
-    <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
-    <div className="h-px flex-1 bg-slate-200/60" />
-  </div>
-);
-
-/* ───────────────────────── MAIN COMPONENT ───────────────────────── */
-
+/* ───────────────────────── MAIN ───────────────────────── */
 export function AiChatView() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [atBottom, setAtBottom] = useState(true);
-  const [charCount, setCharCount] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = useCallback(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: 'smooth',
-    });
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, []);
 
-  useEffect(() => {
-    if (atBottom) scrollToBottom();
-  }, [messages, loading, atBottom, scrollToBottom]);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const handleScroll = () => {
-      setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 80);
-    };
-    el.addEventListener('scroll', handleScroll);
-    return () => el.removeEventListener('scroll', handleScroll);
-  }, []);
+  useEffect(() => { scrollToBottom(); }, [messages, loading, scrollToBottom]);
 
   const canSend = useMemo(() => draft.trim() && !loading, [draft, loading]);
 
-  const handleDraftChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDraft(e.target.value);
-    setCharCount(e.target.value.length);
+  const autoResize = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
   };
 
   const sendMessage = async (override?: string) => {
     const text = (override ?? draft).trim();
     if (!text || loading) return;
-
     setDraft('');
-    setCharCount(0);
     setLoading(true);
     setError(null);
-
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setMessages((prev) => [...prev, { id: uid(), role: 'user', content: text, timestamp: new Date() }]);
-
     try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        body: JSON.stringify({ message: text }),
-      });
+      const res = await fetch('/api/ai/chat', { method: 'POST', body: JSON.stringify({ message: text }) });
       const data = await res.json();
-      setMessages((prev) => [
-        ...prev,
-        { id: uid(), role: 'assistant', content: data?.reply ?? 'No response received.', timestamp: new Date() },
-      ]);
+      setMessages((prev) => [...prev, { id: uid(), role: 'assistant', content: data?.reply ?? 'No response received.', timestamp: new Date() }]);
     } catch {
-      setError('Connection failed. Please check your network and try again.');
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const resetChat = () => {
-    setMessages([]);
-    setDraft('');
-    setError(null);
-    setCharCount(0);
-  };
+  const resetChat = () => { setMessages([]); setDraft(''); setError(null); };
 
   return (
-    <div
-      className="flex h-screen flex-col"
-      style={{
-        background: 'linear-gradient(135deg, #f0fdf9 0%, #f8fafc 40%, #f0f9ff 100%)',
-        fontFamily: "'DM Sans', sans-serif",
-      }}
-    >
-      {/* Background texture */}
-      <div
-        className="pointer-events-none fixed inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300897b' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant:wght@400;500;600&display=swap');
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #e2d0bb; border-radius: 10px; }
+        .nc-textarea::placeholder { color: #c4a882; font-style: italic; }
+        .nc-textarea:focus { outline: none; }
+        @keyframes softBounce { 0%,80%,100%{transform:translateY(0);opacity:0.45} 40%{transform:translateY(-5px);opacity:1} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+        .msg-in { animation: fadeUp 0.22s ease forwards; }
+      `}</style>
 
-      {/* HEADER */}
-      <header className="relative z-10 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xl px-6 py-3.5 shadow-sm shadow-slate-100/50">
-        {/* Left: Logo */}
-        <div className="flex items-center gap-3.5">
-          <div className="relative">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
-              <Image
-                src="/NeuralCare_logo/url_logo.png"
-                alt="NeuralCare"
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                  const parent = (e.target as HTMLElement).closest('.logo-wrap');
-                  if (parent) parent.classList.add('fallback-active');
-                }}
-              />
-            </div>
-            {/* Online dot */}
-            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm shadow-emerald-300/50" />
-          </div>
+      <PageBackground>
+        <div className="relative flex h-screen flex-col">
 
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[15px] font-bold text-slate-900 tracking-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
-                NeuralCare AI
-              </span>
-              <span className="rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-teal-600">
-                Beta
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] text-slate-400 font-medium">Behavioral Health AI · Online</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Actions */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200/60 bg-slate-50/80 px-3 py-1.5 text-[11px] font-semibold text-slate-500">
-            <Shield className="h-3 w-3 text-teal-500" />
-            HIPAA
-          </div>
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200/60 bg-slate-50/80 px-3 py-1.5 text-[11px] font-semibold text-slate-500">
-            <Lock className="h-3 w-3 text-slate-400" />
-            Encrypted
-          </div>
-
+          {/* Floating new chat */}
           {messages.length > 0 && (
             <button
               onClick={resetChat}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-200/60 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 transition-all duration-150 shadow-sm"
+              title="New conversation"
+              className="absolute right-[18px] top-4 z-20 flex h-9 w-9 items-center justify-center rounded-[11px] border transition-colors duration-150"
+              style={{ borderColor: '#e2d0bb', background: '#fdf6ee', color: '#8b5e3c', boxShadow: '0 1px 8px rgba(139,94,60,0.1)' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f0e4d4'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fdf6ee'; }}
             >
-              <Plus className="h-3.5 w-3.5" />
-              New Chat
+              <SquarePen size={15} />
             </button>
           )}
-        </div>
-      </header>
 
-      {/* CHAT AREA */}
-      <main className="relative flex-1 overflow-hidden">
-        <div ref={scrollRef} className="h-full overflow-y-auto scroll-smooth">
-          {messages.length === 0 ? (
-            <Welcome onSelect={sendMessage} />
-          ) : (
-            <div className="mx-auto max-w-3xl space-y-0.5 py-6 pb-4">
-              <DateDivider label="Today" />
-              {messages.map((msg) => (
-                <Bubble key={msg.id} {...msg} />
-              ))}
-              {loading && <TypingIndicator />}
+          {/* CHAT */}
+          <main className="relative z-10 flex-1 overflow-hidden">
+            <div ref={scrollRef} className="chat-scroll h-full overflow-y-auto">
+              {messages.length === 0 ? (
+                <Welcome onSelect={sendMessage} />
+              ) : (
+                <div className="mx-auto flex max-w-[660px] flex-col gap-[14px] px-7 pb-5 pt-[52px]">
+                  {messages.map((msg) => (
+                    <div key={msg.id} className="msg-in">
+                      <Bubble {...msg} />
+                    </div>
+                  ))}
+                  {loading && (
+                    <div className="flex items-center gap-[5px] pl-0.5 pt-0.5">
+                      {[0, 160, 320].map((d) => (
+                        <span
+                          key={d}
+                          className="inline-block h-[7px] w-[7px] rounded-full"
+                          style={{ background: '#c9a98a', animation: 'softBounce 1.4s ease-in-out infinite', animationDelay: `${d}ms` }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </main>
+
+          {/* ERROR */}
+          {error && (
+            <div
+              className="z-20 mx-auto mb-2 flex w-full max-w-[660px] items-center gap-2 rounded-xl border px-[14px] py-[10px] text-[13.5px]"
+              style={{ background: '#fff5f0', borderColor: '#f5c9b0', color: '#8b3a1e', fontFamily: "'Crimson Pro', serif" }}
+            >
+              <AlertCircle size={14} className="shrink-0" />
+              {error}
             </div>
           )}
-        </div>
 
-        {/* Scroll to bottom pill */}
-        {!atBottom && (
-          <button
-            onClick={scrollToBottom}
-            className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-slate-200/60 bg-white/90 backdrop-blur-md px-4 py-2 text-[11px] font-semibold text-slate-600 shadow-lg hover:bg-white hover:shadow-xl hover:-translate-y-px transition-all duration-150"
-          >
-            <ChevronDown className="h-3.5 w-3.5 text-teal-500" />
-            Scroll to latest
-          </button>
-        )}
-      </main>
-
-      {/* ERROR BANNER */}
-      {error && (
-        <div className="mx-4 mb-2 flex items-start gap-2.5 rounded-2xl border border-red-200/60 bg-red-50/80 backdrop-blur-sm px-4 py-3 text-[13px] text-red-700 shadow-sm">
-          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-red-500" />
-          <div>
-            <p className="font-semibold text-red-800">Connection error</p>
-            <p className="text-[12px] text-red-600 mt-0.5">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {/* INPUT AREA */}
-      <footer className="relative z-10 border-t border-slate-200/60 bg-white/70 backdrop-blur-xl p-4 pt-3">
-        <div className="mx-auto max-w-3xl space-y-2.5">
-          {/* Input box */}
-          <div className="relative flex items-end gap-0 rounded-2xl border border-slate-200/80 bg-white/90 shadow-md shadow-slate-200/40 focus-within:border-teal-300/80 focus-within:shadow-teal-100/60 focus-within:ring-2 focus-within:ring-teal-200/30 transition-all duration-200">
-            {/* Left accent bar */}
-            <div className="absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-gradient-to-b from-teal-400 to-cyan-500 opacity-0 transition-opacity duration-200 focus-within:opacity-100" />
-
-            <Textarea
-              ref={textareaRef}
-              value={draft}
-              onChange={handleDraftChange}
-              placeholder="Ask about mental health, coping strategies, or therapy options…"
-              rows={1}
-              maxLength={2000}
-              className="flex-1 resize-none border-none bg-transparent py-3.5 pl-4 pr-2 text-[13.5px] text-slate-700 placeholder:text-slate-400 focus:ring-0 focus-visible:ring-0 leading-relaxed min-h-[50px] max-h-[160px]"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
+          {/* INPUT */}
+          <footer className="relative z-20 px-5 pb-[22px] pt-2">
+            {/* Fade gradient above */}
+            <div
+              className="pointer-events-none absolute inset-x-0 -top-11 h-11"
+              style={{ background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }}
             />
 
-            <div className="flex items-end gap-1.5 p-2">
-              {/* Char count */}
-              {charCount > 100 && (
-                <span className={`mb-2.5 mr-1 text-[10px] font-medium transition-colors ${charCount > 1800 ? 'text-red-400' : 'text-slate-300'}`}>
-                  {charCount}/2000
-                </span>
-              )}
+            <div
+              className="mx-auto flex max-w-[660px] items-end rounded-[20px] border px-[18px] py-[10px] transition-all duration-200"
+              style={{ borderColor: '#e2d0bb', background: '#fffaf5', boxShadow: '0 2px 18px rgba(139,94,60,0.08)' }}
+              onFocusCapture={(e) => {
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.borderColor = '#c4956a';
+                el.style.boxShadow = '0 2px 24px rgba(139,94,60,0.14)';
+              }}
+              onBlurCapture={(e) => {
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.borderColor = '#e2d0bb';
+                el.style.boxShadow = '0 2px 18px rgba(139,94,60,0.08)';
+              }}
+            >
+              <textarea
+                ref={textareaRef}
+                value={draft}
+                onChange={(e) => { setDraft(e.target.value); autoResize(); }}
+                placeholder="What's on your mind…"
+                rows={1}
+                maxLength={2000}
+                className="nc-textarea max-h-[160px] flex-1 resize-none border-none bg-transparent p-0 text-[15px] leading-[1.65] tracking-[0.01em]"
+                style={{ fontFamily: "'Crimson Pro', Georgia, serif", color: '#3d2c1e', overflowY: 'auto' }}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              />
 
-              {/* Send */}
               <button
                 disabled={!canSend}
                 onClick={() => sendMessage()}
-                className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 ${
-                  canSend
-                    ? 'bg-gradient-to-br from-teal-500 to-cyan-600 hover:from-teal-400 hover:to-cyan-500 hover:scale-105 hover:shadow-md hover:shadow-teal-300/40 active:scale-95 shadow-sm shadow-teal-500/20'
-                    : 'cursor-not-allowed bg-slate-100 border border-slate-200/60'
-                }`}
+                className={`mb-[1px] ml-[10px] flex h-[34px] w-[34px] shrink-0 items-center justify-center self-end rounded-[11px] border-none transition-all duration-150 ${canSend ? 'hover:scale-[1.07]' : 'cursor-not-allowed'}`}
+                style={{
+                  background: canSend ? 'linear-gradient(145deg, #8b5e3c 0%, #5e3318 100%)' : '#eedcca',
+                  color: canSend ? '#fdf6ee' : '#c4a882',
+                  boxShadow: canSend ? '0 3px 12px rgba(90,45,15,0.25)' : 'none',
+                }}
               >
-                <Send className={`h-4 w-4 ${canSend ? 'text-white' : 'text-slate-300'}`} />
+                <ArrowUp size={15} strokeWidth={2.5} />
               </button>
             </div>
-          </div>
 
-          {/* Footer row */}
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-3 text-[10.5px] text-slate-400 font-medium">
-              <span className="flex items-center gap-1">
-                <Lock className="h-2.5 w-2.5" /> Private & secure
-              </span>
-              <span className="text-slate-200">·</span>
-              <span>Press ⏎ to send, Shift+⏎ for new line</span>
-            </div>
-            <p className="text-[10.5px] text-slate-400 font-medium">
-              Not a substitute for professional care
+            <p
+              className="mt-[9px] text-center text-[11.5px] tracking-[0.025em]"
+              style={{ fontFamily: "'Crimson Pro', serif", color: '#c4a882' }}
+            >
+              Not a substitute for professional mental health care
             </p>
-          </div>
+          </footer>
+
         </div>
-      </footer>
-    </div>
+      </PageBackground>
+    </>
   );
 }
