@@ -24,8 +24,10 @@ export function ProfileEmergencyContact({
     <ProfileSection
       icon={Phone}
       iconColor="text-blue-500"
+      iconBg="bg-blue-50/80"
       label="Emergency Contact"
       description="Who should we contact in case of an emergency?"
+      accentColor="from-blue-400 to-cyan-400"
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ProfileField

@@ -2,7 +2,7 @@
 
 import { Heart, Activity, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { ProfileSection } from './';
+import { ProfileSection } from './Profilesection';
 import { ProfileField } from './ProfileField';
 import type { Profile } from './Types';
 
@@ -25,10 +25,12 @@ export function ProfileMedicalInfo({
     <ProfileSection
       icon={Heart}
       iconColor="text-rose-500"
+      iconBg="bg-rose-50/80"
       label="Medical Information"
       description="Sensitive health data shared only with your care team"
+      accentColor="from-rose-400 to-pink-400"
       badge={
-        <Badge className="text-[9px] px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 font-semibold shadow-none gap-1">
+        <Badge className="text-[9px] px-2 py-0.5 bg-amber-50/80 text-amber-700 border border-amber-200/60 font-semibold shadow-none gap-1 backdrop-blur-sm">
           <AlertCircle className="size-2.5" /> Sensitive
         </Badge>
       }
@@ -51,7 +53,6 @@ export function ProfileMedicalInfo({
           icon={AlertCircle}
           placeholder="e.g. Penicillin, Peanuts"
           onChange={(e) => onChange('allergies', e.target.value)}
-          className="sm:col-span-1"
         />
       </div>
     </ProfileSection>

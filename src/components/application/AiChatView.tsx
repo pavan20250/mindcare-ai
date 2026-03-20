@@ -112,7 +112,7 @@ const Welcome = ({ onSelect }: { onSelect: (t: string) => void }) => (
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
           NeuralCare AI
         </h1>
-        <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
+        <p className="text-sm text-slate-500 leading-relaxed max-w-xl">
           A supportive space to talk through what you're feeling
         </p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/60 text-xs font-medium text-teal-700">
@@ -131,17 +131,13 @@ const Welcome = ({ onSelect }: { onSelect: (t: string) => void }) => (
           className="group relative overflow-hidden rounded-2xl border border-white/70 bg-white/50 backdrop-blur-sm px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/75 hover:border-teal-200/60 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40"
         >
           {/* Hover tint */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+          <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
           <span className="relative text-base mb-1.5 block">{icon}</span>
           <p className="relative text-xs font-semibold text-slate-800 leading-snug">{label}</p>
           <p className="relative mt-0.5 text-xs text-slate-500">{sub}</p>
         </button>
       ))}
     </div>
-
-    <p className="text-xs text-slate-400 text-center max-w-xs leading-relaxed">
-      Not a substitute for professional mental health care
-    </p>
   </div>
 );
 
@@ -281,7 +277,7 @@ export function AiChatView() {
         {/* ── Input footer ── */}
         <footer className="relative z-20 shrink-0 px-5 pb-5 pt-3">
           {/* Fade-up scrim */}
-          <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-gradient-to-t from-slate-50/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-slate-50/80 to-transparent" />
 
           <div className="mx-auto max-w-2xl space-y-2">
             {/* Textarea + send */}
@@ -318,9 +314,6 @@ export function AiChatView() {
 
             {/* Hint row */}
             <div className="flex items-center justify-between px-1">
-              <p className="text-xs text-slate-400">
-                Not a substitute for professional mental health care
-              </p>
               <p className="text-xs text-slate-400">
                 <kbd className="rounded border border-slate-200 bg-white/60 px-1.5 py-px text-xs font-sans text-slate-500">
                   ↵
