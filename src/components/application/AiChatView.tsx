@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUp, SquarePen, AlertCircle } from 'lucide-react';
+import { ArrowUp, SquarePen, AlertCircle, Sparkles, User, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import { PageBackground } from '@/components/application/PageBg';
 
@@ -12,109 +12,140 @@ const uid = () => crypto.randomUUID();
 
 /* ───────────────────────── PROMPTS ───────────────────────── */
 const PROMPTS = [
-  { label: 'Managing anxiety',   sub: 'Where do I start?',    value: "I've been feeling anxious lately — where do I start?" },
-  { label: 'Panic attack coping', sub: 'Strategies that help', value: 'What coping strategies help with panic attacks?' },
-  { label: 'Do I need therapy?', sub: 'Signs to look for',    value: 'How do I know if I need professional help?' },
-  { label: 'Understanding CBT',  sub: 'What it involves',     value: 'Can you explain what CBT therapy involves?' },
+  {
+    label: 'Managing anxiety',
+    sub: 'Where do I start?',
+    value: "I've been feeling anxious lately — where do I start?",
+    icon: '🌿',
+  },
+  {
+    label: 'Panic attack coping',
+    sub: 'Strategies that help',
+    value: 'What coping strategies help with panic attacks?',
+    icon: '🫁',
+  },
+  {
+    label: 'Do I need therapy?',
+    sub: 'Signs to look for',
+    value: 'How do I know if I need professional help?',
+    icon: '💬',
+  },
+  {
+    label: 'Understanding CBT',
+    sub: 'What it involves',
+    value: 'Can you explain what CBT therapy involves?',
+    icon: '🧠',
+  },
 ];
 
 /* ───────────────────────── BUBBLE ───────────────────────── */
 const Bubble = ({ role, content }: Message) => {
   const isUser = role === 'user';
+
   return (
-    <div className={`flex w-full mb-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex w-full items-end gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      {/* Assistant avatar */}
+      {!isUser && (
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-teal-50 border border-teal-200 mb-0.5">
+          <Sparkles className="size-3.5 text-teal-600" />
+        </div>
+      )}
+
+      {/* Message bubble */}
       {isUser ? (
-        <div
-          className="max-w-[68%] rounded-[18px_18px_4px_18px] px-4 py-[11px] text-[15px] leading-[1.65] tracking-[0.01em]"
-          style={{ background: '#3d2c1e', color: '#fdf6ee', fontFamily: "'Crimson Pro', Georgia, serif" }}
-        >
+        <div className="max-w-[70%] rounded-3xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed bg-teal-600 text-white shadow-sm">
           {content}
         </div>
       ) : (
-        <div
-          className="max-w-[84%] text-[15.5px] leading-[1.82] tracking-[0.01em] whitespace-pre-wrap"
-          style={{ color: '#3d2c1e', fontFamily: "'Crimson Pro', Georgia, serif" }}
-        >
+        <div className="max-w-[80%] rounded-3xl rounded-bl-sm px-4 py-2.5 text-sm leading-relaxed bg-white/70 border border-white/80 text-slate-700 shadow-sm backdrop-blur-sm whitespace-pre-wrap">
           {content}
+        </div>
+      )}
+
+      {/* User avatar */}
+      {isUser && (
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-teal-100 border border-teal-200 mb-0.5">
+          <User className="size-3.5 text-teal-700" />
         </div>
       )}
     </div>
   );
 };
 
-/* ───────────────────────── WELCOME ───────────────────────── */
+/* ───────────────────────── TYPING INDICATOR ───────────────────────── */
+const TypingIndicator = () => (
+  <div className="flex items-end gap-2">
+    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-teal-50 border border-teal-200 mb-0.5">
+      <Sparkles className="size-3.5 text-teal-600" />
+    </div>
+    <div className="rounded-3xl rounded-bl-sm px-4 py-3 bg-white/70 border border-white/80 shadow-sm backdrop-blur-sm">
+      <div className="flex items-center gap-1">
+        <span className="size-1.5 rounded-full bg-teal-400 animate-bounce [animation-delay:0ms]" />
+        <span className="size-1.5 rounded-full bg-teal-400 animate-bounce [animation-delay:150ms]" />
+        <span className="size-1.5 rounded-full bg-teal-400 animate-bounce [animation-delay:300ms]" />
+      </div>
+    </div>
+  </div>
+);
+
+/* ───────────────────────── WELCOME SCREEN ───────────────────────── */
 const Welcome = ({ onSelect }: { onSelect: (t: string) => void }) => (
-  <div className="flex h-full flex-col items-center justify-center gap-9 px-7">
+  <div className="flex h-full flex-col items-center justify-center gap-8 px-6 py-10">
 
     {/* Logo + Brand */}
-    <div className="flex flex-col items-center gap-4">
-      <div
-        className="flex h-[58px] w-[58px] items-center justify-center overflow-hidden rounded-[18px] border"
-        style={{ background: '#f5e8d4', borderColor: '#dfc9a8', boxShadow: '0 4px 18px rgba(139,94,60,0.14)' }}
-      >
-        <Image
-          src="/NeuralCare_logo/url_logo.png"
-          alt="NeuralCare"
-          width={58}
-          height={58}
-          className="h-full w-full object-cover"
-          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-        />
+    <div className="flex flex-col items-center gap-5">
+      <div className="relative">
+        <div className="absolute -inset-3 rounded-3xl bg-teal-400/10 blur-xl pointer-events-none" />
+        <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-teal-200/60 bg-white/60 backdrop-blur-sm shadow-lg">
+          <Image
+            src="/NeuralCare_logo/url_logo.png"
+            alt="NeuralCare"
+            width={64}
+            height={64}
+            className="h-full w-full object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        </div>
       </div>
 
-      <div className="text-center">
-        <h1
-          className="m-0 text-[31px] font-medium leading-none tracking-[-0.015em]"
-          style={{ fontFamily: "'Cormorant', Georgia, serif", color: '#3d2c1e' }}
-        >
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
           NeuralCare AI
         </h1>
-        <p
-          className="mt-[7px] text-[15px] font-normal italic tracking-[0.01em]"
-          style={{ fontFamily: "'Crimson Pro', Georgia, serif", color: '#a07850' }}
-        >
-          A gentle space to think through what you're feeling
+        <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
+          A supportive space to talk through what you're feeling
         </p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/60 text-xs font-medium text-teal-700">
+          <span className="size-1.5 rounded-full bg-teal-500 animate-pulse" />
+          AI assistant ready
+        </div>
       </div>
     </div>
 
-    {/* Prompt cards */}
-    <div className="grid w-full max-w-[460px] grid-cols-2 gap-[10px]">
-      {PROMPTS.map(({ label, sub, value }) => (
+    {/* Prompt cards grid */}
+    <div className="grid w-full max-w-lg grid-cols-2 gap-3">
+      {PROMPTS.map(({ label, sub, value, icon }) => (
         <button
           key={label}
           onClick={() => onSelect(value)}
-          className="group rounded-[14px] border px-4 py-[14px] text-left transition-all duration-[180ms] hover:-translate-y-px"
-          style={{
-            fontFamily: "'Crimson Pro', Georgia, serif",
-            background: '#fdf6ee',
-            borderColor: '#e8d8c4',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = '#f5e8d8';
-            (e.currentTarget as HTMLButtonElement).style.borderColor = '#d4b896';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = '#fdf6ee';
-            (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8d8c4';
-          }}
+          className="group relative overflow-hidden rounded-2xl border border-white/70 bg-white/50 backdrop-blur-sm px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/75 hover:border-teal-200/60 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40"
         >
-          <p className="m-0 text-[14.5px] font-semibold leading-[1.3]" style={{ color: '#3d2c1e' }}>{label}</p>
-          <p className="mt-1 text-[13px] italic" style={{ color: '#a07850' }}>{sub}</p>
+          {/* Hover tint */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+          <span className="relative text-base mb-1.5 block">{icon}</span>
+          <p className="relative text-xs font-semibold text-slate-800 leading-snug">{label}</p>
+          <p className="relative mt-0.5 text-xs text-slate-500">{sub}</p>
         </button>
       ))}
     </div>
 
-    <p
-      className="m-0 text-[12.5px] tracking-[0.025em]"
-      style={{ fontFamily: "'Crimson Pro', serif", color: '#c4a882' }}
-    >
-      Not a substitute for professional care
+    <p className="text-xs text-slate-400 text-center max-w-xs leading-relaxed">
+      Not a substitute for professional mental health care
     </p>
   </div>
 );
 
-/* ───────────────────────── MAIN ───────────────────────── */
+/* ───────────────────────── MAIN COMPONENT ───────────────────────── */
 export function AiChatView() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState('');
@@ -136,7 +167,7 @@ export function AiChatView() {
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    el.style.height = Math.min(el.scrollHeight, 152) + 'px';
   };
 
   const sendMessage = async (override?: string) => {
@@ -146,11 +177,25 @@ export function AiChatView() {
     setLoading(true);
     setError(null);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-    setMessages((prev) => [...prev, { id: uid(), role: 'user', content: text, timestamp: new Date() }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: uid(), role: 'user', content: text, timestamp: new Date() },
+    ]);
     try {
-      const res = await fetch('/api/ai/chat', { method: 'POST', body: JSON.stringify({ message: text }) });
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message: text }),
+      });
       const data = await res.json();
-      setMessages((prev) => [...prev, { id: uid(), role: 'assistant', content: data?.reply ?? 'No response received.', timestamp: new Date() }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: uid(),
+          role: 'assistant',
+          content: data?.reply ?? 'No response received.',
+          timestamp: new Date(),
+        },
+      ]);
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -158,136 +203,135 @@ export function AiChatView() {
     }
   };
 
-  const resetChat = () => { setMessages([]); setDraft(''); setError(null); };
+  const resetChat = () => {
+    setMessages([]);
+    setDraft('');
+    setError(null);
+  };
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant:wght@400;500;600&display=swap');
-        .chat-scroll::-webkit-scrollbar { width: 4px; }
-        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #e2d0bb; border-radius: 10px; }
-        .nc-textarea::placeholder { color: #c4a882; font-style: italic; }
-        .nc-textarea:focus { outline: none; }
-        @keyframes softBounce { 0%,80%,100%{transform:translateY(0);opacity:0.45} 40%{transform:translateY(-5px);opacity:1} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-        .msg-in { animation: fadeUp 0.22s ease forwards; }
-      `}</style>
+    <PageBackground>
+      <div className="flex h-screen flex-col overflow-hidden">
 
-      <PageBackground>
-        <div className="relative flex h-screen flex-col">
+        {/* ── Header ── */}
+        <header className="z-20 flex shrink-0 items-center justify-between border-b border-white/50 bg-white/40 px-5 py-3 backdrop-blur-xl">
+          <div className="flex items-center gap-3">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-teal-600 text-white shadow-sm">
+              <MessageCircle className="size-3.5" />
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold text-slate-900 leading-tight">
+                NeuralCare AI
+              </h1>
+              <div className="flex items-center gap-1.5 mt-px">
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                <span className="text-xs text-slate-500">Mental health assistant</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Floating new chat */}
           {messages.length > 0 && (
             <button
               onClick={resetChat}
               title="New conversation"
-              className="absolute right-[18px] top-4 z-20 flex h-9 w-9 items-center justify-center rounded-[11px] border transition-colors duration-150"
-              style={{ borderColor: '#e2d0bb', background: '#fdf6ee', color: '#8b5e3c', boxShadow: '0 1px 8px rgba(139,94,60,0.1)' }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f0e4d4'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fdf6ee'; }}
+              className="flex items-center gap-1.5 rounded-xl border border-white/60 bg-white/50 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:bg-white/70 hover:text-slate-900 active:scale-95"
             >
-              <SquarePen size={15} />
+              <SquarePen size={12} />
+              New chat
             </button>
           )}
+        </header>
 
-          {/* CHAT */}
-          <main className="relative z-10 flex-1 overflow-hidden">
-            <div ref={scrollRef} className="chat-scroll h-full overflow-y-auto">
-              {messages.length === 0 ? (
-                <Welcome onSelect={sendMessage} />
-              ) : (
-                <div className="mx-auto flex max-w-[660px] flex-col gap-[14px] px-7 pb-5 pt-[52px]">
-                  {messages.map((msg) => (
-                    <div key={msg.id} className="msg-in">
-                      <Bubble {...msg} />
-                    </div>
-                  ))}
-                  {loading && (
-                    <div className="flex items-center gap-[5px] pl-0.5 pt-0.5">
-                      {[0, 160, 320].map((d) => (
-                        <span
-                          key={d}
-                          className="inline-block h-[7px] w-[7px] rounded-full"
-                          style={{ background: '#c9a98a', animation: 'softBounce 1.4s ease-in-out infinite', animationDelay: `${d}ms` }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </main>
+        {/* ── Messages area ── */}
+        <main className="z-10 min-h-0 flex-1 overflow-hidden">
+          <div
+            ref={scrollRef}
+            className="h-full overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-teal-200/60 [&::-webkit-scrollbar-track]:bg-transparent"
+          >
+            {messages.length === 0 ? (
+              <Welcome onSelect={sendMessage} />
+            ) : (
+              <div className="mx-auto flex max-w-2xl flex-col gap-3 px-5 pb-6 pt-6">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className="animate-in fade-in slide-in-from-bottom-1 duration-200"
+                  >
+                    <Bubble {...msg} />
+                  </div>
+                ))}
+                {loading && (
+                  <div className="animate-in fade-in slide-in-from-bottom-1 duration-200">
+                    <TypingIndicator />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </main>
 
-          {/* ERROR */}
-          {error && (
-            <div
-              className="z-20 mx-auto mb-2 flex w-full max-w-[660px] items-center gap-2 rounded-xl border px-[14px] py-[10px] text-[13.5px]"
-              style={{ background: '#fff5f0', borderColor: '#f5c9b0', color: '#8b3a1e', fontFamily: "'Crimson Pro', serif" }}
-            >
-              <AlertCircle size={14} className="shrink-0" />
-              {error}
-            </div>
-          )}
+        {/* ── Error banner ── */}
+        {error && (
+          <div className="z-20 mx-auto mb-2 flex w-full max-w-2xl items-center gap-2 rounded-2xl border border-red-200/60 bg-red-50/80 px-4 py-2.5 text-xs font-medium text-red-700 backdrop-blur-sm">
+            <AlertCircle size={13} className="shrink-0 text-red-500" />
+            {error}
+          </div>
+        )}
 
-          {/* INPUT */}
-          <footer className="relative z-20 px-5 pb-[22px] pt-2">
-            {/* Fade gradient above */}
-            <div
-              className="pointer-events-none absolute inset-x-0 -top-11 h-11"
-              style={{ background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }}
-            />
+        {/* ── Input footer ── */}
+        <footer className="relative z-20 shrink-0 px-5 pb-5 pt-3">
+          {/* Fade-up scrim */}
+          <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-gradient-to-t from-slate-50/80 to-transparent" />
 
-            <div
-              className="mx-auto flex max-w-[660px] items-end rounded-[20px] border px-[18px] py-[10px] transition-all duration-200"
-              style={{ borderColor: '#e2d0bb', background: '#fffaf5', boxShadow: '0 2px 18px rgba(139,94,60,0.08)' }}
-              onFocusCapture={(e) => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.style.borderColor = '#c4956a';
-                el.style.boxShadow = '0 2px 24px rgba(139,94,60,0.14)';
-              }}
-              onBlurCapture={(e) => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.style.borderColor = '#e2d0bb';
-                el.style.boxShadow = '0 2px 18px rgba(139,94,60,0.08)';
-              }}
-            >
+          <div className="mx-auto max-w-2xl space-y-2">
+            {/* Textarea + send */}
+            <div className="flex items-end gap-3 rounded-2xl border border-white/70 bg-white/60 px-4 py-3 shadow-sm backdrop-blur-xl transition-all duration-200 focus-within:border-teal-300/60 focus-within:bg-white/80 focus-within:shadow-md">
               <textarea
                 ref={textareaRef}
                 value={draft}
                 onChange={(e) => { setDraft(e.target.value); autoResize(); }}
-                placeholder="What's on your mind…"
+                placeholder="Ask me anything about mental health…"
                 rows={1}
                 maxLength={2000}
-                className="nc-textarea max-h-[160px] flex-1 resize-none border-none bg-transparent p-0 text-[15px] leading-[1.65] tracking-[0.01em]"
-                style={{ fontFamily: "'Crimson Pro', Georgia, serif", color: '#3d2c1e', overflowY: 'auto' }}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                className="max-h-[152px] flex-1 resize-none bg-transparent text-sm leading-relaxed text-slate-800 placeholder:text-slate-400 focus:outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
               />
 
               <button
                 disabled={!canSend}
                 onClick={() => sendMessage()}
-                className={`mb-[1px] ml-[10px] flex h-[34px] w-[34px] shrink-0 items-center justify-center self-end rounded-[11px] border-none transition-all duration-150 ${canSend ? 'hover:scale-[1.07]' : 'cursor-not-allowed'}`}
-                style={{
-                  background: canSend ? 'linear-gradient(145deg, #8b5e3c 0%, #5e3318 100%)' : '#eedcca',
-                  color: canSend ? '#fdf6ee' : '#c4a882',
-                  boxShadow: canSend ? '0 3px 12px rgba(90,45,15,0.25)' : 'none',
-                }}
+                className={[
+                  'mb-0.5 flex size-8 shrink-0 items-center justify-center self-end rounded-xl transition-all duration-150',
+                  canSend
+                    ? 'bg-teal-600 text-white shadow-sm hover:bg-teal-700 hover:scale-105 active:scale-95'
+                    : 'cursor-not-allowed bg-slate-100 text-slate-400',
+                ].join(' ')}
               >
-                <ArrowUp size={15} strokeWidth={2.5} />
+                <ArrowUp size={14} strokeWidth={2.5} />
               </button>
             </div>
 
-            <p
-              className="mt-[9px] text-center text-[11.5px] tracking-[0.025em]"
-              style={{ fontFamily: "'Crimson Pro', serif", color: '#c4a882' }}
-            >
-              Not a substitute for professional mental health care
-            </p>
-          </footer>
+            {/* Hint row */}
+            <div className="flex items-center justify-between px-1">
+              <p className="text-xs text-slate-400">
+                Not a substitute for professional mental health care
+              </p>
+              <p className="text-xs text-slate-400">
+                <kbd className="rounded border border-slate-200 bg-white/60 px-1.5 py-px text-xs font-sans text-slate-500">
+                  ↵
+                </kbd>{' '}
+                to send
+              </p>
+            </div>
+          </div>
+        </footer>
 
-        </div>
-      </PageBackground>
-    </>
+      </div>
+    </PageBackground>
   );
 }
