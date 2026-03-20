@@ -38,9 +38,10 @@ const QUICK_LINKS = [
 ] as const;
 
 interface ProfileSidebarProps {
-  profile: Profile;
+  profile:     Profile;
   memberSince: string;
-  intake: boolean;
+  role?:       string;
+  intake:      boolean;
 }
 
 function GlassCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -53,7 +54,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
   );
 }
 
-export function ProfileSidebar({ profile, memberSince, intake }: ProfileSidebarProps) {
+export function ProfileSidebar({ profile, memberSince, role = 'user', intake }: ProfileSidebarProps) {
   const completion = calcCompletion(profile);
 
   return (
@@ -64,8 +65,8 @@ export function ProfileSidebar({ profile, memberSince, intake }: ProfileSidebarP
           Overview
         </p>
         <div className="space-y-0.5">
-          <StatRow icon={Clock}    iconColor="text-teal-600"   iconBg="bg-teal-50/80"    label="Member since"     value={memberSince} />
-          <StatRow icon={Shield}   iconColor="text-emerald-600" iconBg="bg-emerald-50/80" label="Account status"   value="Active" valueColor="text-emerald-600" />
+          <StatRow icon={Clock}    iconColor="text-teal-600"    iconBg="bg-teal-50/80"    label="Member since"     value={memberSince.replace('Member since ', '')} />
+          <StatRow icon={Shield}   iconColor="text-emerald-600"  iconBg="bg-emerald-50/80" label="Role"             value={role === 'superadmin' ? 'Superadmin' : role === 'admin' ? 'Admin' : 'Patient'} valueColor="text-emerald-600" />
           <StatRow icon={Activity} iconColor="text-blue-500"   iconBg="bg-blue-50/80"    label="Profile strength" value={`${completion}% complete`} valueColor={completion === 100 ? 'text-teal-600' : 'text-slate-700'} />
           <StatRow
             icon={intake ? CheckCircle2 : AlertCircle}
@@ -104,7 +105,7 @@ export function ProfileSidebar({ profile, memberSince, intake }: ProfileSidebarP
 
       {/* HIPAA badge */}
       <div className="relative overflow-hidden flex items-start gap-3 rounded-2xl border border-teal-200/50 bg-teal-50/60 backdrop-blur-sm px-4 py-3.5">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-teal-300/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-rfrom-transparent via-teal-300/40 to-transparent" />
         <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-teal-100/80 border border-teal-200/60">
           <Shield className="size-4 text-teal-600" />
         </div>

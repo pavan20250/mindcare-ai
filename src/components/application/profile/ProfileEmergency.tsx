@@ -46,7 +46,7 @@ export function ProfileEmergencyContact({
           editing={editing}
           icon={Phone}
           type="tel"
-          placeholder="+1 (555) 000-0000"
+          placeholder="+91 98765 43210"
           onChange={(e) => onChange('emergencyPhone', e.target.value)}
         />
       </div>
