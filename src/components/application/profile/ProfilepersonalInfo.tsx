@@ -7,17 +7,12 @@ import type { Profile } from './Types';
 
 interface ProfilePersonalInfoProps {
   profile: Profile;
-  draft: Profile;
+  draft:   Profile;
   editing: boolean;
   onChange: (field: keyof Profile, value: string) => void;
 }
 
-export function ProfilePersonalInfo({
-  profile,
-  draft,
-  editing,
-  onChange,
-}: ProfilePersonalInfoProps) {
+export function ProfilePersonalInfo({ profile, draft, editing, onChange }: ProfilePersonalInfoProps) {
   const get = (f: keyof Profile) => (editing ? draft[f] : profile[f]);
 
   return (
@@ -31,22 +26,14 @@ export function ProfilePersonalInfo({
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ProfileField
-          label="First name"
-          fieldId="firstName"
-          value={get('firstName')}
+          label="Full name"
+          fieldId="fullName"
+          value={get('fullName')}
           editing={editing}
           icon={User}
-          placeholder="Jane"
-          onChange={(e) => onChange('firstName', e.target.value)}
-        />
-        <ProfileField
-          label="Last name"
-          fieldId="lastName"
-          value={get('lastName')}
-          editing={editing}
-          icon={User}
-          placeholder="Doe"
-          onChange={(e) => onChange('lastName', e.target.value)}
+          placeholder="Jane Doe"
+          onChange={(e) => onChange('fullName', e.target.value)}
+          className="sm:col-span-2"
         />
         <ProfileField
           label="Phone number"
@@ -55,7 +42,7 @@ export function ProfilePersonalInfo({
           editing={editing}
           icon={Phone}
           type="tel"
-          placeholder="+1 (555) 000-0000"
+          placeholder="+91 98765 43210"
           onChange={(e) => onChange('phone', e.target.value)}
         />
         <ProfileField
