@@ -33,17 +33,30 @@ export function ProfileField({
       </Label>
 
       {editing ? (
-        <Input
-          id={fieldId}
-          value={value}
-          className="h-9 text-sm rounded-xl border-slate-200 bg-white focus-visible:border-teal-400 focus-visible:ring-teal-400/20"
-          {...inputProps}
-        />
+        <div className="relative">
+          {Icon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <Icon className="size-3.5 text-slate-400" />
+            </div>
+          )}
+          <Input
+            id={fieldId}
+            value={value}
+            className={cn(
+              'h-9 text-sm rounded-xl',
+              'border-white/60 bg-white/50 backdrop-blur-sm',
+              'focus-visible:border-teal-400/70 focus-visible:ring-teal-400/20 focus-visible:bg-white/70',
+              'placeholder:text-slate-400 text-slate-700',
+              Icon && 'pl-9'
+            )}
+            {...inputProps}
+          />
+        </div>
       ) : (
-        <div className="flex items-center gap-2 min-h-9 px-3 py-2 rounded-xl bg-slate-50/80 border border-slate-100">
+        <div className="flex items-center gap-2.5 min-h-9 px-3 py-2 rounded-xl bg-white/40 border border-white/60 backdrop-blur-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]">
           {Icon && <Icon className="size-3.5 text-slate-400 shrink-0" />}
           {value ? (
-            <span className="text-sm text-slate-700 leading-snug">{value}</span>
+            <span className="text-sm text-slate-700 leading-snug font-medium">{value}</span>
           ) : (
             <span className="text-sm text-slate-400 italic">Not set</span>
           )}
@@ -88,10 +101,10 @@ export function ProfileTextarea({
           rows={rows}
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
-          className="w-full text-sm bg-white border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-400/15 resize-none placeholder:text-slate-400 text-slate-700 transition-[border-color,box-shadow]"
+          className="w-full text-sm bg-white/50 border border-white/60 rounded-xl px-3 py-2.5 focus:outline-none focus:border-teal-400/70 focus:ring-2 focus:ring-teal-400/15 focus:bg-white/70 resize-none placeholder:text-slate-400 text-slate-700 transition-all backdrop-blur-sm"
         />
       ) : (
-        <div className="min-h-[72px] px-3 py-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+        <div className="min-h-[72px] px-3 py-2.5 rounded-xl bg-white/40 border border-white/60 backdrop-blur-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]">
           {value ? (
             <span className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{value}</span>
           ) : (
