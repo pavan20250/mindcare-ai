@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { PageBackground } from '@/components/application/PageBg';
 
 const INTAKE_STEP_LABELS: Record<string, string> = {
   welcome: 'Initial concerns',
@@ -31,7 +32,7 @@ export function CareView() {
   const completedAt = intake?.completedAt;
 
   return (
-    <div className="min-h-full bg-[#f8fafb]">
+    <PageBackground>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="mb-5">
           <h1 className="text-xl font-bold text-slate-900">My care</h1>
@@ -45,7 +46,7 @@ export function CareView() {
             <LoadingSpinner />
           </div>
         ) : entries.length === 0 ? (
-          <Card className="rounded-xl border-slate-200 bg-white shadow-sm">
+          <Card className="rounded-xl">
             <CardContent className="px-5 py-8 text-center">
               <p className="text-slate-500 text-sm mb-4">You haven&apos;t completed the intake yet.</p>
               <Button asChild size="sm" className="rounded-lg bg-teal-600 hover:bg-teal-700 font-semibold text-white border-0">
@@ -61,8 +62,8 @@ export function CareView() {
               </p>
             )}
 
-            <Card className="rounded-xl border-slate-200 bg-white shadow-sm overflow-hidden">
-              <div className="divide-y divide-slate-100">
+            <Card className="rounded-xl overflow-hidden">
+              <div className="divide-y divide-white/30">
                 {entries.map(([stepId, value]) => (
                   <div key={stepId} className="px-4 py-3">
                     <p className="text-[11px] font-semibold text-teal-600 uppercase tracking-wide leading-none">
@@ -88,6 +89,6 @@ export function CareView() {
           </>
         )}
       </div>
-    </div>
+    </PageBackground>
   );
 }
