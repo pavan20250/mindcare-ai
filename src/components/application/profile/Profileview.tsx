@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PageBackground } from '@/components/application/PageBg';
 import { ProfileHero } from './ProfileHero';
 import { ProfilePersonalInfo } from './ProfilepersonalInfo';
@@ -9,6 +9,16 @@ import { ProfileEmergencyContact } from './ProfileEmergency';
 import { ProfileSidebar } from './ProfileSidebar';
 import { DEFAULT_PROFILE, type Profile } from './Types';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+
+// ── Module-level cache so data survives tab switches within the same session ──
+let _cachedData: {
+  displayName: string;
+  email: string;
+  role: string;
+  memberSince: string;
+  profile: Profile;
+  intake: boolean;
+} | null = null;
 
 function rowToProfile(row: Record<string, unknown>): Profile {
   return {
@@ -48,22 +58,32 @@ function formatMemberSince(iso: string | null): string {
 }
 
 export function ProfileView() {
-  const [displayName, setDisplayName] = useState('');
-  const [email,       setEmail]       = useState('');
-  const [role,        setRole]        = useState('user');
-  const [memberSince, setMemberSince] = useState('');
+  const [displayName, setDisplayName] = useState(_cachedData?.displayName ?? '');
+  const [email,       setEmail]       = useState(_cachedData?.email       ?? '');
+  const [role,        setRole]        = useState(_cachedData?.role        ?? 'user');
+  const [memberSince, setMemberSince] = useState(_cachedData?.memberSince ?? '');
 
-  const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
-  const [draft,   setDraft]   = useState<Profile>(DEFAULT_PROFILE);
+  const [profile, setProfile] = useState<Profile>(_cachedData?.profile ?? DEFAULT_PROFILE);
+  const [draft,   setDraft]   = useState<Profile>(_cachedData?.profile ?? DEFAULT_PROFILE);
 
-  const [intake,  setIntake]  = useState(false);
+  const [intake,  setIntake]  = useState(_cachedData?.intake  ?? false);
   const [editing, setEditing] = useState(false);
   const [saved,   setSaved]   = useState(false);
-  const [loading, setLoading] = useState(true);
+  // If we already have cached data, skip the initial loading spinner
+  const [loading, setLoading] = useState(_cachedData === null);
   const [saving,  setSaving]  = useState(false);
   const [error,   setError]   = useState<string | null>(null);
 
+  // Prevent double-fetch in React strict mode
+  const fetchedRef = useRef(false);
+
   useEffect(() => {
+    // Data already cached — nothing to fetch
+    if (_cachedData !== null) return;
+    // Already fetching
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
     let cancelled = false;
     const load = async () => {
       try {
@@ -73,15 +93,23 @@ export function ProfileView() {
         ]);
         if (cancelled) return;
 
-        setDisplayName(profileRes.display_name ?? '');
-        setEmail(profileRes.email              ?? '');
-        setRole(profileRes.role                ?? 'user');
-        setMemberSince(formatMemberSince(profileRes.member_since ?? null));
+        const dn    = profileRes.display_name ?? '';
+        const em    = profileRes.email        ?? '';
+        const ro    = profileRes.role         ?? 'user';
+        const ms    = formatMemberSince(profileRes.member_since ?? null);
+        const p     = profileRes.profile ? rowToProfile(profileRes.profile) : DEFAULT_PROFILE;
+        const intk  = !!intakeRes?.intake?.completedAt;
 
-        const p = profileRes.profile ? rowToProfile(profileRes.profile) : DEFAULT_PROFILE;
+        setDisplayName(dn);
+        setEmail(em);
+        setRole(ro);
+        setMemberSince(ms);
         setProfile(p);
         setDraft(p);
-        setIntake(!!intakeRes?.intake?.completedAt);
+        setIntake(intk);
+
+        // Store in module-level cache for subsequent renders
+        _cachedData = { displayName: dn, email: em, role: ro, memberSince: ms, profile: p, intake: intk };
       } catch {
         if (!cancelled) setError('Failed to load profile. Please refresh.');
       } finally {
@@ -114,6 +142,8 @@ export function ProfileView() {
       setProfile(draft);
       setSaved(true);
       setEditing(false);
+      // Bust the cache so the next mount reflects saved data
+      if (_cachedData) _cachedData = { ..._cachedData, profile: draft };
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save profile.');
@@ -134,7 +164,7 @@ export function ProfileView() {
 
   return (
     <PageBackground>
-      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-3">
 
         {error && (
           <div className="rounded-2xl border border-red-200/60 bg-red-50/60 backdrop-blur-sm px-4 py-3 text-sm text-red-700">
@@ -156,10 +186,10 @@ export function ProfileView() {
           onSave={handleSave}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <div className="lg:col-span-8 space-y-4">
-            <ProfilePersonalInfo profile={profile} draft={draft} editing={editing} onChange={handleChange} />
-            <ProfileMedicalInfo  profile={profile} draft={draft} editing={editing} onChange={handleChange} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+          <div className="lg:col-span-8 space-y-3">
+            <ProfilePersonalInfo   profile={profile} draft={draft} editing={editing} onChange={handleChange} />
+            <ProfileMedicalInfo    profile={profile} draft={draft} editing={editing} onChange={handleChange} />
             <ProfileEmergencyContact profile={profile} draft={draft} editing={editing} onChange={handleChange} />
           </div>
           <div className="lg:col-span-4">
