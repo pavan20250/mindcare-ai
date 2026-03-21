@@ -1,4 +1,4 @@
-export { DashboardView } from './DashboardView';
+export { DashboardView } from './dashboard';
 export { AppointmentsView } from './AppointmentsView';
 export type { Doctor, Appointment } from './AppointmentsView';
 export { CareView } from './CareView';
