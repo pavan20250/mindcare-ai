@@ -214,7 +214,7 @@ export function SettingsView() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
         {/* Header with user summary */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 text-white text-base font-bold shadow-sm shadow-teal-500/20">
+          <div className="flex size-12 items-center justify-center rounded-full bg-linear-to-br from-teal-500 to-emerald-600 text-white text-base font-bold shadow-sm shadow-teal-500/20">
             {initials}
           </div>
           <div className="min-w-0 flex-1">

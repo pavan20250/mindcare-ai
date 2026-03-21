@@ -1,7 +1,6 @@
 'use client';
 
-import { ResourcesView } from '@/components/application';
-
+import { BlogsView } from "@/components/application/ResourcesView";
 export default function ResourcesPage() {
-  return <ResourcesView />;
+  return <BlogsView />;
 }

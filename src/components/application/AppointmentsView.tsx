@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { PageBackground } from '@/components/application/PageBg';
 
 export interface Doctor {
   id: string; name: string; specialty: string; credentials: string; bio: string; availability: string;
@@ -127,15 +128,15 @@ export function AppointmentsView() {
 
   const specialtyOptions = [
     { value: '', label: 'All providers' },
-    { value: 'psychologist',  label: 'Psychologist' },
-    { value: 'psychiatrist',  label: 'Psychiatrist' },
+    { value: 'psychologist', label: 'Psychologist' },
+    { value: 'psychiatrist', label: 'Psychiatrist' },
     { value: 'social worker', label: 'LCSW / Social Worker' },
   ];
 
   const upcomingAppointments = appointments.filter((a) => isUpcoming(a.date));
 
   return (
-    <div className="min-h-full">
+    <PageBackground>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Header */}
@@ -183,7 +184,6 @@ export function AppointmentsView() {
                         <Card className="overflow-hidden transition-colors hover:bg-white/40">
                           <CardContent className="p-0">
                             <div className="flex">
-                              {/* Date column */}
                               <div className="flex flex-col items-center justify-center w-14 shrink-0 bg-teal-500/20 border-r border-white/30 text-teal-700 py-2 px-2 text-center">
                                 <span className="text-[10px] font-semibold uppercase leading-tight">
                                   {new Date(apt.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
@@ -266,8 +266,7 @@ export function AppointmentsView() {
               <Card className="border-dashed">
                 <CardContent className="py-8 text-center">
                   <p className="text-slate-500 text-sm mb-4">No providers match this filter.</p>
-                  <Button variant="outline" size="sm" asChild
-                    className="bg-white/30 border-white/50 text-slate-600 hover:bg-white/50 rounded-xl backdrop-blur-sm">
+                  <Button variant="outline" size="sm" asChild className="bg-white/30 border-white/50 text-slate-600 hover:bg-white/50 rounded-xl backdrop-blur-sm">
                     <Link href="/appointments">Show all providers</Link>
                   </Button>
                 </CardContent>
@@ -279,7 +278,6 @@ export function AppointmentsView() {
                     <Card className="group h-full overflow-hidden transition-all duration-200 hover:bg-white/40 hover:border-white/70">
                       <CardContent className="p-0">
                         <div className="flex">
-                          {/* accent bar */}
                           <div className="flex flex-col justify-center w-1 shrink-0 rounded-l-3xl bg-teal-400/40 group-hover:bg-teal-400/60 transition-colors" />
                           <div className="flex-1 min-w-0 p-4 sm:p-5">
                             <div className="flex gap-3 sm:gap-4">
@@ -322,8 +320,7 @@ export function AppointmentsView() {
       {/* ── Booking dialog ── */}
       <Dialog open={!!bookingDoctor} onOpenChange={(open) => !open && closeBooking()}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto sm:rounded-3xl bg-white/70 backdrop-blur-2xl backdrop-saturate-[1.8] border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.10)] text-slate-800">
-          {/* sheen */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent rounded-t-3xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/60 to-transparent rounded-t-3xl" />
 
           {bookingDoctor && (bookingSuccess ? (
             <>
@@ -345,10 +342,7 @@ export function AppointmentsView() {
                 <p className="mt-2 text-xs text-slate-400">A confirmation has been sent to your email.</p>
               </div>
               <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="outline" onClick={closeBooking}
-                  className="flex-1 bg-white/30 border-white/50 text-slate-600 hover:bg-white/50 rounded-xl backdrop-blur-sm">
-                  Done
-                </Button>
+                <Button variant="outline" onClick={closeBooking} className="flex-1 bg-white/30 border-white/50 text-slate-600 hover:bg-white/50 rounded-xl backdrop-blur-sm">Done</Button>
                 <Button className="flex-1 bg-teal-600 hover:bg-teal-700 text-white border-0 rounded-xl"
                   onClick={() => { setBookingSuccess(null); setBookingDate(''); setSelectedSlot(''); setReason(''); }}>
                   Book another
@@ -378,9 +372,7 @@ export function AppointmentsView() {
                 <div className="space-y-2">
                   <Label className="text-sm text-slate-700 font-medium">Time</Label>
                   {slotsLoading ? (
-                    <div className="flex items-center gap-2 text-slate-400 text-sm">
-                      <LoadingSpinner size="xs" />Loading slots…
-                    </div>
+                    <div className="flex items-center gap-2 text-slate-400 text-sm"><LoadingSpinner size="xs" />Loading slots…</div>
                   ) : !bookingDate ? (
                     <p className="text-slate-400 text-sm">Select a date first.</p>
                   ) : slots.length === 0 ? (
@@ -406,21 +398,16 @@ export function AppointmentsView() {
                 </div>
               </div>
               <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="outline" onClick={closeBooking}
-                  className="bg-white/30 border-white/50 text-slate-600 hover:bg-white/50 rounded-xl backdrop-blur-sm">
-                  Cancel
-                </Button>
+                <Button variant="outline" onClick={closeBooking} className="bg-white/30 border-white/50 text-slate-600 hover:bg-white/50 rounded-xl backdrop-blur-sm">Cancel</Button>
                 <Button onClick={handleConfirmBooking} disabled={!selectedSlot || submitting}
                   className="bg-teal-600 hover:bg-teal-700 text-white border-0 rounded-xl shadow-sm shadow-teal-600/20">
-                  {submitting ? (
-                    <><LoadingSpinner size="xs" variant="inverted" className="mr-2" />Booking…</>
-                  ) : 'Confirm booking'}
+                  {submitting ? (<><LoadingSpinner size="xs" variant="inverted" className="mr-2" />Booking…</>) : 'Confirm booking'}
                 </Button>
               </DialogFooter>
             </>
           ))}
         </DialogContent>
       </Dialog>
-    </div>
+    </PageBackground>
   );
 }

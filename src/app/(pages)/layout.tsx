@@ -3,15 +3,13 @@
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AppSidebar } from '@/components/application/AppSidebar';
-import { IntakeProvider, useIntake } from '@/contexts/IntakeContext';
+import { IntakeProvider } from '@/contexts/IntakeContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import type { Role } from '@/lib/auth';
 import { getPageKeyFromPath, hasAccess, type Role as RbacRole } from '@/lib/permissions';
 
-const INTAKE_PATH = '/demo';
 const DEFAULT_AUTH_REDIRECT = '/dashboard';
-const GATED_PATHS = ['/care', '/appointments', '/resources'];
 
 type SessionUser = {
   email: string;
@@ -22,17 +20,6 @@ type SessionUser = {
 };
 
 function AppLayoutInner({ user, children }: { user: SessionUser; children: React.ReactNode }) {
-  const { intakeCompleted } = useIntake();
-  const pathname = usePathname();
-  const router = useRouter();
-
-  useEffect(() => {
-    const isGated = GATED_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
-    if (!intakeCompleted && isGated) {
-      router.replace(INTAKE_PATH + '?required=1');
-    }
-  }, [intakeCompleted, pathname, router]);
-
   return (
     <div className="flex min-h-svh w-full bg-[#f8fafb]">
       <AppSidebar user={user} />

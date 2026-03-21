@@ -12,13 +12,9 @@ import {
   Calendar,
   BookOpen,
   BarChart3,
-  CreditCard,
   Settings,
   LogOut,
   User,
-  Lock,
-  CheckCircle2,
-  ShieldCheck,
   Sparkles,
 } from 'lucide-react';
 
@@ -35,16 +31,6 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
-import { Badge } from '@/components/ui/badge';
-import { useIntake } from '@/contexts/IntakeContext';
 import type { Role } from '@/lib/permissions';
 import { NavMenu } from '@/components/navigation/NavMenu';
 
@@ -75,7 +61,6 @@ const NAV_LINKS = [
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { intakeCompleted } = useIntake();
   const role = (user.role ?? 'user') as Role;
 
   const userDisplayName = useMemo(() => {
@@ -95,19 +80,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
       console.error('Logout failed', error);
     }
   }, [pathname, router]);
-
-  const isLocked = useCallback(
-    (href: string) => {
-      const isDashboard = href === '/dashboard';
-      const isProfile = href === '/profile';
-      const isChat = href === '/chat';
-      const isReports = href === '/reports';
-      const isIntake = href === INTAKE_HREF;
-
-      return !isDashboard && !isProfile && !isChat && !isReports && !isIntake && !intakeCompleted;
-    },
-    [intakeCompleted]
-  );
 
   const isActiveRoute = useCallback(
     (href: string) => pathname === href || pathname.startsWith(href),
@@ -172,73 +144,31 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </SidebarGroupLabel>
 
           <SidebarGroupContent>
-            <TooltipProvider delayDuration={300}>
-              <SidebarMenu>
-                {NAV_LINKS.map(({ href, label, icon: Icon }) => {
-                  const locked = isLocked(href);
-                  const isActive = isActiveRoute(href);
-                  const isIntake = href === INTAKE_HREF;
+            <SidebarMenu>
+              {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+                const isActive = isActiveRoute(href);
+                const isIntake = href === INTAKE_HREF;
 
-                  return (
-                    <SidebarMenuItem key={href}>
-                      {locked ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <SidebarMenuButton
-                              isActive={false}
-                              className="pointer-events-none opacity-40 text-slate-400"
-                            >
-                              <Lock className="size-4 text-slate-400" />
-                              <span>{label}</span>
-
-                              <Badge
-                                variant="secondary"
-                                className="ml-auto text-[10px] px-1.5 py-0 bg-slate-100 text-slate-400 border border-slate-200"
-                              >
-                                Complete intake
-                              </Badge>
-                            </SidebarMenuButton>
-                          </TooltipTrigger>
-
-                          <TooltipContent
-                            side="right"
-                            className="bg-white border-slate-200 text-slate-600 shadow-lg"
-                          >
-                            Complete your intake to unlock
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        <SidebarMenuButton
-                          asChild
-                          isActive={isActive}
-                          className={
-                            isActive
-                              ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium'
-                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                          }
-                        >
-                          <Link href={href}>
-                            {isIntake && intakeCompleted ? (
-                              <CheckCircle2 className="size-4 text-teal-600" />
-                            ) : (
-                              <Icon className="size-4" />
-                            )}
-
-                            <span>{label}</span>
-
-                            {isIntake && !intakeCompleted && (
-                              <Badge className="ml-auto bg-teal-50 text-teal-700 text-[10px] px-1.5 py-0 border border-teal-200">
-                                Step 1
-                              </Badge>
-                            )}
-                          </Link>
-                        </SidebarMenuButton>
-                      )}
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </TooltipProvider>
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      className={
+                        isActive
+                          ? 'bg-teal-50 text-teal-700 border border-teal-200/60 font-medium'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      }
+                    >
+                      <Link href={href}>
+                        <Icon className="size-4" />
+                        <span>{label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
