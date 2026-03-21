@@ -7,7 +7,13 @@ import { PageBackground } from '@/components/application/PageBg';
 
 /* ───────────────────────── TYPES ───────────────────────── */
 type Role = 'user' | 'assistant';
-type Message = { id: string; role: Role; content: string; timestamp?: Date };
+type Message = {
+  id: string;
+  role: Role;
+  content: string;
+  timestamp?: Date;
+};
+
 const uid = () => crypto.randomUUID();
 
 /* ───────────────────────── PROMPTS ───────────────────────── */
@@ -91,7 +97,6 @@ const TypingIndicator = () => (
 /* ───────────────────────── WELCOME SCREEN ───────────────────────── */
 const Welcome = ({ onSelect }: { onSelect: (t: string) => void }) => (
   <div className="flex h-full flex-col items-center justify-center gap-8 px-6 py-10">
-
     {/* Logo + Brand */}
     <div className="flex flex-col items-center gap-5">
       <div className="relative">
@@ -103,7 +108,9 @@ const Welcome = ({ onSelect }: { onSelect: (t: string) => void }) => (
             width={64}
             height={64}
             className="h-full w-full object-cover"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
           />
         </div>
       </div>
@@ -155,7 +162,9 @@ export function AiChatView() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, []);
 
-  useEffect(() => { scrollToBottom(); }, [messages, loading, scrollToBottom]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading, scrollToBottom]);
 
   const canSend = useMemo(() => draft.trim() && !loading, [draft, loading]);
 
@@ -169,31 +178,59 @@ export function AiChatView() {
   const sendMessage = async (override?: string) => {
     const text = (override ?? draft).trim();
     if (!text || loading) return;
+
+    const userMessage: Message = {
+      id: uid(),
+      role: 'user',
+      content: text,
+      timestamp: new Date(),
+    };
+
+    const historyForApi = [...messages, { role: 'user' as const, content: text }];
+
     setDraft('');
     setLoading(true);
     setError(null);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-    setMessages((prev) => [
-      ...prev,
-      { id: uid(), role: 'user', content: text, timestamp: new Date() },
-    ]);
+    setMessages((prev) => [...prev, userMessage]);
+
     try {
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
-        body: JSON.stringify({ message: text }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: historyForApi,
+        }),
       });
-      const data = await res.json();
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const msg =
+          typeof data?.error === 'string'
+            ? data.error
+            : 'Backend error. Please try again.';
+        throw new Error(msg);
+      }
+
+      const reply =
+        typeof data?.reply === 'string' && data.reply.trim().length > 0
+          ? data.reply
+          : 'No response received.';
+
       setMessages((prev) => [
         ...prev,
         {
           id: uid(),
           role: 'assistant',
-          content: data?.reply ?? 'No response received.',
+          content: reply,
           timestamp: new Date(),
         },
       ]);
-    } catch {
-      setError('Something went wrong. Please try again.');
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -208,7 +245,6 @@ export function AiChatView() {
   return (
     <PageBackground>
       <div className="flex h-screen flex-col overflow-hidden">
-
         {/* ── Header ── */}
         <header className="z-20 flex shrink-0 items-center justify-between border-b border-white/50 bg-white/40 px-5 py-3 backdrop-blur-xl">
           <div className="flex items-center gap-3">
@@ -285,7 +321,10 @@ export function AiChatView() {
               <textarea
                 ref={textareaRef}
                 value={draft}
-                onChange={(e) => { setDraft(e.target.value); autoResize(); }}
+                onChange={(e) => {
+                  setDraft(e.target.value);
+                  autoResize();
+                }}
                 placeholder="Ask me anything about mental health…"
                 rows={1}
                 maxLength={2000}
@@ -323,7 +362,6 @@ export function AiChatView() {
             </div>
           </div>
         </footer>
-
       </div>
     </PageBackground>
   );
