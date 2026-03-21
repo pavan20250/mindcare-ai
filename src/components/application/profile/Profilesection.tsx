@@ -22,12 +22,11 @@ export function ProfileSection({
   badge,
   children,
   className,
-  accentColor = 'from-teal-500 to-emerald-400',
 }: ProfileSectionProps) {
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 backdrop-blur-[28px] backdrop-saturate-[2.0]',
+        'relative overflow-hidden rounded-2xl border border-white/60 bg-white/60 backdrop-blur-[28px] backdrop-saturate-[2.0]',
         'shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_4px_24px_rgba(99,102,241,0.06),0_1px_4px_rgba(0,0,0,0.04)]',
         className
       )}
@@ -38,21 +37,18 @@ export function ProfileSection({
       {/* Corner glow */}
       <div className="pointer-events-none absolute -left-6 -top-6 h-28 w-28 rounded-full bg-white/40 blur-2xl" />
 
-      {/* Section accent line */}
-      <div className={cn('absolute inset-x-0 top-0 h-0.5 bg-linear-to-r opacity-60', accentColor)} />
-
-      <div className="relative p-5 sm:p-6">
+      <div className="relative p-4 sm:p-5">
         {/* Section header */}
-        <div className="flex items-start justify-between gap-3 mb-5 pb-4 border-b border-white/50">
-          <div className="flex items-center gap-3">
+        <div className="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/50">
+          <div className="flex items-center gap-2.5">
             <div
               className={cn(
-                'flex size-9 items-center justify-center rounded-xl border border-white/70 shadow-sm',
+                'flex size-8 items-center justify-center rounded-xl border border-white/70 shadow-sm',
                 iconBg,
                 iconColor,
               )}
             >
-              <Icon className="size-4" />
+              <Icon className="size-3.5" />
             </div>
             <div>
               <h2 className="text-[13px] font-bold text-slate-800 leading-tight">{label}</h2>

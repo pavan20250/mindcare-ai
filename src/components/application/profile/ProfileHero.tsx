@@ -1,222 +1,197 @@
 'use client';
 
-import { Shield, Check, Edit3, Save, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Shield, Check, Edit3, Save, Sparkles, MapPin, Mail, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { type Profile, getInitials, calcCompletion } from './Types';
 
 interface ProfileHeroProps {
-  profile:      Profile;
-  displayName:  string;   // from Supabase auth metadata (full_name)
-  email:        string;   // from Supabase auth
-  role:         string;   // from user_roles.role
-  memberSince:  string;   // formatted from user_roles.created_at
-  editing:      boolean;
-  saved:        boolean;
-  saving?:      boolean;
-  onEdit:   () => void;
-  onSave:   () => void;
-  onCancel: () => void;
+  profile:     Profile;
+  displayName: string;
+  email:       string;
+  role:        string;
+  memberSince: string;
+  editing:     boolean;
+  saved:       boolean;
+  saving?:     boolean;
+  onEdit:      () => void;
+  onSave:      () => void;
+  onCancel:    () => void;
 }
 
 function stringToHue(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return Math.abs(hash) % 360;
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+  return Math.abs(h) % 360;
 }
 
 function Avatar({ initials, name }: { initials: string; name: string }) {
-  const hue  = stringToHue(name || 'user');
-  const hue2 = (hue + 35) % 360;
-  const id   = `av-${hue}`;
-
+  const h1 = stringToHue(name || 'u');
+  const h2 = (h1 + 38) % 360;
+  const id = `av${h1}`;
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
       <defs>
-        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor={`hsl(${hue},  60%, 55%)`} />
-          <stop offset="100%" stopColor={`hsl(${hue2}, 65%, 42%)`} />
+        <linearGradient id={`${id}g`} x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+          <stop stopColor={`hsl(${h1},52%,60%)`} />
+          <stop offset="1" stopColor={`hsl(${h2},58%,45%)`} />
         </linearGradient>
-        <radialGradient id={`${id}-s`} cx="40%" cy="28%" r="55%">
-          <stop offset="0%"   stopColor="rgba(255,255,255,0.32)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0)"    />
+        <radialGradient id={`${id}s`} cx="36%" cy="24%" r="50%">
+          <stop stopColor="rgba(255,255,255,0.24)" />
+          <stop offset="1" stopColor="rgba(255,255,255,0)" />
         </radialGradient>
       </defs>
-      <circle cx="40" cy="40" r="40" fill={`url(#${id}-g)`} />
-      <text
-        x="40" y="40"
-        textAnchor="middle"
-        dominantBaseline="central"
+      <circle cx="36" cy="36" r="36" fill={`url(#${id}g)`} />
+      <text x="36" y="36" textAnchor="middle" dominantBaseline="central"
         fill="rgba(255,255,255,0.95)"
-        fontSize={initials.length === 1 ? '28' : '22'}
-        fontWeight="500"
-        fontFamily="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif"
-        letterSpacing="1"
-        style={{ userSelect: 'none' }}
-      >
+        fontSize={initials.length > 1 ? 18 : 22}
+        fontWeight="400"
+        fontFamily="system-ui,-apple-system,sans-serif"
+        style={{ userSelect: 'none', letterSpacing: '0.5px' }}>
         {initials}
       </text>
-      <circle cx="40" cy="40" r="40" fill={`url(#${id}-s)`} />
+      <circle cx="36" cy="36" r="36" fill={`url(#${id}s)`} />
     </svg>
   );
 }
 
-function roleLabel(role: string): string {
-  if (role === 'superadmin') return 'Superadmin';
-  if (role === 'admin')      return 'Admin';
-  return 'Patient';
-}
+const ROLE_MAP: Record<string, { label: string; color: string }> = {
+  superadmin: { label: 'Superadmin', color: '#7c3aed' },
+  admin:      { label: 'Admin',      color: '#b45309' },
+  user:       { label: 'Patient',    color: '#0f766e' },
+};
 
 export function ProfileHero({
-  profile,
-  displayName,
-  email,
-  role,
-  memberSince,
-  editing,
-  saved,
-  saving = false,
-  onEdit,
-  onSave,
-  onCancel,
+  profile, displayName, email, role, memberSince,
+  editing, saved, saving = false,
+  onEdit, onSave, onCancel,
 }: ProfileHeroProps) {
   const completion = calcCompletion(profile);
   const initials   = getInitials(profile, email);
-
-  const r    = 46;
-  const circ = 2 * Math.PI * r;
-  const dash = circ - (completion / 100) * circ;
+  const rc         = ROLE_MAP[role] ?? ROLE_MAP.user;
+  const name       = displayName || email.split('@')[0];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 backdrop-blur-[28px] backdrop-saturate-[2.0] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_8px_32px_rgba(99,102,241,0.08),0_2px_8px_rgba(0,0,0,0.05)]">
+    <div className="relative overflow-hidden rounded-2xl bg-white/60 border border-slate-200/60 backdrop-blur-2xl shadow-sm">
 
-      {/* Specular top edge */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent from-5% via-white/90 to-transparent to-95%" />
-      {/* Teal accent band */}
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-teal-500 via-emerald-400 to-cyan-400 rounded-t-3xl" />
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute -left-12 -top-12 h-56 w-56 rounded-full bg-teal-400/8 blur-3xl" />
+      {/* Very subtle inner top highlight */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/80" />
 
-      <div className="relative flex flex-col sm:flex-row sm:items-start gap-6 p-6 sm:p-8 pt-8">
+      <div className="px-6 py-5">
+        <div className="flex items-start gap-5">
 
-        {/* Avatar + ring */}
-        <div className="relative shrink-0 self-start">
-          <svg
-            className="absolute -rotate-90 pointer-events-none"
-            style={{ inset: '-10px', width: 'calc(100% + 20px)', height: 'calc(100% + 20px)' }}
-            viewBox="0 0 120 120"
-          >
-            <defs>
-              <linearGradient id="ring-fill" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stopColor="#0d9488" />
-                <stop offset="100%" stopColor="#22d3ee" />
-              </linearGradient>
-            </defs>
-            <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(203,213,225,0.4)" strokeWidth="2.5" />
-            {completion > 0 && (
-              <circle
-                cx="60" cy="60" r={r}
-                fill="none" stroke="url(#ring-fill)"
-                strokeWidth="2.5" strokeLinecap="round"
-                strokeDasharray={circ} strokeDashoffset={dash}
-                style={{ transition: 'stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)' }}
-              />
+          {/* ── Avatar ── */}
+          <div className="relative shrink-0 mt-0.5">
+            <div className="rounded-full overflow-hidden ring-2 ring-white shadow-md shadow-black/10">
+              <Avatar initials={initials} name={name} />
+            </div>
+            {/* tiny active dot */}
+            <span className="absolute bottom-0.5 right-0.5 block size-3 rounded-full bg-emerald-400 ring-2 ring-white" />
+          </div>
+
+          {/* ── Info ── */}
+          <div className="flex-1 min-w-0 space-y-3">
+
+            {/* Name row */}
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="text-[1.1rem] font-semibold tracking-tight text-slate-900 leading-none">
+                  {name}
+                </h1>
+
+                {/* Role chip */}
+                <span
+                  className="inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[10px] font-semibold border leading-none"
+                  style={{
+                    color: rc.color,
+                    background: `${rc.color}12`,
+                    borderColor: `${rc.color}30`,
+                  }}
+                >
+                  <Shield className="size-[9px]" />
+                  {rc.label}
+                </span>
+
+                {saved && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[10px] font-semibold leading-none text-emerald-700 bg-emerald-50 border border-emerald-200/60 animate-in fade-in duration-300">
+                    <Check className="size-[9px]" strokeWidth={3} /> Saved
+                  </span>
+                )}
+              </div>
+
+              {/* Meta */}
+              <div className="flex flex-wrap items-center gap-x-3.5 gap-y-0.5">
+                <span className="flex items-center gap-1 text-[11.5px] text-slate-400">
+                  <Mail className="size-3 shrink-0 text-slate-300" />
+                  {email}
+                </span>
+                {memberSince && (
+                  <span className="flex items-center gap-1 text-[11.5px] text-slate-400">
+                    <CalendarDays className="size-3 shrink-0 text-slate-300" />
+                    {memberSince.replace('Member since ', '')}
+                  </span>
+                )}
+                {profile.address && (
+                  <span className="flex items-center gap-1 text-[11.5px] text-slate-400">
+                    <MapPin className="size-3 shrink-0 text-slate-300" />
+                    {profile.address.split(',')[0]}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Bio */}
+            {profile.bio && (
+              <p className="text-[12.5px] leading-relaxed text-slate-500 max-w-lg">
+                {profile.bio}
+              </p>
             )}
-          </svg>
 
-          <div className="size-20 rounded-full overflow-hidden ring-[2.5px] ring-white shadow-[0_4px_20px_rgba(0,0,0,0.12),0_1px_6px_rgba(13,148,136,0.15)]">
-            <Avatar initials={initials} name={displayName} />
-          </div>
-
-          {completion === 100 && (
-            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-teal-500 border-2 border-white shadow">
-              <Check className="size-2.5 text-white" strokeWidth={3} />
-            </div>
-          )}
-        </div>
-
-        {/* Identity — all from DB */}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h1 className="text-xl font-semibold text-slate-900 tracking-tight leading-tight">
-              {displayName || email.split('@')[0]}
-            </h1>
-            <div className="flex gap-1.5 flex-wrap">
-              {/* Role from user_roles table */}
-              <Badge className="text-[10px] px-2 py-0.5 bg-teal-50/80 text-teal-700 border border-teal-200/60 font-semibold shadow-none gap-1">
-                <Shield className="size-2.5" />
-                {roleLabel(role)}
-              </Badge>
-              {saved && (
-                <Badge className="text-[10px] px-2 py-0.5 bg-emerald-50/80 text-emerald-700 border border-emerald-200/60 font-semibold shadow-none gap-1 animate-in fade-in duration-200">
-                  <Check className="size-2.5" /> Saved
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          {/* Email from Supabase auth */}
-          <p className="text-sm text-slate-500">{email}</p>
-
-          {/* Member since from user_roles.created_at */}
-          <p className="text-xs text-slate-400 mt-0.5">{memberSince}</p>
-
-          {profile.bio && (
-            <p className="text-sm text-slate-500 mt-3 leading-relaxed max-w-md italic">
-              "{profile.bio}"
-            </p>
-          )}
-
-          {/* Profile strength */}
-          <div className="mt-5 max-w-[260px]">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
-                <Sparkles className="size-3 text-teal-500" />
+            {/* ── Progress ── */}
+            <div className="flex items-center gap-2.5 pt-0.5">
+              <div className="flex items-center gap-1 text-[10.5px] text-slate-400 shrink-0">
+                <Sparkles className="size-2.5 text-teal-500" />
                 Profile strength
-              </span>
-              <span className="text-[11px] font-semibold tabular-nums text-slate-500">
+              </div>
+
+              {/* Single clean bar */}
+              <div className="flex-1 max-w-40 h-1 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-linear-to-r from-teal-500 to-emerald-400 transition-all duration-700 ease-out"
+                  style={{ width: `${completion}%` }}
+                />
+              </div>
+
+              <span className="text-[10.5px] font-medium tabular-nums text-slate-400 shrink-0">
                 {completion}%
               </span>
             </div>
-            <div className="h-1.5 rounded-full bg-slate-100/80 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-linear-to-r from-teal-500 to-emerald-400 transition-all duration-700 ease-out"
-                style={{ width: `${completion}%` }}
-              />
-            </div>
+
           </div>
-        </div>
 
-        {/* Actions */}
-        <div className="flex gap-2 sm:self-start shrink-0">
-          {editing ? (
-            <>
-              <Button
-                variant="outline" size="sm" onClick={onCancel}
-                className="rounded-xl border-white/60 bg-white/40 text-slate-600 hover:bg-white/60 text-xs h-8"
-              >
-                Cancel
+          {/* ── Actions ── */}
+          <div className="shrink-0 self-start">
+            {editing ? (
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={onCancel}
+                  className="h-8 rounded-lg border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-xs px-3 shadow-none">
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={onSave} disabled={saving}
+                  className="h-8 rounded-lg bg-teal-600 hover:bg-teal-700 text-white border-0 text-xs px-3.5 shadow-sm shadow-teal-600/20 disabled:opacity-60">
+                  <Save className="size-3 mr-1.5" />
+                  {saving ? 'Saving…' : 'Save'}
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" onClick={onEdit}
+                className="h-8 rounded-lg border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-teal-700 hover:border-teal-200 text-xs px-3 shadow-none transition-colors">
+                <Edit3 className="size-3 mr-1.5" />
+                Edit profile
               </Button>
-              <Button
-                size="sm" onClick={onSave} disabled={saving}
-                className="rounded-xl bg-teal-600 hover:bg-teal-700 text-white border-0 text-xs h-8 shadow-sm shadow-teal-600/20 disabled:opacity-60"
-              >
-                <Save className="size-3 mr-1" />
-                {saving ? 'Saving…' : 'Save'}
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant="outline" size="sm" onClick={onEdit}
-              className="rounded-xl border-white/60 bg-white/40 text-slate-600 hover:bg-white/60 hover:text-teal-700 text-xs h-8"
-            >
-              <Edit3 className="size-3 mr-1" /> Edit profile
-            </Button>
-          )}
-        </div>
+            )}
+          </div>
 
+        </div>
       </div>
     </div>
   );
