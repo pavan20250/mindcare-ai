@@ -3,4 +3,8 @@ export { WelcomeBanner } from './WelcomeBanner';
 export { MoodCheckin } from './MoodCheckin';
 export { AppointmentCard, AppointmentEmpty, AppointmentSkeleton } from './AppointmentCard';
 export { WellnessTip } from './WellnessTip';
+export { NeuralPerformanceIndex } from './Neuralperformanceindex';
+export { FocusMetrics } from './Focusmetrics';
+export { StressLevel } from './Stresslevel';
+export { CarePlanSummary } from './Careplansummary';
 export type { Appointment, MoodValue, MoodEntry } from './Types';
