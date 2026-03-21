@@ -247,7 +247,7 @@ export function AiChatView() {
       <div className="flex h-screen flex-col overflow-hidden">
         {/* ── Header ── */}
         <header className="z-20 flex shrink-0 items-center justify-between border-b border-white/50 bg-white/40 px-5 py-3 backdrop-blur-xl">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex size-8 items-center justify-center rounded-xl bg-teal-600 text-white shadow-sm">
               <MessageCircle className="size-3.5" />
             </div>
